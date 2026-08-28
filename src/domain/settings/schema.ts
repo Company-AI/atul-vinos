@@ -42,7 +42,7 @@ export const ageGateSettings = z.object({
     .string()
     .default("Beber con moderación. Prohibida su venta a menores de 18 años."),
   imageUrl: z.string().default(""),
-  backgroundUrl: z.string().default("/media/age-gate.jpg"),
+  backgroundUrl: z.string().default("/media/age-gate.png"),
   exitUrl: z.string().default("https://www.google.com"),
   rememberDays: z.number().int().default(180),
 });
@@ -91,7 +91,7 @@ export const seoSettings = z.object({
     .default(
       "Vinos de altura elaborados con paciencia. Comprá online o sumate al Club y recibí una selección todos los meses.",
     ),
-  ogImageUrl: z.string().default("/media/og.jpg"),
+  ogImageUrl: z.string().default("/media/og.png"),
   ga4Id: z.string().default(""),
   metaPixelId: z.string().default(""),
   indexable: z.boolean().default(true),
@@ -118,14 +118,14 @@ export const legalSettings = z.object({
 });
 
 export const settingsSchema = z.object({
-  company: companySettings.default({}),
-  ageGate: ageGateSettings.default({}),
-  shipping: shippingSettings.default({}),
-  club: clubSettings.default({}),
-  payments: paymentSettings.default({}),
-  seo: seoSettings.default({}),
-  email: emailSettings.default({}),
-  legal: legalSettings.default({}),
+  company: companySettings.prefault({}),
+  ageGate: ageGateSettings.prefault({}),
+  shipping: shippingSettings.prefault({}),
+  club: clubSettings.prefault({}),
+  payments: paymentSettings.prefault({}),
+  seo: seoSettings.prefault({}),
+  email: emailSettings.prefault({}),
+  legal: legalSettings.prefault({}),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

@@ -62,7 +62,18 @@ const mix = (c1, c2, t) => [lerp(c1[0], c2[0], t), lerp(c1[1], c2[1], t), lerp(c
 const clamp = (v) => Math.max(0, Math.min(255, v));
 // Cuantizar reduce la entropía del PNG (archivos ~5x más chicos) sin pérdida visible
 const QUANT = 6;
-const q = (v) => Math.round(clamp(v) / QUANT) * QUANT;
+// Matriz de Bayer 4x4: el dither ordenado rompe el banding y, al ser periódico,
+// comprime mucho mejor que el ruido aleatorio.
+const BAYER = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5],
+];
+const q = (v, x, y) => {
+  const bias = (BAYER[y & 3][x & 3] / 16 - 0.5) * QUANT;
+  return Math.round(clamp(v + bias) / QUANT) * QUANT;
+};
 
 // Ruido de valor suave y determinista (sin dependencias)
 function hash2(x, y, seed) {
@@ -101,29 +112,35 @@ function scene(width, height, opts) {
     const ty = y / height;
     for (let x = 0; x < width; x++) {
       const tx = x / width;
-      let color;
 
-      if (ty < horizon) {
-        // cielo: degradado + resplandor cálido cerca del horizonte
-        const t = ty / horizon;
-        color = mix(top, mix(top, acc, 0.35), Math.pow(t, 1.6));
-        const glow = Math.pow(1 - Math.abs(tx - 0.5) * 1.4, 3) * Math.pow(t, 3) * 0.5;
-        color = mix(color, acc, Math.max(0, glow));
-      } else {
-        // terreno: oscuro con textura y surcos de viñedo opcionales
-        const t = (ty - horizon) / (1 - horizon);
-        color = mix(mix(bottom, acc, 0.12), bottom, Math.pow(t, 0.6));
-        if (rows > 0) {
-          const persp = 0.15 + t * 1.0;
-          const line = Math.sin((tx - 0.5) / persp * rows * Math.PI) ;
-          const strength = Math.pow(t, 0.8) * 0.12;
-          color = mix(color, acc, Math.max(0, line) * strength);
-        }
+      // Cielo
+      const tSky = Math.min(1, ty / horizon);
+      let sky_ = mix(top, mix(top, acc, 0.35), Math.pow(tSky, 1.6));
+      const glow = Math.pow(Math.max(0, 1 - Math.abs(tx - 0.5) * 1.4), 3) * Math.pow(tSky, 3) * 0.5;
+      sky_ = mix(sky_, acc, Math.max(0, glow));
+
+      // Terreno: bandas horizontales + hileras en perspectiva, ambas suaves
+      const tGround = Math.max(0, Math.min(1, (ty - horizon) / (1 - horizon)));
+      let ground_ = mix(mix(bottom, acc, 0.12), bottom, Math.pow(tGround, 0.6));
+      if (rows > 0) {
+        const persp = 0.18 + tGround * 1.1;
+        const line = Math.sin(((tx - 0.5) / persp) * rows * Math.PI);
+        // La intensidad crece hacia el primer plano: cerca del horizonte se difumina
+        const strength = Math.pow(tGround, 1.6) * 0.16;
+        ground_ = mix(ground_, acc, Math.max(0, line) * strength);
+        const band = Math.sin(tGround * 26) * 0.5 + 0.5;
+        ground_ = mix(ground_, bottom, band * 0.06);
       }
 
-      // niebla / atmósfera
+      // Transición suave del horizonte (evita la línea dura)
+      const hbT = Math.max(0, Math.min(1, (ty - (horizon - 0.06)) / 0.12));
+      const hb = hbT * hbT * (3 - 2 * hbT);
+      let color = mix(sky_, ground_, hb);
+
+      // Niebla: más densa cerca del horizonte, como la calima del atardecer
       const n = fbm(tx * 3.2, ty * 2.4, seed);
-      color = mix(color, mix(color, acc, 0.5), (n - 0.5) * haze);
+      const hazeBand = 1 + Math.exp(-Math.pow((ty - horizon) * 9, 2)) * 1.6;
+      color = mix(color, mix(color, acc, 0.5), (n - 0.5) * haze * hazeBand);
 
       // viñeta cálida
       const dx = (tx - 0.5) * 2, dy = (ty - 0.5) * 2;
@@ -133,9 +150,9 @@ function scene(width, height, opts) {
       // grano
       const g = (hash2(Math.floor(x / 3), Math.floor(y / 3), seed + 91) - 0.5) * grain;
       const i = (y * width + x) * 3;
-      buf[i] = q(color[0] + g);
-      buf[i + 1] = q(color[1] + g);
-      buf[i + 2] = q(color[2] + g);
+      buf[i] = q(color[0] + g, x, y);
+      buf[i + 1] = q(color[1] + g, x, y);
+      buf[i + 2] = q(color[2] + g, x, y);
     }
   }
   return buf;
@@ -214,9 +231,9 @@ function bottleShot(width, height, opts) {
 
       const g = (hash2(Math.floor(x / 3), Math.floor(y / 3), seed + 17) - 0.5) * 3;
       const i = (y * width + x) * 3;
-      buf[i] = q(color[0] + g);
-      buf[i + 1] = q(color[1] + g);
-      buf[i + 2] = q(color[2] + g);
+      buf[i] = q(color[0] + g, x, y);
+      buf[i + 1] = q(color[1] + g, x, y);
+      buf[i + 2] = q(color[2] + g, x, y);
     }
   }
   return buf;

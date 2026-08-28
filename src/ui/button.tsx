@@ -71,4 +71,25 @@ export function Spinner({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Mismo aspecto que Button pero renderizando un link real.
+ * Evita anidar <a> dentro de <button> (inválido y no accesible).
+ */
+export interface ButtonLinkProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    VariantProps<typeof buttonVariants> {}
+
+export const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
+  ({ className, variant, size, block, uppercase, children, ...props }, ref) => (
+    <a
+      ref={ref}
+      className={cn(buttonVariants({ variant, size, block, uppercase }), className)}
+      {...props}
+    >
+      {children}
+    </a>
+  ),
+);
+ButtonLink.displayName = "ButtonLink";
+
 export { buttonVariants };

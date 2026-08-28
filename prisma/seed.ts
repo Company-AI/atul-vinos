@@ -1053,7 +1053,7 @@ async function main() {
   });
 
   // Stock bajo deliberado para probar alertas
-  await move(productIdBySlug.get("aurora-icono-2018")!, "AJUSTE", 4, {
+  await move(productIdBySlug.get("aurora-icono-2018")!, "AJUSTE", 16, {
     userId: superAdmin.id, comment: "Ajuste: quedan pocas botellas de la añada", at: daysAgo(2),
   });
 

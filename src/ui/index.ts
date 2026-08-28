@@ -1,4 +1,4 @@
-export { Button, Spinner, buttonVariants } from "./button";
+export { Button, ButtonLink, Spinner, buttonVariants } from "./button";
 export { Badge, Chip } from "./badge";
 export { Card, CardHeader } from "./card";
 export { EmptyState } from "./empty-state";

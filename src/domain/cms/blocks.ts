@@ -22,9 +22,9 @@ export const videoHeroBlock = z.object({
   eyebrow: z.string().default(""),
   title: z.string().default(""),
   subtitle: z.string().default(""),
-  ctaPrimary: link.default({}),
-  ctaSecondary: link.default({}),
-  media: media.default({}),
+  ctaPrimary: link.prefault({}),
+  ctaSecondary: link.prefault({}),
+  media: media.prefault({}),
   overlay: z.enum(["scrim-bottom", "scrim-full", "none"]).default("scrim-bottom"),
   align: z.enum(["left", "center"]).default("center"),
   height: z.enum(["full", "tall", "medium"]).default("full"),
@@ -36,8 +36,8 @@ export const editorialBlock = z.object({
   title: z.string().default(""),
   body: z.string().default(""),
   quote: z.string().default(""),
-  cta: link.default({}),
-  media: media.default({}),
+  cta: link.prefault({}),
+  media: media.prefault({}),
   mediaSide: z.enum(["left", "right"]).default("right"),
   tone: z.enum(["light", "linen", "dark"]).default("light"),
   layout: z.enum(["split", "fullBleed", "centered"]).default("split"),
@@ -47,7 +47,7 @@ export const showcaseBlock = z.object({
   eyebrow: z.string().default(""),
   title: z.string().default(""),
   body: z.string().default(""),
-  cta: link.default({}),
+  cta: link.prefault({}),
   items: z
     .array(
       z.object({
@@ -66,8 +66,8 @@ export const clubTeaserBlock = z.object({
   title: z.string().default(""),
   body: z.string().default(""),
   bullets: z.array(z.string()).default([]),
-  cta: link.default({}),
-  media: media.default({}),
+  cta: link.prefault({}),
+  media: media.prefault({}),
 });
 
 export const stepsBlock = z.object({
@@ -84,7 +84,7 @@ export const featuredWinesBlock = z.object({
   eyebrow: z.string().default(""),
   title: z.string().default(""),
   body: z.string().default(""),
-  cta: link.default({}),
+  cta: link.prefault({}),
   /** Qué mostrar: destacados, novedades, más vendidos o una línea concreta. */
   source: z.enum(["featured", "new", "bestSellers", "line"]).default("featured"),
   lineSlug: z.string().default(""),
