@@ -46,7 +46,7 @@ export default async function CheckoutStatusPage({ params }: PageProps) {
       icon: <CheckCircle2 className="size-10 text-success-500" />,
       eyebrow: "Pedido confirmado",
       title: "¡Gracias! Ya estamos preparando tu pedido.",
-      body: "Te enviamos la confirmación por email. Cuando salga de la bodega vas a recibir el número de seguimiento.",
+      body: "Te enviamos la confirmación por email. Cuando salga del depósito vas a recibir el número de seguimiento.",
     },
     pending: {
       icon: <Clock className="size-10 text-warning-500" />,

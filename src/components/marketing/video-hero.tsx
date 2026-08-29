@@ -151,7 +151,7 @@ export function VideoHero({
         El video es más luminoso y cambiante que un poster fijo: se suma una
         capa tenue para que el titular mantenga contraste AA en todos los frames.
       */}
-      {showVideo && <div aria-hidden className="absolute inset-0 -z-10 bg-carbon-950/25" />}
+      {showVideo && <div aria-hidden className="absolute inset-0 -z-10 bg-carbon-950/35" />}
 
       <div
         className={cn(

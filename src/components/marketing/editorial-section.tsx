@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BackgroundMedia } from "./background-media";
 import { cn } from "@/lib/cn";
 import type { BlockData } from "@/domain/cms/blocks";
 import { buttonVariants } from "@/ui/button";
@@ -16,14 +17,18 @@ export function EditorialSection({ data }: { data: BlockData<"editorial"> }) {
     return (
       <section data-editorial className="on-dark relative isolate overflow-hidden bg-carbon-950">
         {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={media.imageAlt || ""}
-            fill
-            sizes="100vw"
-            className="-z-10 object-cover opacity-60"
+          <BackgroundMedia
+            media={{
+              imageUrl,
+              imageAlt: media.imageAlt,
+              posterUrl: media.posterUrl,
+              videoDesktopUrl: media.videoDesktopUrl,
+              videoMobileUrl: media.videoMobileUrl,
+            }}
+            imageClassName="opacity-60"
           />
         )}
+        <div aria-hidden className="absolute inset-0 -z-10 bg-carbon-950/45" />
         <div aria-hidden className="absolute inset-0 -z-10 scrim-full" />
         <Container className="py-section" size="narrow">
           <Reveal>

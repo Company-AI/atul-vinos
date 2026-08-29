@@ -30,7 +30,7 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-linen-100">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-bone-pure">
         {videoUrl && active === -1 ? (
           <video
             src={videoUrl}
@@ -46,7 +46,7 @@ export function ProductGallery({
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover"
+            className="object-contain p-10"
           />
         )}
       </div>
@@ -71,7 +71,7 @@ export function ProductGallery({
                   alt=""
                   fill
                   sizes="80px"
-                  className="object-cover"
+                  className="object-contain p-2"
                 />
               </button>
             </li>

@@ -1,11 +1,15 @@
-# Bodega Aurora — plataforma
+# Aurora Selección — plataforma
 
-Sitio institucional premium, e-commerce de vinos y Club de suscripción mensual,
-con un back-office para operar el negocio completo. Monolito modular en
-Next.js 15 + TypeScript + PostgreSQL.
+Sitio institucional premium, e-commerce y Club de suscripción mensual para una
+**distribuidora de vinos de Mendoza**, con un back-office para operar todo el
+negocio. Monolito modular en Next.js 15 + TypeScript + PostgreSQL.
 
-> La marca «Bodega Aurora» y todo su contenido son datos semilla: nombre, logo,
-> textos, fotos, precios, planes y costos de envío se editan desde el admin.
+No producimos vino: representamos bodegas y lo que vendemos es criterio de
+selección. El catálogo semilla son etiquetas reales de Rutini Wines, Trumpeter y
+Bodega Norton, con sus packshots oficiales.
+
+> La marca «Aurora Selección» y todo su contenido son datos semilla: nombre,
+> logo, textos, fotos, precios, planes y costos de envío se editan desde el admin.
 
 ---
 
@@ -16,7 +20,8 @@ npm install
 cp .env.example .env          # ajustá DATABASE_URL y AUTH_SECRET
 createdb bodega_dev
 npm run db:migrate            # crea el esquema
-npm run assets:stock          # descarga la media de demostración
+npm run assets:stock          # paisajes de Mendoza y videos
+npm run assets:packshots      # packshots oficiales de las bodegas
 npm run db:seed               # datos de prueba completos
 npm run dev
 ```
@@ -27,9 +32,9 @@ El sitio queda en `http://localhost:3021`.
 
 | Rol | Email | Contraseña |
 |---|---|---|
-| Super Admin | `admin@bodegaaurora.test` | `Aurora2026!` |
-| Depósito | `deposito@bodegaaurora.test` | `Aurora2026!` |
-| Atención al cliente | `atencion@bodegaaurora.test` | `Aurora2026!` |
+| Super Admin | `admin@auroraseleccion.test` | `Aurora2026!` |
+| Depósito | `deposito@auroraseleccion.test` | `Aurora2026!` |
+| Atención al cliente | `atencion@auroraseleccion.test` | `Aurora2026!` |
 | Cliente | `juan.perez@example.com` | `Cliente2026!` |
 
 ---
@@ -67,7 +72,8 @@ fallido, no se genera pedido y aparece en `/admin/pagos` para recuperarlo.
 | `npm run db:seed` | Recarga los datos de demostración |
 | `npm run db:reset` | Borra y recrea la base con el seed |
 | `npm run db:studio` | Prisma Studio |
-| `npm run assets:stock` | Descarga fotos y videos de demostración |
+| `npm run assets:stock` | Descarga paisajes de Mendoza y videos |
+| `npm run assets:packshots` | Descarga los packshots oficiales de las bodegas |
 
 ---
 
@@ -93,6 +99,27 @@ proveedor interno y cambiarlo sin tocar el dominio.
 
 La arquitectura completa, el modelo de datos y los flujos están en
 [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
+
+---
+
+## Sobre el catálogo semilla
+
+Las etiquetas, bodegas y regiones son reales, y los packshots son los oficiales de
+cada bodega. Tres cosas a tener en cuenta antes de vender:
+
+- **Precios**: capturados de las tiendas oficiales en agosto de 2026. Los de
+  Rutini venían por caja de 6 y están divididos por unidad. Hay que reemplazarlos
+  por la lista vigente del proveedor.
+- **Cosechas**: van vacías a propósito. Cambian con cada partida que entra, así
+  que se cargan desde Admin > Productos cuando llega la mercadería. No inventamos
+  añadas.
+- **Textos**: la descripción de cada vino es *por qué lo elegimos* —nuestra
+  recomendación como distribuidores—, no la ficha oficial de la bodega. Las notas
+  de cata son orientativas del varietal. Cuando la bodega mande su material, se
+  reemplaza desde el admin.
+
+Agregar una bodega nueva es cargar sus productos: las taxonomías (bodegas,
+regiones, varietales, maridajes) se derivan del catálogo, no de listas paralelas.
 
 ---
 
@@ -178,5 +205,9 @@ npm test
 - [ ] Pasar el storage a S3/R2 y mover la media pesada fuera del repo
 - [ ] Reemplazar la fotografía y el video de demostración (ver [`docs/ASSETS.md`](docs/ASSETS.md))
 - [ ] Revisar textos legales con un asesor
-- [ ] Cargar el catálogo real y los costos de envío por zona
+- [ ] **Actualizar precios**: los del seed se capturaron de las tiendas oficiales
+      en agosto de 2026 y son solo de referencia
+- [ ] **Cargar las cosechas**: van vacías a propósito, cambian con cada partida
+- [ ] Pedirle a cada bodega su media kit y reemplazar los packshots
+- [ ] Cargar los costos de envío por zona
 - [ ] Cambiar las contraseñas del seed y crear los usuarios reales del equipo

@@ -13,20 +13,29 @@
  *
  * Los créditos se escriben en public/media/CREDITS.md.
  *
- * REGLA AL ELEGIR FOTOS DE PRODUCTO: la etiqueta no puede ser legible. Mostrar
- * botellas de otras bodegas como si fueran propias induce a error al comprador
- * y es un problema de marcas. Se eligen botellas sin etiqueta, etiquetas fuera
- * de foco o copas.
+ * SOBRE LOS PAISAJES: las fotos de viñedos son de Mendoza (Tunuyán,
+ * Potrerillos, Valle de Uco). Los VIDEOS son de archivo y no están filmados en
+ * Mendoza: se eligieron por parecido de paisaje. Si hace falta precisión
+ * geográfica, hay que filmar o licenciar material propio.
+ *
+ * REGLA AL ELEGIR FOTOS DE PRODUCTO: no se usan de acá. Los packshots del
+ * catálogo son los oficiales de cada bodega y los baja
+ * scripts/fetch-product-shots.mjs.
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
 const PHOTOS = [
-  // ─── Escenas ──────────────────────────────────────────────────────────────
-  { id: 2331884, file: "public/media/scenes/hero-vineyard-mountains.jpg", w: 1920, title: "Viñedo al pie de la montaña" },
-  { id: 5370804, file: "public/media/scenes/vineyard-rows.jpg", w: 1600, title: "Hileras de viñedo" },
-  { id: 11566340, file: "public/media/scenes/vineyard-valley.jpg", w: 1600, title: "Valle con viñedos" },
-  { id: 842711, file: "public/media/scenes/mountains.jpg", w: 1920, title: "Sierras" },
+  // ─── Paisajes de Mendoza (fotos reales de Tunuyán, Potrerillos y el Valle) ─
+  { id: 31025244, file: "public/media/scenes/mendoza-vineyard-andes.jpg", w: 1920, title: "Viñedos de Tunuyán con los Andes de fondo" },
+  { id: 31025236, file: "public/media/scenes/mendoza-vineyard-rows.jpg", w: 1600, title: "Hileras de viñedo en Tunuyán, Mendoza" },
+  { id: 38896296, file: "public/media/scenes/mendoza-vineyard-view.jpg", w: 1600, title: "Viñedo en Mendoza" },
+  { id: 19046646, file: "public/media/scenes/mendoza-valley.jpg", w: 1600, title: "Viñedo en un valle de montaña" },
+  { id: 33839967, file: "public/media/scenes/potrerillos-andes.jpg", w: 1920, title: "Los Andes en Potrerillos, Mendoza" },
+  { id: 27990477, file: "public/media/scenes/mendoza-vineyard-house.jpg", w: 1600, title: "Casa de campo entre viñedos, con la montaña detrás" },
+  { id: 3876464, file: "public/media/scenes/mendoza-farmland-snow.jpg", w: 1600, title: "Campo al pie de la cordillera nevada" },
+
+  // ─── Bodega, guarda y servicio ────────────────────────────────────────────
   { id: 17765439, file: "public/media/scenes/barrels.jpg", w: 1600, title: "Barricas apiladas" },
   { id: 30654296, file: "public/media/scenes/cellar.jpg", w: 1600, title: "Nave de crianza" },
   { id: 5537784, file: "public/media/scenes/barrels-storage.jpg", w: 1600, title: "Barricas en depósito" },
@@ -36,24 +45,11 @@ const PHOTOS = [
   { id: 6058230, file: "public/media/scenes/glass-dark.jpg", w: 1400, title: "Copa de vino sobre negro" },
   { id: 312080, file: "public/media/scenes/pouring.jpg", w: 1600, title: "Sirviendo vino" },
   { id: 30279443, file: "public/media/scenes/pouring-dark.jpg", w: 1920, title: "Sirviendo vino, fondo oscuro" },
+  { id: 8775181, file: "public/media/scenes/toast.jpg", w: 1600, title: "Brindis con copas de tinto" },
+  { id: 11976218, file: "public/media/scenes/sparkling.jpg", w: 1400, title: "Copas de espumante" },
   { id: 94437, file: "public/media/scenes/bottle-glass-dark.jpg", w: 1600, title: "Botella y copa" },
-
-  // ─── Botellas por tipo de vino ────────────────────────────────────────────
-  { id: 94437, file: "public/media/wines/tinto.jpg", w: 1000, title: "Botella de tinto" },
-  { id: 121191, file: "public/media/wines/tinto-alt.jpg", w: 1000, title: "Botella sobre madera" },
-  { id: 10012572, file: "public/media/wines/blanco.jpg", w: 1000, title: "Vino blanco" },
-  { id: 375839, file: "public/media/wines/rosado.jpg", w: 1000, title: "Rosado" },
-  { id: 11976218, file: "public/media/wines/espumante.jpg", w: 1000, title: "Copas de espumante" },
-  { id: 30269757, file: "public/media/wines/naranjo.jpg", w: 1000, title: "Copa, alta gama" },
-  { id: 8775181, file: "public/media/wines/pack.jpg", w: 1000, title: "Brindis con copas de tinto" },
 ];
 
-/**
- * Pexels expone varias resoluciones por video con el patrón
- *   {id}-{tier}_{ancho}_{alto}_{fps}fps.mp4
- * Los clips verticales invierten ancho y alto, así que las variantes se
- * derivan de la orientación del archivo canónico.
- */
 const TIERS = {
   "720": { landscape: "hd_1280_720", portrait: "hd_720_1280" },
   "540": { landscape: "sd_960_540", portrait: "sd_540_960" },
@@ -62,11 +58,27 @@ const TIERS = {
 
 const VIDEOS = [
   {
-    id: 3775895,
-    title: "Drone sobre el viñedo de una bodega",
+    // Hileras de viñedo con la montaña detrás: el plano que abre la home.
+    id: 3775817,
+    title: "Viñedos al pie de la montaña",
     variants: [
       { file: "public/media/video/hero-desktop.mp4", prefer: ["720", "540"], maxBytes: 7_000_000 },
       { file: "public/media/video/hero-mobile.mp4", prefer: ["360", "540"], maxBytes: 2_500_000 },
+    ],
+  },
+  {
+    // Recorrido por el camino entre viñedos: fondo del bloque de selección.
+    id: 3775623,
+    title: "Camino entre viñedos",
+    variants: [
+      { file: "public/media/video/vineyard-road.mp4", prefer: ["720", "540"], maxBytes: 6_000_000 },
+    ],
+  },
+  {
+    id: 3775895,
+    title: "Drone sobre el viñedo",
+    variants: [
+      { file: "public/media/video/vineyard-aerial.mp4", prefer: ["720", "540"], maxBytes: 7_000_000 },
     ],
   },
   {
@@ -77,7 +89,7 @@ const VIDEOS = [
     ],
   },
   {
-    // Vertical: ideal como fuente mobile del hero del Club.
+    // Vertical: fuente mobile del hero del Club.
     id: 8093235,
     title: "Vino sirviéndose, plano vertical",
     variants: [

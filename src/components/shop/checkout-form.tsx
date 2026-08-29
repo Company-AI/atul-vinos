@@ -392,7 +392,7 @@ export function CheckoutForm({
             </p>
           </div>
 
-          <Field label="Comentarios para la bodega" htmlFor="note" className="mt-6"
+          <Field label="Comentarios para nosotros" htmlFor="note" className="mt-6"
             hint="Opcional. Ej.: es un regalo, incluir tarjeta.">
             <Textarea
               id="note" value={note} maxLength={500}

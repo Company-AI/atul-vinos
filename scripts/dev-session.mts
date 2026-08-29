@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === "production") {
   process.exit(1);
 }
 
-const email = process.argv[2] ?? "admin@bodegaaurora.test";
+const email = process.argv[2] ?? "admin@auroraseleccion.test";
 const prisma = new PrismaClient();
 
 const user = await prisma.user.findUnique({ where: { email } });

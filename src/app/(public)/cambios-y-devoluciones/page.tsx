@@ -30,7 +30,7 @@ export default async function ReturnsPage() {
         },
         {
           heading: "Cambios de producto",
-          body: "Mientras el pedido no haya salido de la bodega podés cambiar los productos escribiéndonos. Una vez despachado, aplica el procedimiento de devolución.",
+          body: "Mientras el pedido no haya salido del depósito podés cambiar los productos escribiéndonos. Una vez despachado, aplica el procedimiento de devolución.",
         },
         {
           heading: "Suscripción del Club",

@@ -20,8 +20,9 @@ Tres productos en una sola base de código, con una única fuente de verdad de d
 | Club de suscripción | socio | `/club`, `/mi-cuenta/*` |
 | Back-office | operación | `/admin/*` |
 
-Criterio rector de UX pública: **primero marca, después tienda**. La conversión existe
-pero nunca a costa de popups agresivos ni fricción visual.
+Criterio rector de UX pública: **primero el criterio, después la tienda**. Lo que
+diferencia a un distribuidor de un supermercado es por qué eligió cada botella, así
+que eso va adelante. La conversión existe pero nunca a costa de popups agresivos.
 
 ---
 

@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Nuestros vinos",
     description:
-      "Todos los vinos de la bodega: tintos, blancos, rosados y espumantes. Filtrá por varietal, región, cosecha o maridaje.",
+      "Nuestra selección de vinos de Mendoza. Filtrá por varietal, región, bodega, precio o maridaje.",
     alternates: { canonical: "/vinos" },
     openGraph: { title: `Nuestros vinos · ${seo.defaultTitle}` },
   };
@@ -62,14 +62,14 @@ export default async function VinosPage({ searchParams }: PageProps) {
       <Container className="pb-12 pt-4">
         <Eyebrow>Tienda</Eyebrow>
         <Heading level={1} size="lg" className="mt-4 max-w-[24ch]">
-          {intro.title || (filters.q ? `Resultados para «${filters.q}»` : "Nuestros vinos")}
+          {intro.title || (filters.q ? `Resultados para «${filters.q}»` : "Nuestra selección")}
         </Heading>
         {intro.body ? (
           <Prose className="mt-5">{intro.body}</Prose>
         ) : (
           <Prose className="mt-5">
-            Todo lo que embotellamos, en un solo lugar. Filtrá por varietal, región, cosecha o por
-            lo que vas a comer.
+            Toda nuestra selección de Mendoza en un solo lugar. Probamos cada etiqueta antes de
+            comprarla. Filtrá por varietal, región, bodega o por lo que vas a comer.
           </Prose>
         )}
       </Container>

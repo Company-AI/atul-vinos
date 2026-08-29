@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { BackgroundMedia } from "./background-media";
 import { Check } from "lucide-react";
 import type { BlockData } from "@/domain/cms/blocks";
 import { buttonVariants } from "@/ui/button";
@@ -14,14 +14,18 @@ export function ClubTeaser({ data }: { data: BlockData<"club_teaser"> }) {
   return (
     <section className="on-dark relative isolate overflow-hidden bg-carbon-900 text-linen-100">
       {imageUrl && (
-        <Image
-          src={imageUrl}
-          alt=""
-          fill
-          sizes="100vw"
-          className="-z-10 object-cover opacity-30"
+        <BackgroundMedia
+          media={{
+            imageUrl,
+            imageAlt: data.media.imageAlt,
+            posterUrl: data.media.posterUrl,
+            videoDesktopUrl: data.media.videoDesktopUrl,
+            videoMobileUrl: data.media.videoMobileUrl,
+          }}
+          imageClassName="opacity-35"
         />
       )}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-carbon-950/55" />
       <div aria-hidden className="absolute inset-0 -z-10 scrim-full" />
 
       <Container className="py-section">

@@ -13,7 +13,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Historias",
   description:
-    "Notas sobre vinos, maridajes, cosechas y la vida en la bodega, escritas por nuestro equipo.",
+    "Notas sobre vinos, regiones de Mendoza y maridajes, escritas por nuestro equipo de selección.",
   alternates: { canonical: "/historias" },
 };
 
@@ -33,7 +33,7 @@ export default async function StoriesPage() {
         Lo que pasa entre la planta y la copa.
       </Heading>
       <Prose className="mt-5">
-        Notas sobre vinos, maridajes, cosechas y la vida en la bodega. Sin tecnicismos innecesarios.
+        Notas sobre vinos, regiones y maridajes. Sin tecnicismos innecesarios.
       </Prose>
 
       {posts.length === 0 ? (

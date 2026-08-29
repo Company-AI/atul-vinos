@@ -36,7 +36,7 @@ export function WineCard({
 
   return (
     <article className={cn("group relative flex flex-col", className)}>
-      <div className="relative aspect-[3/4] overflow-hidden bg-linen-100">
+      <div className="relative aspect-[3/4] overflow-hidden bg-bone-pure">
         <Link href={`/vinos/${product.slug}`} className="block size-full" tabIndex={-1} aria-hidden>
           {product.imageUrl ? (
             <Image
@@ -45,7 +45,7 @@ export function WineCard({
               fill
               priority={priority}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-[620ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+              className="object-contain p-6 transition-transform duration-[620ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
             />
           ) : (
             <div className="grid size-full place-items-center text-stone-400">Sin imagen</div>

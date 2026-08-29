@@ -177,21 +177,21 @@ async function main() {
   const [superAdmin] = await Promise.all([
     prisma.user.create({
       data: {
-        email: "admin@bodegaaurora.test", passwordHash: staffPassword,
+        email: "admin@auroraseleccion.test", passwordHash: staffPassword,
         firstName: "Facundo", lastName: "Administrador", isStaff: true,
         roleId: roles.super_admin, emailVerifiedAt: NOW,
       },
     }),
     prisma.user.create({
       data: {
-        email: "deposito@bodegaaurora.test", passwordHash: staffPassword,
+        email: "deposito@auroraseleccion.test", passwordHash: staffPassword,
         firstName: "Marcos", lastName: "Depósito", isStaff: true,
         roleId: roles.deposito, emailVerifiedAt: NOW,
       },
     }),
     prisma.user.create({
       data: {
-        email: "atencion@bodegaaurora.test", passwordHash: staffPassword,
+        email: "atencion@auroraseleccion.test", passwordHash: staffPassword,
         firstName: "Carla", lastName: "Atención", isStaff: true,
         roleId: roles.atencion_cliente, emailVerifiedAt: NOW,
       },
@@ -210,7 +210,14 @@ async function main() {
   console.log(`✓ ${Object.keys(defaults).length} grupos de configuración`);
 
   // ═════════════════════════════ Taxonomías ══════════════════════════════════
-  const categoryNames = ["Vinos tintos", "Vinos blancos", "Rosados", "Espumantes", "Vinos naranjos", "Packs"];
+  // Las taxonomías se derivan del catálogo: si mañana entra una bodega nueva,
+  // aparece sola sin tocar esta parte.
+  const unique = (values: string[]) => [...new Set(values.filter(Boolean))];
+
+  const categoryNames = unique([
+    ...WINES.map((w) => w.category),
+    ...PACKS.map((p) => p.category),
+  ]);
   const categories = new Map<string, string>();
   for (const [i, name] of categoryNames.entries()) {
     const c = await prisma.category.create({
@@ -219,72 +226,138 @@ async function main() {
     categories.set(name, c.id);
   }
 
+  const WINERY_INFO: Record<string, { story: string; imageUrl: string }> = {
+    "Rutini Wines": {
+      story:
+        "Fundada en 1885 y hoy con base en Tupungato, Valle de Uco. Trabajamos con ellos toda la línea, desde Encuentro hasta Finca Centenaria.",
+      imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
+    },
+    Trumpeter: {
+      story:
+        "La línea de Rutini pensada para el día a día, elaborada en Luján de Cuyo. Es la que más rota en nuestro depósito.",
+      imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
+    },
+    "Bodega Norton": {
+      story:
+        "Más de cien años en Perdriel, Luján de Cuyo. Nos interesa especialmente su línea de altura del Valle de Uco.",
+      imageUrl: "/media/scenes/potrerillos-andes.jpg",
+    },
+  };
+
   const wineries = new Map<string, string>();
-  for (const name of ["Bodega Aurora", "Finca Aurora Alta", "Aurora Patagonia"]) {
+  for (const name of unique(WINES.map((w) => w.winery))) {
+    const info = WINERY_INFO[name];
     const w = await prisma.winery.create({
       data: {
-        name, slug: slugify(name),
-        story: "Elaboración propia con uvas de viñedos de la familia.",
-        imageUrl: "/media/scenes/cellar.jpg",
+        name,
+        slug: slugify(name),
+        story: info?.story ?? null,
+        imageUrl: info?.imageUrl ?? "/media/scenes/mendoza-vineyard-andes.jpg",
       },
     });
     wineries.set(name, w.id);
   }
 
-  const regionData = [
-    ["Valle de Uco", "Mendoza"], ["Luján de Cuyo", "Mendoza"], ["Maipú", "Mendoza"],
-    ["Valle Calchaquí", "Salta"], ["Valle de Pedernal", "San Juan"], ["Patagonia", "Río Negro"],
-  ];
+  // Todas las zonas son de Mendoza; Gualtallary y La Consulta son parajes
+  // dentro del Valle de Uco, pero se filtran por separado porque el cliente
+  // que los busca los busca por nombre.
+  const REGION_INFO: Record<string, { province: string; description: string }> = {
+    "Valle de Uco": {
+      province: "Mendoza",
+      description: "Altura, noches frías y suelos pedregosos. Donde está pasando lo más interesante.",
+    },
+    "Luján de Cuyo": {
+      province: "Mendoza",
+      description: "La cuna del Malbec argentino y primera denominación de origen del país.",
+    },
+    Gualtallary: {
+      province: "Mendoza",
+      description: "Suelo calcáreo y mucha altura, en el Valle de Uco. Vinos tensos y minerales.",
+    },
+    "La Consulta": {
+      province: "Mendoza",
+      description: "San Carlos, Valle de Uco. Zona de viñedos viejos de Malbec.",
+    },
+    Maipú: {
+      province: "Mendoza",
+      description: "Zona histórica del este mendocino, de perfil más cálido.",
+    },
+  };
+
   const regions = new Map<string, string>();
-  for (const [name, province] of regionData) {
+  for (const name of unique(WINES.map((w) => w.region))) {
+    const info = REGION_INFO[name];
     const r = await prisma.region.create({
-      data: { name, slug: slugify(name), province, imageUrl: "/media/scenes/mountains.jpg" },
+      data: {
+        name,
+        slug: slugify(name),
+        province: info?.province ?? "Mendoza",
+        description: info?.description ?? null,
+        imageUrl: "/media/scenes/mendoza-valley.jpg",
+      },
     });
     regions.set(name, r.id);
   }
 
-  const lineData = [
-    ["Clásica", 10], ["Reserva", 20], ["Gran Reserva", 30], ["Ícono", 40], ["Experimental", 50],
-  ] as const;
+  // Las "líneas" acá son nuestros niveles de selección, no los de cada bodega.
+  const LINE_ORDER = ["Cotidiana", "Reserva", "Alta gama", "Ícono"];
+  const LINE_INFO: Record<string, { description: string; imageUrl: string }> = {
+    Cotidiana: {
+      description: "Para la semana. Correctos, parejos y a un precio que permite abrirlos sin pensarlo.",
+      imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
+    },
+    Reserva: {
+      description: "Un escalón más: paso por barrica, más estructura y algo para conversar.",
+      imageUrl: "/media/scenes/barrels.jpg",
+    },
+    "Alta gama": {
+      description: "Botellas para una ocasión. Acá el origen y el trabajo del enólogo se notan.",
+      imageUrl: "/media/scenes/cellar.jpg",
+    },
+    Ícono: {
+      description: "Parcelas puntuales y viñedos viejos. Lo mejor que conseguimos de cada bodega.",
+      imageUrl: "/media/scenes/mendoza-vineyard-andes.jpg",
+    },
+  };
+
   const lines = new Map<string, string>();
-  for (const [name, order] of lineData) {
+  for (const [i, name] of LINE_ORDER.filter((l) =>
+    WINES.some((w) => w.line === l),
+  ).entries()) {
+    const info = LINE_INFO[name];
     const l = await prisma.wineLine.create({
-      data: { name, slug: slugify(name), sortOrder: order, imageUrl: "/media/scenes/barrels-storage.jpg" },
+      data: {
+        name,
+        slug: slugify(name),
+        description: info?.description ?? null,
+        imageUrl: info?.imageUrl ?? null,
+        sortOrder: (i + 1) * 10,
+      },
     });
     lines.set(name, l.id);
   }
 
-  const grapeNames = [
-    "Malbec", "Cabernet Sauvignon", "Cabernet Franc", "Pinot Noir", "Syrah",
-    "Chardonnay", "Sauvignon Blanc", "Torrontés",
-  ];
   const grapes = new Map<string, string>();
-  for (const name of grapeNames) {
+  for (const name of unique(WINES.flatMap((w) => w.grapes.map((g) => g.name)))) {
     const g = await prisma.grapeVariety.create({ data: { name, slug: slugify(name) } });
     grapes.set(name, g.id);
   }
 
-  const pairingNames = [
-    "Carnes rojas", "Asado", "Cordero", "Caza", "Cerdo", "Aves", "Pescados", "Mariscos",
-    "Pastas", "Picadas", "Quesos maduros", "Quesos suaves", "Verduras asadas", "Hongos",
-    "Ensaladas", "Comida asiática", "Especias", "Aperitivo",
-  ];
   const pairings = new Map<string, string>();
-  for (const name of pairingNames) {
+  for (const name of unique(WINES.flatMap((w) => w.pairings))) {
     const p = await prisma.pairing.create({ data: { name, slug: slugify(name) } });
     pairings.set(name, p.id);
   }
 
-  const tagNames = [
-    "Más vendido", "Novedad", "Guarda", "Alta gama", "Edición limitada", "Fresco",
-    "Intenso", "Delicado", "Aromático", "Con barrica", "Método tradicional",
-    "Para descubrir", "Para brindar", "Ideal para todos los días", "Pack", "Regalo",
-  ];
   const tags = new Map<string, string>();
-  for (const name of tagNames) {
+  for (const name of unique([
+    ...WINES.flatMap((w) => w.tags),
+    ...PACKS.flatMap((p) => p.tags),
+  ])) {
     const t = await prisma.productTag.create({ data: { name, slug: slugify(name) } });
     tags.set(name, t.id);
   }
+
   console.log("✓ Taxonomías: categorías, bodegas, regiones, líneas, varietales, maridajes, etiquetas");
 
   // ══════════════════════════════ Productos ══════════════════════════════════
@@ -297,12 +370,11 @@ async function main() {
         name: w.name, slug: w.slug, sku: w.sku,
         shortDescription: w.shortDescription, description: w.description,
         price: w.price, compareAtPrice: w.compareAtPrice ?? null, cost: w.cost,
-        wineType: w.wineType, vintage: w.vintage, volumeMl: w.volumeMl,
-        alcoholPercent: w.alcoholPercent, servingTempC: w.servingTempC,
-        tastingNotes: w.tastingNotes, agingPotential: w.agingPotential,
-        intensity: w.intensity, winemaking: w.winemaking,
+        wineType: w.wineType, volumeMl: w.volumeMl,
+        servingTempC: w.servingTempC, tastingNotes: w.tastingNotes,
+        agingPotential: w.agingPotential, intensity: w.intensity,
         featured: w.featured ?? false, isNew: w.isNew ?? false, bestSeller: w.bestSeller ?? false,
-        seoTitle: `${w.name} ${w.vintage}`,
+        seoTitle: w.name,
         seoDescription: w.shortDescription,
         categoryId: categories.get(w.category)!,
         wineryId: wineries.get(w.winery)!,
@@ -310,21 +382,16 @@ async function main() {
         lineId: lines.get(w.line)!,
         images: {
           create: [{
-            url: `/media/wines/${w.image}.jpg`,
-            alt: `Botella de ${w.name} ${w.vintage} de Bodega Aurora`,
-            isPrimary: true, sortOrder: 0, width: 600, height: 800,
+            url: `/media/wines/${w.image}.png`,
+            alt: `Botella de ${w.name}`,
+            isPrimary: true, sortOrder: 0, width: 1000, height: 1000,
           }],
         },
         grapes: {
-          create: w.grapes.map((g) => ({ grapeId: grapes.get(g.name)!, percent: g.percent })),
+          create: w.grapes.map((g) => ({ grapeId: grapes.get(g.name)!, percent: g.percent ?? null })),
         },
         pairings: { create: w.pairings.map((p) => ({ pairingId: pairings.get(p)! })) },
         tags: { create: w.tags.map((t) => ({ tagId: tags.get(t)! })) },
-        awards: {
-          create: (w.awards ?? []).map((a) => ({
-            title: a.title, organization: a.organization, year: a.year, score: a.score,
-          })),
-        },
         inventory: {
           create: { onHand: 0, reserved: 0, minStock: w.stock.minStock, location: w.stock.location },
         },
@@ -346,10 +413,9 @@ async function main() {
         featured: p.featured ?? false, bestSeller: p.bestSeller ?? false,
         seoTitle: p.name, seoDescription: p.shortDescription,
         categoryId: categories.get(p.category)!,
-        wineryId: wineries.get("Bodega Aurora")!,
         images: {
           create: [{
-            url: `/media/wines/${p.image}.jpg`, alt: `${p.name} de Bodega Aurora`,
+            url: `/media/packs/${p.image}.jpg`, alt: p.name,
             isPrimary: true, sortOrder: 0, width: 600, height: 800,
           }],
         },
@@ -390,7 +456,7 @@ async function main() {
       provinces: ["Córdoba"], cities: ["Río Cuarto", "Las Higueras", "Holmberg"],
       rates: [
         { name: "Envío a domicilio", price: 3500, freeFrom: 60000, etaMinDays: 1, etaMaxDays: 2 },
-        { name: "Retiro en bodega", price: 0, etaMinDays: 0, etaMaxDays: 1 },
+        { name: "Retiro en depósito", price: 0, etaMinDays: 0, etaMaxDays: 1 },
       ],
     },
     {
@@ -431,9 +497,9 @@ async function main() {
   const benefitData = [
     { code: "store_discount", name: "Descuento en tienda", description: "Descuento permanente sobre el catálogo.", value: 10, sortOrder: 10 },
     { code: "free_shipping", name: "Envío sin cargo", description: "Envío gratuito en la caja mensual.", sortOrder: 20 },
-    { code: "early_access", name: "Acceso anticipado", description: "Compra de nuevas añadas antes del lanzamiento.", sortOrder: 30 },
-    { code: "exclusive_wines", name: "Vinos exclusivos", description: "Etiquetas que solo se embotellan para el Club.", sortOrder: 40 },
-    { code: "cellar_visit", name: "Visita a la bodega", description: "Una cata de barricas por año sin cargo.", sortOrder: 50 },
+    { code: "early_access", name: "Acceso anticipado", description: "Aviso primero cuando entra una partida nueva.", sortOrder: 30 },
+    { code: "exclusive_wines", name: "Partidas limitadas", description: "Etiquetas que llegan en cantidades chicas y se reservan para socios.", sortOrder: 40 },
+    { code: "cellar_visit", name: "Cata anual", description: "Una cata por año con nuestro equipo de selección, sin cargo.", sortOrder: 50 },
   ];
   const benefits = new Map<string, string>();
   for (const b of benefitData) {
@@ -443,36 +509,37 @@ async function main() {
 
   const planData = [
     {
-      name: "Club Descubrir", slug: "club-descubrir",
-      tagline: "Tres vinos por mes para empezar a recorrer la bodega.",
-      description: "Tres botellas de nuestras líneas Clásica y Reserva, con ficha de cata de cada vino. Ideal si estás empezando a explorar.",
-      price: 39900, bottleCount: 3, sortOrder: 10, shippingCost: 4900, freeShipping: false,
+      name: "Descubrir", slug: "descubrir",
+      tagline: "Tres botellas por mes para empezar a recorrer Mendoza.",
+      description: "Tres etiquetas de nuestras líneas Cotidiana y Reserva, con la ficha de por qué elegimos cada una. Ideal si estás empezando a explorar.",
+      price: 42900, bottleCount: 3, sortOrder: 10, shippingCost: 4900, freeShipping: false,
       firstCycleDiscountPercent: 20,
-      perks: ["3 botellas por mes", "Fichas de cata", "10% de descuento en la tienda", "Cambiás o pausás cuando quieras"],
+      perks: ["3 botellas por mes", "Ficha con el porqué de cada elección", "10% de descuento en la tienda", "Cambiás o pausás cuando quieras"],
       benefits: ["store_discount", "early_access"],
-      imageUrl: "/media/scenes/vineyard-valley.jpg",
+      imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
     },
     {
-      name: "Club Reserva", slug: "club-reserva",
-      tagline: "Cuatro vinos seleccionados, con envío incluido.",
-      description: "Cuatro botellas de las líneas Reserva y Gran Reserva, con al menos una etiqueta que no está en la tienda. El plan que elige la mayoría.",
-      price: 62900, bottleCount: 4, sortOrder: 20, shippingCost: 0, freeShipping: true,
+      name: "Curador", slug: "curador",
+      tagline: "Cuatro botellas elegidas por nosotros, con envío incluido.",
+      description: "Cuatro etiquetas de Reserva y Alta gama, con al menos una que no está en el catálogo abierto. Es el plan que elige la mayoría.",
+      price: 68900, bottleCount: 4, sortOrder: 20, shippingCost: 0, freeShipping: true,
       featured: true,
-      perks: ["4 botellas seleccionadas", "Envío sin cargo", "Un vino exclusivo por mes", "10% de descuento en la tienda", "Acceso anticipado a nuevas añadas"],
+      perks: ["4 botellas seleccionadas", "Envío sin cargo", "Una etiqueta fuera de catálogo por mes", "10% de descuento en la tienda", "Aviso anticipado de partidas chicas"],
       benefits: ["store_discount", "free_shipping", "early_access", "exclusive_wines"],
-      imageUrl: "/media/scenes/cellar.jpg",
+      imageUrl: "/media/scenes/pouring.jpg",
     },
     {
-      name: "Club Ícono", slug: "club-icono",
-      tagline: "Seis vinos premium, incluyendo alta gama.",
-      description: "Seis botellas con foco en Gran Reserva e Ícono, más la invitación anual a la cata de barricas en la bodega.",
-      price: 128900, bottleCount: 6, sortOrder: 30, shippingCost: 0, freeShipping: true,
-      trialDays: 0,
-      perks: ["6 botellas premium", "Envío sin cargo", "Vinos de alta gama y ediciones limitadas", "15% de descuento en la tienda", "Cata de barricas anual en la bodega"],
+      name: "Reserva", slug: "reserva",
+      tagline: "Seis botellas, con foco en alta gama e ícono.",
+      description: "Seis etiquetas con foco en Alta gama e Ícono, más una cata anual con nosotros para probar lo que está por entrar.",
+      price: 139900, bottleCount: 6, sortOrder: 30,
+      shippingCost: 0, freeShipping: true, trialDays: 0,
+      perks: ["6 botellas de gama alta", "Envío sin cargo", "Acceso a partidas limitadas", "15% de descuento en la tienda", "Cata anual con el equipo de selección"],
       benefits: ["store_discount", "free_shipping", "early_access", "exclusive_wines", "cellar_visit"],
-      imageUrl: "/media/scenes/grapes-cluster.jpg",
+      imageUrl: "/media/scenes/mendoza-vineyard-andes.jpg",
     },
   ];
+
   const plans = new Map<string, { id: string; price: number; name: string; bottleCount: number }>();
   for (const p of planData) {
     const plan = await prisma.subscriptionPlan.create({
@@ -487,7 +554,7 @@ async function main() {
         benefits: {
           create: p.benefits.map((code) => ({
             benefitId: benefits.get(code)!,
-            overrideValue: code === "store_discount" && p.slug === "club-icono" ? 15 : null,
+            overrideValue: code === "store_discount" && p.slug === "reserva" ? 15 : null,
           })),
         },
       },
@@ -497,20 +564,24 @@ async function main() {
   console.log(`✓ ${planData.length} planes del Club con ${benefitData.length} beneficios`);
 
   // ═════════════════════════ Box del mes (actual y próximo) ══════════════════
+  // Qué mandamos en cada caja, por plan y por mes. Se edita desde
+  // Admin > Suscripciones > Box del mes.
   const boxComposition: Record<string, string[][]> = {
-    "club-descubrir": [
-      ["malbec-clasico-2023", "cabernet-sauvignon-reserva-2020", "chardonnay-reserva-2023"],
-      ["malbec-clasico-2023", "syrah-2021", "sauvignon-blanc-2024"],
+    descubrir: [
+      ["trumpeter-reserve-malbec", "norton-doc-malbec", "rutini-coleccion-sauvignon-blanc"],
+      ["encuentro-malbec", "norton-select-malbec", "trumpeter-reserve-rose-de-malbec"],
     ],
-    "club-reserva": [
-      ["malbec-reserva-2021", "cabernet-franc-reserva-2021", "pinot-noir-2022", "chardonnay-reserva-2023"],
-      ["malbec-reserva-2021", "cabernet-sauvignon-reserva-2020", "torrontes-2024", "espumante-extra-brut"],
+    curador: [
+      ["rutini-coleccion-malbec", "norton-altura-malbec", "rutini-coleccion-chardonnay", "dominio-malbec"],
+      ["rutini-coleccion-cabernet-franc", "blend-of-terroirs-malbec", "norton-perdriel-malbec", "rutini-coleccion-rose-de-malbec"],
     ],
-    "club-icono": [
-      ["malbec-gran-reserva-2019", "aurora-icono-2018", "cabernet-franc-reserva-2021",
-        "pinot-noir-2022", "espumante-brut-nature", "naranjo-experimental-2023"],
-      ["malbec-gran-reserva-2019", "malbec-reserva-2021", "syrah-2021",
-        "chardonnay-reserva-2023", "espumante-brut-nature", "naranjo-experimental-2023"],
+    reserva: [
+      ["rutini-single-vineyard-gualtallary-malbec", "rutini-finca-centenaria-la-consulta-malbec",
+        "rutini-coleccion-cabernet-franc", "rutini-coleccion-pinot-noir",
+        "norton-altura-malbec", "rutini-coleccion-chardonnay"],
+      ["rutini-single-vineyard-gualtallary-carmenere", "rutini-coleccion-malbec",
+        "blend-of-terroirs-malbec", "dominio-malbec",
+        "rutini-coleccion-pinot-noir", "norton-perdriel-malbec"],
     ],
   };
 
@@ -668,7 +739,7 @@ async function main() {
     ...PACKS.map((p) => [p.slug, p.price] as [string, number]),
   ]);
   const nameBySlug = new Map<string, string>([
-    ...WINES.map((w) => [w.slug, `${w.name} ${w.vintage}`] as [string, string]),
+    ...WINES.map((w) => [w.slug, w.name] as [string, string]),
     ...PACKS.map((p) => [p.slug, p.name] as [string, string]),
   ]);
   const skuBySlug = new Map<string, string>([
@@ -676,8 +747,8 @@ async function main() {
     ...PACKS.map((p) => [p.slug, p.sku] as [string, string]),
   ]);
   const imageBySlug = new Map<string, string>([
-    ...WINES.map((w) => [w.slug, `/media/wines/${w.image}.jpg`] as [string, string]),
-    ...PACKS.map((p) => [p.slug, `/media/wines/${p.image}.jpg`] as [string, string]),
+    ...WINES.map((w) => [w.slug, `/media/wines/${w.image}.png`] as [string, string]),
+    ...PACKS.map((p) => [p.slug, `/media/packs/${p.image}.jpg`] as [string, string]),
   ]);
 
   let storeOrders = 0;
@@ -830,11 +901,11 @@ async function main() {
   // ═══════════════════════════ Suscripciones ═════════════════════════════════
   // Cada suscripción = 1 contrato. Cada mes cobrado = 1 ciclo + 1 pedido.
   const subPlans: { customer: number; plan: string; status: Prisma.SubscriptionCreateInput["status"]; cycles: number }[] = [
-    { customer: 0, plan: "club-reserva", status: "ACTIVE", cycles: 3 },
-    { customer: 1, plan: "club-descubrir", status: "ACTIVE", cycles: 3 },
-    { customer: 3, plan: "club-icono", status: "ACTIVE", cycles: 2 },
-    { customer: 4, plan: "club-reserva", status: "PAYMENT_FAILED", cycles: 2 },
-    { customer: 6, plan: "club-descubrir", status: "CANCELLED", cycles: 2 },
+    { customer: 0, plan: "curador", status: "ACTIVE", cycles: 3 },
+    { customer: 1, plan: "descubrir", status: "ACTIVE", cycles: 3 },
+    { customer: 3, plan: "reserva", status: "ACTIVE", cycles: 2 },
+    { customer: 4, plan: "curador", status: "PAYMENT_FAILED", cycles: 2 },
+    { customer: 6, plan: "descubrir", status: "CANCELLED", cycles: 2 },
   ];
 
   let cycleCount = 0;
@@ -1039,29 +1110,29 @@ async function main() {
   console.log(`✓ ${subPlans.length} suscripciones, ${cycleCount} ciclos, ${subscriptionOrders} pedidos del Club`);
 
   // ══════════════ Movimientos extra: ajustes, roturas, devoluciones ══════════
-  await move(productIdBySlug.get("malbec-reserva-2021")!, "ROTURA", 2, {
+  await move(productIdBySlug.get("rutini-coleccion-malbec")!, "ROTURA", 2, {
     userId: superAdmin.id, comment: "Dos botellas rotas en depósito", at: daysAgo(14),
   });
-  await move(productIdBySlug.get("chardonnay-reserva-2023")!, "AJUSTE", 118, {
+  await move(productIdBySlug.get("rutini-coleccion-chardonnay")!, "AJUSTE", 118, {
     userId: superAdmin.id, comment: "Ajuste por conteo físico de inventario", at: daysAgo(10),
   });
-  await move(productIdBySlug.get("syrah-2021")!, "DEVOLUCION", 1, {
+  await move(productIdBySlug.get("norton-doc-malbec")!, "DEVOLUCION", 1, {
     userId: superAdmin.id, comment: "Devolución por cambio de producto", at: daysAgo(6),
   });
-  await move(productIdBySlug.get("torrontes-2024")!, "ENTRADA", 48, {
+  await move(productIdBySlug.get("trumpeter-reserve-malbec")!, "ENTRADA", 48, {
     userId: superAdmin.id, comment: "Ingreso de nueva partida", at: daysAgo(4),
   });
 
   // Stock bajo deliberado para probar alertas
-  await move(productIdBySlug.get("aurora-icono-2018")!, "AJUSTE", 16, {
-    userId: superAdmin.id, comment: "Ajuste: quedan pocas botellas de la añada", at: daysAgo(2),
+  await move(productIdBySlug.get("rutini-finca-centenaria-la-consulta-malbec")!, "AJUSTE", 16, {
+    userId: superAdmin.id, comment: "Ajuste: quedan pocas botellas de la partida", at: daysAgo(2),
   });
 
   // ══════════════════════════════ Auditoría ══════════════════════════════════
   await prisma.auditLog.createMany({
     data: [
-      { userId: superAdmin.id, actorEmail: superAdmin.email, action: "product.price.update", entityType: "Product", entityId: productIdBySlug.get("malbec-reserva-2021")!, before: { price: 28900 }, after: { price: 24500 }, ip: "190.51.10.4", createdAt: daysAgo(20) },
-      { userId: superAdmin.id, actorEmail: superAdmin.email, action: "stock.adjust", entityType: "Inventory", entityId: productIdBySlug.get("chardonnay-reserva-2023")!, before: { onHand: 132 }, after: { onHand: 118 }, ip: "190.51.10.4", createdAt: daysAgo(10) },
+      { userId: superAdmin.id, actorEmail: superAdmin.email, action: "product.price.update", entityType: "Product", entityId: productIdBySlug.get("rutini-coleccion-malbec")!, before: { price: 28900 }, after: { price: 24500 }, ip: "190.51.10.4", createdAt: daysAgo(20) },
+      { userId: superAdmin.id, actorEmail: superAdmin.email, action: "stock.adjust", entityType: "Inventory", entityId: productIdBySlug.get("rutini-coleccion-chardonnay")!, before: { onHand: 132 }, after: { onHand: 118 }, ip: "190.51.10.4", createdAt: daysAgo(10) },
       { userId: superAdmin.id, actorEmail: superAdmin.email, action: "subscription_box.update", entityType: "SubscriptionBox", entityId: [...boxes.values()][1], before: {}, after: { note: "Se cambió el Pinot Noir por Torrontés" }, createdAt: daysAgo(5) },
       { userId: superAdmin.id, actorEmail: superAdmin.email, action: "settings.update", entityType: "Setting", entityId: "shipping", before: { freeShippingFrom: 80000 }, after: { freeShippingFrom: 100000 }, createdAt: daysAgo(2) },
     ],
@@ -1087,8 +1158,8 @@ async function main() {
 
   console.log("\n─────────────────────────────────────────────");
   console.log(`Productos: ${productCount}   Pedidos: ${orderCount}   Alertas de stock: ${invAlerts[0].count}`);
-  console.log("\nAcceso admin:    admin@bodegaaurora.test / Aurora2026!");
-  console.log("Acceso depósito: deposito@bodegaaurora.test / Aurora2026!");
+  console.log("\nAcceso admin:    admin@auroraseleccion.test / Aurora2026!");
+  console.log("Acceso depósito: deposito@auroraseleccion.test / Aurora2026!");
   console.log("Acceso cliente:  juan.perez@example.com / Cliente2026!");
   console.log("─────────────────────────────────────────────\n");
 }

@@ -26,7 +26,7 @@ async function toXlsx(
   rows: ReportRow[],
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = "Bodega";
+  workbook.creator = "Aurora Selección";
   workbook.created = new Date();
 
   const sheet = workbook.addWorksheet(label.slice(0, 30));

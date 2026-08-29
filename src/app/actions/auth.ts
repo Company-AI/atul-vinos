@@ -129,7 +129,7 @@ export async function register(input: {
     "auth.welcome",
     { email: user.email, name: `${user.firstName} ${user.lastName}`, userId: user.id },
     {
-      subject: "Bienvenido a la bodega",
+      subject: "Bienvenido",
       heading: `Hola ${user.firstName}`,
       intro: "Tu cuenta está lista. Desde Mi Cuenta podés seguir tus pedidos, guardar direcciones y administrar tu suscripción al Club.",
       body: "Cuenta creada correctamente.",

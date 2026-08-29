@@ -52,7 +52,7 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   bottleWeightGrams: { label: "Peso por botella (g)" },
   packagingWeightGrams: { label: "Peso del embalaje (g)" },
   labelFormatDefault: { label: "Formato de etiqueta por defecto" },
-  pickupEnabled: { label: "Permitir retiro en bodega" },
+  pickupEnabled: { label: "Permitir retiro en depósito" },
   pickupLabel: { label: "Nombre del retiro" },
 
   allowPause: { label: "Permitir pausar la suscripción" },

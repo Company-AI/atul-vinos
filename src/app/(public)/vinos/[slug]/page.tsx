@@ -265,7 +265,7 @@ export default async function ProductPage({ params }: PageProps) {
 
               {product.description && (
                 <Reveal delay={0.1}>
-                  <Eyebrow>La historia de este vino</Eyebrow>
+                  <Eyebrow>Por qué lo elegimos</Eyebrow>
                   <Prose className="mt-5">
                     {product.description.split("\n\n").map((p, i) => <p key={i}>{p}</p>)}
                   </Prose>

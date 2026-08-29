@@ -180,7 +180,9 @@ function FilterPanel({ options, activeCount }: { options: FilterOptions; activeC
         </button>
       )}
 
-      {groups.map((group) => (
+      {groups
+        .filter((group) => group.options.length > 0)
+        .map((group) => (
         <fieldset key={group.key} className="border-t border-linen-200 pt-5">
           <legend className="eyebrow mb-3 text-stone-500">{group.label}</legend>
           <ul className="space-y-2">

@@ -1,6 +1,9 @@
 /**
- * Contenido inicial del sitio. Todo esto es editable desde /admin/contenido:
- * el seed solo deja la web presentable el primer día.
+ * Contenido inicial del sitio. Todo editable desde /admin/contenido.
+ *
+ * Posicionamiento: NO producimos vino. Somos distribuidores de bodegas de
+ * Mendoza y lo que vendemos es criterio de selección. Todos los textos parten
+ * de ahí; si algún día se cambia el modelo, se cambian acá.
  */
 
 export const CMS_SECTIONS = [
@@ -11,18 +14,18 @@ export const CMS_SECTIONS = [
     title: "Hero de la home",
     sortOrder: 10,
     data: {
-      eyebrow: "Bodega Aurora · Valle de Uco",
-      title: "El vino empieza mucho antes de abrir una botella.",
+      eyebrow: "Distribuidores de vinos de Mendoza",
+      title: "No hacemos el vino. Elegimos cuál vale la pena.",
       subtitle:
-        "Cuatro generaciones trabajando la misma tierra a 1.100 metros. Vinos que cuentan de dónde vienen.",
-      ctaPrimary: { label: "Descubrí nuestros vinos", href: "/vinos" },
+        "Trabajamos con bodegas del Valle de Uco y Luján de Cuyo. Probamos todo antes de comprarlo: si está en esta lista, es porque lo pondríamos en nuestra propia mesa.",
+      ctaPrimary: { label: "Ver la selección", href: "/vinos" },
       ctaSecondary: { label: "Conocé el Club", href: "/club" },
       media: {
-        imageUrl: "/media/scenes/hero-vineyard-mountains.jpg",
-        imageAlt: "Viñedos al pie de la sierra al atardecer",
+        imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
+        imageAlt: "Viñedos de Mendoza con la cordillera de fondo",
         videoDesktopUrl: "/media/video/hero-desktop.mp4",
         videoMobileUrl: "/media/video/hero-mobile.mp4",
-        posterUrl: "/media/scenes/hero-vineyard-mountains.jpg",
+        posterUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
       },
       overlay: "scrim-full",
       align: "center",
@@ -31,22 +34,22 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.terroir",
+    key: "home.criterio",
     page: "home",
     type: "editorial",
-    title: "Nuestra tierra",
+    title: "Nuestro criterio",
     sortOrder: 20,
     data: {
-      eyebrow: "Nuestra tierra",
-      title: "Suelo pedregoso, noches frías, paciencia.",
+      eyebrow: "Cómo elegimos",
+      title: "Probamos todo lo que vendemos.",
       body:
-        "Estamos a 1.100 metros, donde la amplitud térmica supera los 18 grados en verano. Eso hace que la uva madure despacio y conserve acidez. El suelo es aluvional, con mucho canto rodado: obliga a la planta a buscar agua en profundidad y a dar menos fruta, pero mejor.\n\nNo riego por goteo en los cuadros viejos. No corregimos acidez. Lo que cambia de una añada a otra queda en la botella.",
-      quote: "La tierra no se apura. Nosotros tampoco.",
-      cta: { label: "Conocé nuestra historia", href: "/historia" },
+        "No compramos por catálogo ni por puntaje. Vamos a la bodega, hablamos con el enólogo y probamos la añada que se va a vender, no la anterior. Si una etiqueta bajó respecto del año pasado, la sacamos de la lista aunque se venda bien.\n\nPor eso el catálogo es corto. Preferimos veinte botellas que podemos defender una por una antes que doscientas que no probamos nunca.",
+      quote: "Si no lo abriríamos en casa, no lo vendemos.",
+      cta: { label: "Ver la selección", href: "/vinos" },
       media: {
-        imageUrl: "/media/scenes/vineyard-rows.jpg",
-        imageAlt: "Hileras de viñedo sobre suelo pedregoso",
-        posterUrl: "/media/scenes/vineyard-rows.jpg",
+        imageUrl: "/media/scenes/mendoza-vineyard-andes.jpg",
+        imageAlt: "Viñedos de Tunuyán con los Andes de fondo",
+        posterUrl: "/media/scenes/mendoza-vineyard-andes.jpg",
       },
       mediaSide: "right",
       tone: "light",
@@ -54,62 +57,65 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.craft",
+    key: "home.mendoza",
     page: "home",
     type: "editorial",
-    title: "Nuestra forma de hacer vino",
+    title: "De dónde viene",
     sortOrder: 30,
     data: {
-      eyebrow: "Nuestra forma de hacer vino",
-      title: "Intervenir lo menos posible, decidir a tiempo.",
+      eyebrow: "Mendoza",
+      title: "Todo lo que vendemos viene de la misma provincia.",
       body:
-        "Cosechamos a mano en cajones de 18 kilos y hacemos doble selección: primero de racimo, después de grano. Fermentamos con levaduras autóctonas en piletas de concreto, y usamos la barrica como herramienta, no como maquillaje.\n\nCada parcela se vinifica por separado. El corte se define recién sobre la mesa de cata, probando barrica por barrica.",
-      cta: { label: "Ver el proceso", href: "/historia" },
+        "Valle de Uco y Luján de Cuyo. No es una limitación: es la decisión de conocer bien un lugar en vez de tener un poco de todo. Sabemos qué hace cada zona, qué cambia entre Gualtallary y La Consulta, y por qué un Malbec de Perdriel no se parece a uno de altura.\n\nEsa diferencia es lo que te contamos cuando comprás. Está en cada ficha y en la tarjeta que va dentro de la caja.",
+      cta: { label: "Ver las zonas", href: "/vinos" },
       media: {
-        imageUrl: "/media/scenes/barrels.jpg",
-        imageAlt: "Barricas de roble en la nave de crianza",
-        posterUrl: "/media/scenes/barrels.jpg",
+        imageUrl: "/media/scenes/potrerillos-andes.jpg",
+        imageAlt: "Los Andes vistos desde Potrerillos, Mendoza",
+        videoDesktopUrl: "/media/video/vineyard-road.mp4",
+        videoMobileUrl: "",
+        posterUrl: "/media/scenes/potrerillos-andes.jpg",
       },
       mediaSide: "left",
       tone: "dark",
-      layout: "split",
+      layout: "fullBleed",
     },
   },
   {
     key: "home.lines",
     page: "home",
     type: "showcase",
-    title: "Nuestras líneas",
+    title: "Niveles de selección",
     sortOrder: 40,
     data: {
-      eyebrow: "Nuestros vinos",
-      title: "Cinco líneas, una misma finca.",
-      body: "De la mesa de todos los días a las añadas que esperan quince años en la cava.",
-      cta: { label: "Ver todos los vinos", href: "/vinos" },
+      eyebrow: "Cómo está ordenada la lista",
+      title: "Cuatro niveles, según para qué la vayas a abrir.",
+      body:
+        "No ordenamos por bodega sino por ocasión. Es más útil: casi nadie busca «un Norton», busca algo para un martes o algo para una fecha.",
+      cta: { label: "Ver todo el catálogo", href: "/vinos" },
       tone: "linen",
       items: [
         {
-          title: "Clásica",
-          subtitle: "Fruta franca, para la mesa cotidiana",
-          imageUrl: "/media/scenes/vineyard-valley.jpg",
-          href: "/vinos?linea=clasica",
+          title: "Cotidiana",
+          subtitle: "Para la semana, sin pensarlo",
+          imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
+          href: "/vinos?linea=cotidiana",
         },
         {
           title: "Reserva",
-          subtitle: "Doce meses de roble francés",
-          imageUrl: "/media/scenes/barrels-storage.jpg",
+          subtitle: "Un escalón más, con barrica",
+          imageUrl: "/media/scenes/barrels.jpg",
           href: "/vinos?linea=reserva",
         },
         {
-          title: "Gran Reserva",
-          subtitle: "Solo las mejores hileras",
+          title: "Alta gama",
+          subtitle: "Cuando la ocasión lo pide",
           imageUrl: "/media/scenes/cellar.jpg",
-          href: "/vinos?linea=gran-reserva",
+          href: "/vinos?linea=alta-gama",
         },
         {
           title: "Ícono",
-          subtitle: "Únicamente en añadas excepcionales",
-          imageUrl: "/media/scenes/grapes-cluster.jpg",
+          subtitle: "Parcelas puntuales y viñas viejas",
+          imageUrl: "/media/scenes/mendoza-valley.jpg",
           href: "/vinos?linea=icono",
         },
       ],
@@ -122,13 +128,48 @@ export const CMS_SECTIONS = [
     title: "Vinos destacados",
     sortOrder: 50,
     data: {
-      eyebrow: "Selección",
-      title: "Para empezar por algún lado.",
-      body: "Los vinos que más recomendamos cuando alguien nos pregunta por dónde arrancar.",
-      cta: { label: "Ver la tienda completa", href: "/vinos" },
+      eyebrow: "Lo que estamos recomendando",
+      title: "Si tuviéramos que elegir cuatro.",
+      body: "Cambia seguido: son las botellas que más estamos recomendando este mes en el mostrador.",
+      cta: { label: "Ver la lista completa", href: "/vinos" },
       source: "featured",
       limit: 4,
       tone: "light",
+    },
+  },
+  {
+    key: "home.bodegas",
+    page: "home",
+    type: "showcase",
+    title: "Bodegas que representamos",
+    sortOrder: 60,
+    data: {
+      eyebrow: "Con quiénes trabajamos",
+      title: "Pocas bodegas, relación directa.",
+      body:
+        "Preferimos representar pocas casas y conocerlas bien. Compramos directo, sin intermediarios, y eso es lo que nos permite sostener el precio y la disponibilidad.",
+      cta: { label: "Ver todas las etiquetas", href: "/vinos" },
+      tone: "light",
+      items: [
+        {
+          title: "Rutini Wines",
+          subtitle: "Tupungato, Valle de Uco · desde 1885",
+          imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
+          href: "/vinos?bodega=rutini-wines",
+        },
+        {
+          title: "Bodega Norton",
+          subtitle: "Perdriel, Luján de Cuyo · desde 1895",
+          imageUrl: "/media/scenes/potrerillos-andes.jpg",
+          href: "/vinos?bodega=bodega-norton",
+        },
+        {
+          title: "Trumpeter",
+          subtitle: "Luján de Cuyo · la línea de todos los días",
+          imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
+          href: "/vinos?bodega=trumpeter",
+        },
+      ],
     },
   },
   {
@@ -136,27 +177,31 @@ export const CMS_SECTIONS = [
     page: "home",
     type: "club_teaser",
     title: "El Club",
-    sortOrder: 60,
+    sortOrder: 70,
     data: {
-      eyebrow: "El Club Aurora",
-      title: "Una selección diferente llega a tu puerta todos los meses.",
+      eyebrow: "El Club",
+      title: "Todos los meses elegimos por vos.",
       body:
-        "Elegís un plan, nosotros armamos la caja. Vinos que no siempre están en la tienda, fichas de cata escritas por nuestro enólogo y beneficios que se aplican solos cuando comprás.",
+        "Es lo mismo que hacemos en el mostrador, pero llega a tu casa. Armamos una caja distinta cada mes con lo que más nos entusiasma de lo que entró, y te explicamos por qué elegimos cada botella.",
       bullets: [
-        "Selección curada cada mes, nunca repetida",
-        "Envío incluido en los planes Reserva e Ícono",
-        "10% de descuento permanente en la tienda",
-        "Acceso anticipado a nuevas añadas",
+        "Una selección distinta cada mes, nunca repetida",
+        "Ficha escrita por nosotros con el porqué de cada elección",
+        "Envío incluido en los planes Curador y Reserva",
+        "10% de descuento permanente en toda la tienda",
         "Pausá, omití un mes o cancelá cuando quieras",
       ],
       cta: { label: "Quiero ser parte", href: "/club" },
       media: {
         imageUrl: "/media/scenes/pouring.jpg",
         imageAlt: "Vino tinto sirviéndose en una copa",
+        videoDesktopUrl: "/media/video/club-desktop.mp4",
+        videoMobileUrl: "/media/video/club-mobile.mp4",
         posterUrl: "/media/scenes/pouring.jpg",
       },
     },
   },
+
+  // ═══════════════════════════════ Club ═══════════════════════════════════
   {
     key: "club.hero",
     page: "club",
@@ -164,15 +209,15 @@ export const CMS_SECTIONS = [
     title: "Hero del Club",
     sortOrder: 10,
     data: {
-      eyebrow: "Club Aurora",
-      title: "Tu próxima botella favorita puede llegar el mes que viene.",
+      eyebrow: "El Club",
+      title: "Dejá que elijamos nosotros.",
       subtitle:
-        "Una suscripción mensual con vinos elegidos por nuestro enólogo, algunos de ellos exclusivos para socios.",
+        "Todos los meses armamos una caja con lo mejor que entró y te contamos por qué. Sin contratos, sin permanencia, cancelás cuando quieras.",
       ctaPrimary: { label: "Ver los planes", href: "#planes" },
       ctaSecondary: { label: "Cómo funciona", href: "#como-funciona" },
       media: {
         imageUrl: "/media/scenes/glass-dark.jpg",
-        imageAlt: "Copa de vino tinto servida sobre fondo oscuro",
+        imageAlt: "Copa de vino tinto sobre fondo oscuro",
         videoDesktopUrl: "/media/video/club-desktop.mp4",
         videoMobileUrl: "/media/video/club-mobile.mp4",
         posterUrl: "/media/scenes/glass-dark.jpg",
@@ -196,7 +241,7 @@ export const CMS_SECTIONS = [
       steps: [
         { title: "Elegís tu plan", body: "Tres, cuatro o seis botellas por mes. Podés cambiar de plan cuando quieras." },
         { title: "Te suscribís", body: "El pago se debita automáticamente todos los meses. Sin contratos ni permanencia mínima." },
-        { title: "Preparamos tu selección", body: "Cada mes armamos una caja distinta y escribimos las fichas de cata." },
+        { title: "Elegimos por vos", body: "Cada mes armamos la caja con lo que más nos entusiasma de lo que entró al depósito." },
         { title: "La recibís en tu casa", body: "Despachamos entre el 22 y el 28. Te avisamos con el seguimiento." },
       ],
     },
@@ -209,13 +254,13 @@ export const CMS_SECTIONS = [
     sortOrder: 40,
     data: {
       eyebrow: "Ser socio",
-      title: "El Club no es solo la caja mensual.",
+      title: "Lo que no se compra suelto.",
       body:
-        "Los socios tienen 10% de descuento permanente en la tienda, acceso anticipado a las nuevas añadas antes de que salgan a la venta, y vinos que solo se embotellan para el Club.\n\nAdemás, una vez al año invitamos a los socios a la bodega para la cata de barricas.",
+        "Los socios tienen 10% de descuento permanente en toda la tienda y son los primeros en enterarse cuando entra una partida chica. Hay etiquetas que llegan en cantidades tan limitadas que se van entre los socios antes de llegar al catálogo.\n\nAdemás, cada caja viene con la ficha que escribimos nosotros: qué es, por qué lo elegimos y con qué lo tomaríamos.",
       cta: { label: "Ver los planes", href: "#planes" },
       media: {
         imageUrl: "/media/scenes/cellar.jpg",
-        imageAlt: "Nave de crianza con barricas",
+        imageAlt: "Barricas en la nave de crianza",
         posterUrl: "/media/scenes/cellar.jpg",
       },
       mediaSide: "left",
@@ -231,22 +276,27 @@ export const CMS_SECTIONS = [
     sortOrder: 50,
     data: { eyebrow: "Dudas frecuentes", title: "Todo lo que suelen preguntarnos.", group: "club" },
   },
+
+  // ═════════════════════════════ Quiénes somos ════════════════════════════
   {
     key: "historia.hero",
     page: "historia",
     type: "video_hero",
-    title: "Hero de historia",
+    title: "Hero de quiénes somos",
     sortOrder: 10,
     data: {
-      eyebrow: "Desde 1943",
-      title: "Cuatro generaciones, la misma tierra.",
-      subtitle: "La historia de la bodega es, en realidad, la historia de una familia y un suelo pedregoso.",
-      ctaPrimary: { label: "Ver nuestros vinos", href: "/vinos" },
+      eyebrow: "Quiénes somos",
+      title: "Veinte años tomando y preguntando.",
+      subtitle:
+        "Empezamos comprando para nosotros y terminamos distribuyendo. En el medio, muchas visitas a bodega y muchas botellas que no volvimos a comprar.",
+      ctaPrimary: { label: "Ver la selección", href: "/vinos" },
       ctaSecondary: { label: "", href: "" },
       media: {
-        imageUrl: "/media/scenes/mountains.jpg",
-        imageAlt: "Cordillera de los Andes al amanecer",
-        posterUrl: "/media/scenes/mountains.jpg",
+        imageUrl: "/media/scenes/mendoza-farmland-snow.jpg",
+        imageAlt: "Campo al pie de la cordillera nevada, Mendoza",
+        videoDesktopUrl: "/media/video/vineyard-aerial.mp4",
+        videoMobileUrl: "",
+        posterUrl: "/media/scenes/mendoza-farmland-snow.jpg",
       },
       overlay: "scrim-bottom",
       align: "center",
@@ -261,14 +311,14 @@ export const CMS_SECTIONS = [
     title: "El origen",
     sortOrder: 20,
     data: {
-      eyebrow: "1943",
-      title: "Empezó con dos hectáreas y una decisión discutible.",
+      eyebrow: "Cómo empezó",
+      title: "Al principio comprábamos para tomar nosotros.",
       body:
-        "Cuando Aurora compró el campo, nadie plantaba viña tan arriba. Decían que el frío no iba a dejar madurar la uva. Tardó once años en darle la razón a los escépticos y doce en demostrar que estaban equivocados.\n\nHoy trabajamos 48 hectáreas y todavía usamos su cuaderno de anotaciones para decidir cuándo empezar la cosecha.",
+        "Íbamos a Mendoza dos veces por año, volvíamos con el auto lleno y repartíamos entre amigos. Cuando los amigos empezaron a encargar por caja, dejó de ser un viaje y pasó a ser un trabajo.\n\nLa parte que no cambió es la manera de elegir: seguimos yendo, seguimos probando y seguimos diciendo que no. Lo único distinto es que ahora hay un depósito, una camioneta y facturas.",
       media: {
-        imageUrl: "/media/scenes/harvest.jpg",
-        imageAlt: "Cosecha manual en cajones",
-        posterUrl: "/media/scenes/harvest.jpg",
+        imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
+        imageAlt: "Casa de campo entre viñedos con la montaña detrás",
+        posterUrl: "/media/scenes/mendoza-vineyard-house.jpg",
       },
       mediaSide: "right",
       tone: "light",
@@ -279,22 +329,24 @@ export const CMS_SECTIONS = [
     key: "historia.proceso",
     page: "historia",
     type: "steps",
-    title: "El proceso",
+    title: "Cómo trabajamos",
     sortOrder: 30,
     data: {
-      eyebrow: "De la planta a la botella",
-      title: "Cómo se hace un vino acá.",
+      eyebrow: "De la bodega a tu mesa",
+      title: "Qué pasa antes de que una botella entre al catálogo.",
       tone: "linen",
       steps: [
-        { title: "Poda y conducción", body: "Julio y agosto. Definimos la carga de la planta para todo el año." },
-        { title: "Cosecha manual", body: "Febrero a abril, por parcela, en cajones de 18 kilos y de madrugada." },
-        { title: "Selección doble", body: "Mesa de racimo y mesa de grano. Se descarta entre el 8% y el 15%." },
-        { title: "Fermentación", body: "Piletas de concreto, levaduras autóctonas, pisonado suave." },
-        { title: "Crianza", body: "Roble francés y foudres. De 8 a 24 meses según la línea." },
-        { title: "Embotellado", body: "Sin filtrar en las líneas altas. Descanso en botella antes de salir." },
+        { title: "Visitamos", body: "Dos o tres viajes por año a Mendoza. Vemos el viñedo y hablamos con quien hace el vino." },
+        { title: "Probamos", body: "A ciegas y con la añada que se va a vender. Si bajó, sale de la lista." },
+        { title: "Negociamos", body: "Compramos directo a la bodega. Sin intermediarios el precio cierra mejor para todos." },
+        { title: "Traemos", body: "Transporte con temperatura controlada. El vino no viaja al sol." },
+        { title: "Guardamos", body: "Depósito a temperatura estable y botellas acostadas. Rotación permanente." },
+        { title: "Explicamos", body: "Cada etiqueta lleva nuestra ficha: qué es, de dónde viene y con qué la tomaríamos." },
       ],
     },
   },
+
+  // ════════════════════════════════ Footer ════════════════════════════════
   {
     key: "footer.main",
     page: "global",
@@ -302,25 +354,26 @@ export const CMS_SECTIONS = [
     title: "Footer",
     sortOrder: 10,
     data: {
-      tagline: "Vinos de altura elaborados con paciencia en el Valle de Uco.",
-      newsletterTitle: "Novedades de la bodega",
-      newsletterBody: "Recibí novedades, nuevas cosechas y beneficios. Sin spam, dos o tres emails por mes.",
+      tagline: "Distribuimos vinos de Mendoza. Probamos todo lo que vendemos.",
+      newsletterTitle: "Qué entró este mes",
+      newsletterBody:
+        "Te avisamos cuando llega una partida nueva y cuando algo se está por terminar. Dos o tres emails por mes, nada más.",
       responsibleNote:
         "Beber con moderación. Prohibida la venta de bebidas alcohólicas a menores de 18 años.",
       columns: [
         {
-          title: "Tienda",
+          title: "Comprar",
           links: [
-            { label: "Todos los vinos", href: "/vinos" },
+            { label: "Toda la selección", href: "/vinos" },
             { label: "Packs", href: "/packs" },
             { label: "Novedades", href: "/vinos?orden=novedades" },
-            { label: "Club Aurora", href: "/club" },
+            { label: "El Club", href: "/club" },
           ],
         },
         {
-          title: "Bodega",
+          title: "Nosotros",
           links: [
-            { label: "Nuestra historia", href: "/historia" },
+            { label: "Quiénes somos", href: "/historia" },
             { label: "Historias", href: "/historias" },
             { label: "Contacto", href: "/contacto" },
           ],
@@ -341,66 +394,71 @@ export const CMS_SECTIONS = [
 ];
 
 export const FAQS = [
+  { question: "¿Ustedes hacen el vino?", answer: "No. Somos distribuidores: compramos directo a bodegas de Mendoza y las representamos acá. Lo que aportamos es la selección, el asesoramiento y la logística. El vino lo hacen ellos, y lo decimos siempre.", group: "general", sortOrder: 10 },
+  { question: "¿Por qué el catálogo es tan corto?", answer: "Porque probamos todo lo que vendemos. Preferimos veinte etiquetas que podemos defender una por una antes que doscientas que no conocemos. Cuando entra algo nuevo, es porque lo probamos y nos convenció.", group: "general", sortOrder: 20 },
+  { question: "¿Venden a restaurantes o por mayor?", answer: "Sí. Trabajamos con restaurantes, vinotecas y eventos, con lista de precios propia y entrega programada. Escribinos desde Contacto y te pasamos las condiciones.", group: "general", sortOrder: 30 },
+  { question: "¿Venden a menores de 18 años?", answer: "No. La venta de bebidas alcohólicas a menores de 18 años está prohibida por ley. Al ingresar al sitio y al confirmar la compra declarás ser mayor de edad, y el transportista puede pedir documento en la entrega.", group: "general", sortOrder: 40 },
+  { question: "¿Cómo sé qué cosecha me llega?", answer: "La añada cambia con cada partida que entra, así que la publicamos en la ficha cuando la tenemos confirmada. Si necesitás una añada puntual, escribinos antes de comprar y te decimos qué hay en depósito.", group: "general", sortOrder: 50 },
   { question: "¿Hacen envíos a todo el país?", answer: "Sí. Despachamos a toda la Argentina. El costo se calcula en el checkout según tu código postal, y a partir de $100.000 el envío es gratuito.", group: "envios", sortOrder: 10 },
   { question: "¿Cuánto tarda en llegar mi pedido?", answer: "Preparamos el pedido en 24 a 48 horas hábiles. La entrega demora entre 2 y 5 días hábiles según la zona. Siempre te enviamos el número de seguimiento por email.", group: "envios", sortOrder: 20 },
-  { question: "¿Puedo retirar en la bodega?", answer: "Sí, sin cargo. Elegí «Retiro en bodega» en el checkout y te avisamos cuando esté listo. Estamos en Ruta 36 km 601, de lunes a sábado de 10 a 18.", group: "envios", sortOrder: 30 },
-  { question: "¿Qué pasa si una botella llega rota?", answer: "La reponemos sin costo. Escribinos dentro de las 48 horas con una foto del embalaje y de la botella.", group: "envios", sortOrder: 40 },
+  { question: "¿Cómo viajan las botellas?", answer: "Con separadores de cartón y protección lateral, acostadas. En verano coordinamos los despachos para que el vino no quede en tránsito el fin de semana.", group: "envios", sortOrder: 30 },
+  { question: "¿Puedo retirar en el depósito?", answer: "Sí, sin cargo. Elegí «Retiro en depósito» en el checkout y te avisamos cuando esté listo. También podés probar algo antes de llevarlo.", group: "envios", sortOrder: 40 },
+  { question: "¿Qué pasa si una botella llega rota?", answer: "La reponemos sin costo. Escribinos dentro de las 48 horas con una foto del embalaje y de la botella.", group: "envios", sortOrder: 50 },
   { question: "¿Qué medios de pago aceptan?", answer: "Tarjetas de crédito y débito, dinero en cuenta y transferencia a través de Mercado Pago. Las suscripciones del Club se debitan automáticamente todos los meses con la tarjeta que registres.", group: "pagos", sortOrder: 10 },
   { question: "¿Puedo pagar en cuotas?", answer: "Sí, con tarjeta de crédito hay hasta 6 cuotas disponibles según tu banco. Las cuotas se muestran en el checkout antes de confirmar.", group: "pagos", sortOrder: 20 },
-  { question: "¿Cómo funciona el Club?", answer: "Elegís un plan y todos los meses se debita automáticamente. Nosotros armamos una selección distinta cada mes y te la enviamos a tu domicilio. No hay contrato ni permanencia mínima.", group: "club", sortOrder: 10 },
-  { question: "¿Puedo elegir los vinos de mi caja?", answer: "La selección la arma nuestro enólogo: es parte de la idea del Club, descubrir vinos que no habrías elegido. Si algún varietal no te gusta, avisanos y lo tenemos en cuenta.", group: "club", sortOrder: 20 },
+  { question: "¿Hacen descuento por cantidad?", answer: "Sí. A partir de la caja de 6 botellas del mismo vino aplicamos precio por caja, y los socios del Club suman su descuento encima. Para volúmenes mayores, escribinos.", group: "pagos", sortOrder: 30 },
+  { question: "¿Cómo funciona el Club?", answer: "Elegís un plan y todos los meses se debita automáticamente. Nosotros armamos una selección distinta cada mes con lo que más nos entusiasma de lo que entró, y te la enviamos a tu domicilio. No hay contrato ni permanencia mínima.", group: "club", sortOrder: 10 },
+  { question: "¿Puedo elegir los vinos de mi caja?", answer: "No, y esa es la idea: el Club es para descubrir cosas que no habrías elegido solo. Si algún varietal no te gusta, avisanos y lo tenemos en cuenta al armar tu caja.", group: "club", sortOrder: 20 },
   { question: "¿Puedo pausar o cancelar?", answer: "Cuando quieras, desde Mi Cuenta. Podés pausar la suscripción, omitir el envío de un mes (hasta 5 días antes del cierre) o cancelarla definitivamente sin llamar a nadie.", group: "club", sortOrder: 30 },
   { question: "¿Cuándo se cobra y cuándo llega la caja?", answer: "El cobro se hace el mismo día de cada mes en que te suscribiste. Despachamos entre el 22 y el 28, y la caja llega en los días hábiles siguientes.", group: "club", sortOrder: 40 },
   { question: "¿Puedo cambiar de plan?", answer: "Sí, desde Mi Cuenta. El cambio se aplica en el próximo ciclo: la caja del mes en curso se envía según el plan que tenías.", group: "club", sortOrder: 50 },
-  { question: "¿Los vinos del Club se pueden comprar en la tienda?", answer: "Algunos sí y otros son exclusivos para socios. Cuando un vino del Club sale a la tienda, los socios lo ven primero.", group: "club", sortOrder: 60 },
-  { question: "¿Venden a menores de 18 años?", answer: "No. La venta de bebidas alcohólicas a menores de 18 años está prohibida por ley. Al ingresar al sitio y al confirmar la compra declarás ser mayor de edad.", group: "general", sortOrder: 10 },
-  { question: "¿Se puede visitar la bodega?", answer: "Sí, con reserva previa. Hacemos visitas guiadas con degustación de martes a sábado. Los socios del Club tienen una visita anual sin cargo.", group: "general", sortOrder: 20 },
+  { question: "¿Los vinos del Club se pueden comprar sueltos?", answer: "Casi siempre sí, pero no siempre. Hay partidas tan chicas que se van enteras al Club. Cuando eso pasa, los socios son los únicos que las reciben.", group: "club", sortOrder: 60 },
 ];
 
 export const POSTS = [
   {
-    title: "Por qué la altura cambia todo en un Malbec",
-    slug: "por-que-la-altura-cambia-todo-en-un-malbec",
-    excerpt: "Mil metros de diferencia pueden significar dos vinos que no parecen hechos con la misma uva.",
-    coverUrl: "/media/scenes/mountains.jpg",
-    author: "Lucía Ferrer, enóloga",
-    category: "Vinos",
+    title: "Gualtallary, La Consulta, Perdriel: por qué no es lo mismo",
+    slug: "gualtallary-la-consulta-perdriel-por-que-no-es-lo-mismo",
+    excerpt: "Tres zonas de Mendoza, la misma uva y tres vinos que no se parecen en nada.",
+    coverUrl: "/media/scenes/mendoza-valley.jpg",
+    author: "Equipo de selección",
+    category: "Regiones",
     content:
-      "La altura no es marketing: es amplitud térmica.\n\nA 1.100 metros, la diferencia entre la temperatura del mediodía y la de la madrugada puede superar los 18 grados. Durante el día la planta acumula azúcar y desarrolla color; durante la noche frena su metabolismo y conserva ácidos. Esa combinación —madurez con acidez— es difícil de conseguir en el llano.\n\nHay un segundo factor: la radiación. A mayor altura, más radiación ultravioleta, y la planta se defiende engrosando el hollejo. Hollejo más grueso significa más antocianos y más taninos. Por eso los Malbec de altura tienen color más profundo y estructura más firme.\n\nEl tercer factor es el suelo. Los cuadros altos suelen ser más pedregosos y más pobres, con menos capacidad de retención de agua. La planta produce menos, pero concentra más.\n\nNada de esto garantiza un buen vino. La altura da la materia prima; lo demás es decidir bien cuándo cosechar.",
-    publishedAt: new Date("2026-06-12"),
+      "Cuando alguien nos dice «quiero un Malbec», la primera pregunta que hacemos es de dónde.\n\nPerdriel, en Luján de Cuyo, es la zona histórica. Está a unos 950 metros, con suelo aluvional profundo. El Malbec que sale de ahí es el clásico argentino: fruta madura, cuerpo, taninos redondos y buena amistad con la barrica. Es el perfil con el que el Malbec se hizo famoso en el mundo.\n\nGualtallary, en el Valle de Uco, está entre 1.200 y 1.600 metros y tiene suelo calcáreo. Eso cambia todo: menos fruta dulce, más tensión, un fondo mineral que algunos describen como tiza o grafito. Son vinos más filosos, que necesitan tiempo en la copa y a veces años en botella.\n\nLa Consulta, más al sur en San Carlos, tiene mucha viña vieja. Los rendimientos son bajísimos y eso da concentración, pero con una acidez que sostiene. Es donde salen algunos de los Malbec más completos del país.\n\nLa forma más rápida de entenderlo es probarlos al lado. Por eso armamos el pack de tres zonas: no es una excusa comercial, es que en paralelo la diferencia se vuelve obvia.",
+    publishedAt: new Date("2026-06-18"),
+  },
+  {
+    title: "Cómo elegimos qué entra al catálogo",
+    slug: "como-elegimos-que-entra-al-catalogo",
+    excerpt: "Vamos, probamos, discutimos y decimos que no bastante seguido.",
+    coverUrl: "/media/scenes/barrels.jpg",
+    author: "Equipo de selección",
+    category: "Nosotros",
+    content:
+      "No compramos por puntaje. Los puntajes sirven para orientarse, pero un 92 no dice nada sobre si ese vino va a funcionar en la mesa de alguien que quiere tomar algo rico un jueves.\n\nEl proceso es bastante simple y bastante lento. Vamos a Mendoza dos o tres veces por año. Probamos con el enólogo la añada que se va a vender, no la que ya se vendió. Cuando podemos, probamos a ciegas contra otras dos o tres etiquetas del mismo rango de precio.\n\nDespués discutimos. Es la parte más importante y la que más tiempo lleva. La pregunta que nos hacemos no es «¿está bueno?» sino «¿a quién se lo daríamos?». Si no hay una respuesta clara, no entra.\n\nY revisamos todos los años. Hay etiquetas que estuvieron en la lista tres años y salieron porque la añada nueva no estaba a la altura. Eso a veces molesta, incluso a las bodegas. Pero es exactamente lo que nos hace útiles.",
+    publishedAt: new Date("2026-07-09"),
   },
   {
     title: "Cómo armar una picada que no pelee con el vino",
     slug: "como-armar-una-picada-que-no-pelee-con-el-vino",
     excerpt: "El error más común no es el queso: es la cantidad de sabores compitiendo al mismo tiempo.",
-    coverUrl: "/media/scenes/vineyard-valley.jpg",
-    author: "Equipo Aurora",
+    coverUrl: "/media/scenes/toast.jpg",
+    author: "Equipo de selección",
     category: "Maridajes",
     content:
-      "Una picada bien armada tiene tres decisiones: grasa, sal y acidez.\n\nLa grasa suaviza el tanino. Por eso un queso maduro o un salame estacionado hacen que un tinto joven parezca más amable. Si el vino tiene tanino firme, sumá grasa.\n\nLa sal, en cambio, amplifica el alcohol. Si el vino ya viene con 14,5 grados, una picada muy salada lo va a hacer sentir caliente. Bajá la sal o subí la frescura del vino.\n\nLa acidez es la que ordena. Unos pickles, unas aceitunas o un tomate en aceite limpian el paladar entre bocado y bocado y evitan la fatiga.\n\nUna combinación que funciona casi siempre: un queso semiduro, un salame de campo, almendras tostadas, aceitunas verdes y pan sin sabor propio. Con eso adelante, un Malbec Reserva o un Cabernet Franc andan perfecto.\n\nLo que no funciona: cinco quesos distintos, dos patés y algo dulce, todo junto. El vino desaparece.",
-    publishedAt: new Date("2026-07-03"),
-  },
-  {
-    title: "Cosecha 2026: fría, lenta y prometedora",
-    slug: "cosecha-2026-fria-lenta-y-prometedora",
-    excerpt: "Empezamos catorce días más tarde que el año pasado. Te contamos por qué es una buena noticia.",
-    coverUrl: "/media/scenes/harvest.jpg",
-    author: "Lucía Ferrer, enóloga",
-    category: "Cosechas",
-    content:
-      "Este año entramos al viñedo el 26 de febrero, catorce días más tarde que en 2025.\n\nEl verano fue fresco y con noches muy frías, especialmente en enero. La maduración se estiró y eso nos dio algo que buscamos siempre: azúcar y acidez al mismo tiempo. Los análisis muestran pH bajos y acidez total alta, con madurez fenólica completa.\n\nEn los blancos entramos primero, con el Sauvignon Blanc de Pedernal. Los aromas están más intensos que el año pasado, con un perfil más cítrico que herbáceo.\n\nEn los tintos, el Malbec del cuadro viejo dio rendimientos bajos: 4.800 kilos por hectárea, casi 20% menos que el promedio. Menos cantidad, más concentración.\n\nSi la crianza acompaña, 2026 va a ser una añada para guardar.",
-    publishedAt: new Date("2026-08-04"),
+      "Una picada bien armada tiene tres decisiones: grasa, sal y acidez.\n\nLa grasa suaviza el tanino. Por eso un queso maduro o un salame estacionado hacen que un tinto joven parezca más amable. Si el vino tiene tanino firme, sumá grasa.\n\nLa sal, en cambio, amplifica el alcohol. Si el vino ya viene con 14,5 grados, una picada muy salada lo va a hacer sentir caliente. Bajá la sal o subí la frescura del vino.\n\nLa acidez es la que ordena. Unos pickles, unas aceitunas o un tomate en aceite limpian el paladar entre bocado y bocado y evitan la fatiga.\n\nUna combinación que funciona casi siempre: un queso semiduro, un salame de campo, almendras tostadas, aceitunas verdes y pan sin sabor propio. Con eso adelante, un Malbec de gama media o un Cabernet Franc andan perfecto.\n\nLo que no funciona: cinco quesos distintos, dos patés y algo dulce, todo junto. El vino desaparece.",
+    publishedAt: new Date("2026-07-28"),
   },
   {
     title: "Seis cosas que le hacemos mal al vino en casa",
     slug: "seis-cosas-que-le-hacemos-mal-al-vino-en-casa",
     excerpt: "La temperatura de servicio arruina más botellas que cualquier defecto de elaboración.",
     coverUrl: "/media/scenes/glass-dark.jpg",
-    author: "Equipo Aurora",
-    category: "Vinos",
+    author: "Equipo de selección",
+    category: "Consejos",
     content:
       "1. Servir el tinto a temperatura ambiente. «Ambiente» en Argentina en enero son 30 grados. Un tinto a 30 grados es alcohol y nada más. Quince minutos en la heladera antes de servir cambian la experiencia por completo.\n\n2. Servir el blanco helado. A 4 grados no se percibe casi ningún aroma. Sacalo de la heladera diez minutos antes.\n\n3. Guardar las botellas paradas por años. El corcho se seca y deja entrar aire. Acostadas, si van a esperar.\n\n4. Guardarlas arriba de la heladera. Es el peor lugar de la casa: calor y vibración.\n\n5. Llenar la copa hasta el borde. Un tercio es suficiente: el vino necesita aire para expresarse.\n\n6. Descartar una botella abierta al día siguiente. Con el corcho puesto y en la heladera, la mayoría de los tintos aguantan tres o cuatro días. Algunos incluso mejoran.",
-    publishedAt: new Date("2026-08-20"),
+    publishedAt: new Date("2026-08-14"),
   },
 ];
 
@@ -420,7 +478,7 @@ export const BANNERS = [
     sortOrder: 20,
   },
   {
-    message: "Nueva cosecha 2024: Sauvignon Blanc, Torrontés y Rosé ya disponibles",
+    message: "Entró partida nueva de Valle de Uco. Stock limitado.",
     linkUrl: "/vinos?orden=novedades",
     linkLabel: "Ver novedades",
     position: "shop",
@@ -433,9 +491,9 @@ export const NOTIFICATION_TEMPLATES = [
   { event: "order.created", subject: "Recibimos tu pedido #{{orderNumber}}", body: "Hola {{firstName}}, recibimos tu pedido y estamos esperando la confirmación del pago." },
   { event: "order.paid", subject: "Pago confirmado — pedido #{{orderNumber}}", body: "Tu pago fue aprobado. Ya estamos preparando tu pedido." },
   { event: "order.ready", subject: "Tu pedido #{{orderNumber}} está listo", body: "Tu pedido está embalado y listo para despachar." },
-  { event: "order.shipped", subject: "Tu pedido #{{orderNumber}} salió de la bodega", body: "Despachamos tu pedido con {{carrier}}. Seguimiento: {{trackingNumber}}." },
+  { event: "order.shipped", subject: "Tu pedido #{{orderNumber}} salió del depósito", body: "Despachamos tu pedido con {{carrier}}. Seguimiento: {{trackingNumber}}." },
   { event: "order.delivered", subject: "Tu pedido #{{orderNumber}} fue entregado", body: "Esperamos que lo disfrutes. Contanos qué te pareció." },
-  { event: "subscription.created", subject: "Bienvenido al Club Aurora", body: "Tu suscripción al {{planName}} está activa. El primer envío sale este mes." },
+  { event: "subscription.created", subject: "Bienvenido al Club", body: "Tu suscripción al {{planName}} está activa. El primer envío sale este mes." },
   { event: "subscription.upcoming_charge", subject: "Tu próximo cobro del Club", body: "El {{nextChargeDate}} vamos a debitar {{amount}} por tu plan {{planName}}." },
   { event: "subscription.payment_failed", subject: "No pudimos procesar tu pago del Club", body: "El cobro de {{amount}} fue rechazado. Podés actualizar tu medio de pago desde Mi Cuenta." },
   { event: "subscription.paused", subject: "Tu suscripción quedó en pausa", body: "Pausamos tu suscripción al {{planName}}. Podés reactivarla cuando quieras." },

@@ -28,8 +28,9 @@ export default async function PacksPage() {
         Packs y estuches
       </Heading>
       <Prose className="mt-5">
-        Combinaciones que armamos nosotros, con descuento respecto de comprar cada botella por
-        separado. La disponibilidad depende del stock real de cada vino que los compone.
+        Cajas que armamos nosotros para que descubras algo, no para liquidar stock. Cada una tiene
+        una idea detrás y sale más barata que comprar las botellas por separado. La disponibilidad
+        depende del stock real de cada vino que la compone.
       </Prose>
 
       <div className="mt-14">

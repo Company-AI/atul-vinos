@@ -7,16 +7,16 @@ import { z } from "zod";
  */
 
 export const companySettings = z.object({
-  name: z.string().default("Bodega Aurora"),
-  legalName: z.string().default("Bodega Aurora S.A."),
-  tagline: z.string().default("Vinos de altura"),
+  name: z.string().default("Aurora Selección"),
+  legalName: z.string().default("Aurora Selección S.R.L."),
+  tagline: z.string().default("Distribuidores de vinos de Mendoza"),
   logoUrl: z.string().default("/brand/logo.svg"),
   logoLightUrl: z.string().default("/brand/logo-light.svg"),
   faviconUrl: z.string().default("/favicon.ico"),
-  email: z.string().default("hola@bodegaaurora.test"),
+  email: z.string().default("hola@auroraseleccion.test"),
   phone: z.string().default("+54 358 400 0000"),
   whatsapp: z.string().default("5493584000000"),
-  addressLine: z.string().default("Ruta 36 km 601"),
+  addressLine: z.string().default("Sarmiento 1240"),
   city: z.string().default("Río Cuarto"),
   province: z.string().default("Córdoba"),
   postalCode: z.string().default("5800"),
@@ -57,7 +57,7 @@ export const shippingSettings = z.object({
   packagingWeightGrams: z.number().default(400),
   labelFormatDefault: z.enum(["A4", "THERMAL_100X150"]).default("THERMAL_100X150"),
   pickupEnabled: z.boolean().default(true),
-  pickupLabel: z.string().default("Retiro en bodega"),
+  pickupLabel: z.string().default("Retiro en depósito"),
 });
 
 export const clubSettings = z.object({
@@ -78,28 +78,28 @@ export const paymentSettings = z.object({
   provider: z.enum(["mercadopago"]).default("mercadopago"),
   sandbox: z.boolean().default(true),
   publicKey: z.string().default(""),
-  statementDescriptor: z.string().default("BODEGA AURORA"),
+  statementDescriptor: z.string().default("AURORA SELECCION"),
   installmentsEnabled: z.boolean().default(true),
   maxInstallments: z.number().int().default(6),
 });
 
 export const seoSettings = z.object({
-  defaultTitle: z.string().default("Bodega Aurora — Vinos de altura"),
-  titleTemplate: z.string().default("%s · Bodega Aurora"),
+  defaultTitle: z.string().default("Aurora Selección — Vinos de Mendoza"),
+  titleTemplate: z.string().default("%s · Aurora Selección"),
   defaultDescription: z
     .string()
     .default(
-      "Vinos de altura elaborados con paciencia. Comprá online o sumate al Club y recibí una selección todos los meses.",
+      "Distribuimos vinos de bodegas de Mendoza y probamos todo lo que vendemos. Comprá online o sumate al Club y recibí nuestra selección todos los meses.",
     ),
-  ogImageUrl: z.string().default("/media/scenes/hero-vineyard-mountains.jpg"),
+  ogImageUrl: z.string().default("/media/scenes/mendoza-vineyard-rows.jpg"),
   ga4Id: z.string().default(""),
   metaPixelId: z.string().default(""),
   indexable: z.boolean().default(true),
 });
 
 export const emailSettings = z.object({
-  fromName: z.string().default("Bodega Aurora"),
-  fromEmail: z.string().default("hola@bodegaaurora.test"),
+  fromName: z.string().default("Aurora Selección"),
+  fromEmail: z.string().default("hola@auroraseleccion.test"),
   replyTo: z.string().default(""),
   footerText: z
     .string()

@@ -312,7 +312,7 @@ async function notifyStatusChange(orderId: string, status: OrderStatus): Promise
     },
     SHIPPED: {
       event: "order.shipped",
-      subject: "Tu pedido salió de la bodega",
+      subject: "Tu pedido salió del depósito",
       heading: "Tu pedido está en camino",
       intro: "Ya lo entregamos al transportista.",
     },
