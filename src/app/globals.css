@@ -355,3 +355,137 @@
     clip-path: inset(0 0 0 0);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VARIANTES DE DISEÑO — /v2 Maison · /v3 Arquitectura · /v4 Terroir
+   Tres lenguajes distintos sobre los mismos datos. Cada uno define su paleta,
+   su escala y sus familias; los componentes de variante leen estas variables
+   semánticas y nunca los tokens globales del sitio principal.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Maison ──────────────────────────────────────────────────────────────
+   Lujo por resta. Hueso cálido y tinta gris —nunca negro puro—, serifa de
+   alto contraste y una sans muy callada. Poca imagen, mucho aire.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-variant="maison"] {
+  --v-bg: #F7F6F3;
+  --v-surface: #FFFFFF;
+  --v-sunk: #EFEDE7;
+  --v-ink: #282828;
+  --v-muted: #7A756C;
+  --v-rule: #DDD9D0;
+  --v-accent: #8A7A55;
+  --v-on-accent: #FFFFFF;
+
+  --v-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  --v-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  --v-mono: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+
+  --v-display-weight: 300;
+  --v-hero: clamp(2.75rem, 6.5vw, 5.75rem);
+  --v-hero-lh: 1.04;
+  --v-hero-ls: -0.015em;
+  --v-title: clamp(1.875rem, 3.2vw, 3rem);
+  --v-title-lh: 1.14;
+  --v-label-ls: 0.28em;
+  --v-measure: 58ch;
+  --v-radius: 0px;
+  --v-rhythm: clamp(6rem, 13vh, 11rem);
+}
+
+/* ─── Arquitectura ────────────────────────────────────────────────────────
+   La bodega como edificio. Hormigón, grilla al frente, bordes duros y una
+   sola sans de tracking cerrado. El acento es óxido, no vino.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-variant="arquitectura"] {
+  --v-bg: #E8E6E1;
+  --v-surface: #F2F1ED;
+  --v-sunk: #16181A;
+  --v-ink: #1B1D1F;
+  --v-muted: #6E7276;
+  --v-rule: #C2BFB8;
+  --v-accent: #A34E2A;
+  --v-on-accent: #F2F1ED;
+
+  --v-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --v-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --v-mono: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  --v-display-weight: 500;
+  --v-hero: clamp(2.5rem, 7vw, 6.25rem);
+  --v-hero-lh: 0.94;
+  --v-hero-ls: -0.045em;
+  --v-title: clamp(1.75rem, 3.4vw, 3.25rem);
+  --v-title-lh: 1.02;
+  --v-label-ls: 0.2em;
+  --v-measure: 54ch;
+  --v-radius: 0px;
+  --v-rhythm: clamp(5rem, 11vh, 9rem);
+}
+
+/* ─── Terroir ─────────────────────────────────────────────────────────────
+   El viñedo como ciencia. Papel, tinta verde profunda y el dato como
+   ornamento: altitud, coordenadas, suelo. Serifa suave más monoespaciada.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-variant="terroir"] {
+  --v-bg: #FBFAF7;
+  --v-surface: #FFFFFF;
+  --v-sunk: #F0EFE9;
+  --v-ink: #1E2A24;
+  --v-muted: #6B7A70;
+  --v-rule: #D6DCD5;
+  --v-accent: #5C1F2E;
+  --v-on-accent: #FBFAF7;
+
+  --v-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --v-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --v-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+
+  --v-display-weight: 400;
+  --v-hero: clamp(2.5rem, 6vw, 5.25rem);
+  --v-hero-lh: 1.06;
+  --v-hero-ls: -0.02em;
+  --v-title: clamp(1.75rem, 3vw, 2.75rem);
+  --v-title-lh: 1.16;
+  --v-label-ls: 0.16em;
+  --v-measure: 62ch;
+  --v-radius: 2px;
+  --v-rhythm: clamp(5.5rem, 12vh, 10rem);
+}
+
+/* ─── Primitivas compartidas por las variantes ───────────────────────────── */
+
+@utility v-root {
+  background-color: var(--v-bg);
+  color: var(--v-ink);
+  font-family: var(--v-sans);
+}
+
+@utility v-hero-type {
+  font-family: var(--v-display);
+  font-weight: var(--v-display-weight);
+  font-size: var(--v-hero);
+  line-height: var(--v-hero-lh);
+  letter-spacing: var(--v-hero-ls);
+}
+
+@utility v-title-type {
+  font-family: var(--v-display);
+  font-weight: var(--v-display-weight);
+  font-size: var(--v-title);
+  line-height: var(--v-title-lh);
+  letter-spacing: var(--v-hero-ls);
+}
+
+@utility v-label {
+  font-family: var(--v-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--v-label-ls);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+@utility v-section {
+  padding-top: var(--v-rhythm);
+  padding-bottom: var(--v-rhythm);
+}
