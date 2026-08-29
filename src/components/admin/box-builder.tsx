@@ -6,7 +6,6 @@ import { AlertTriangle, Plus, Trash2 } from "lucide-react";
 import { saveBox } from "@/app/actions/admin-subscriptions";
 import { formatARS } from "@/lib/money";
 import { cn } from "@/lib/cn";
-import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/ui/field";
 import { toast } from "@/ui/toaster";

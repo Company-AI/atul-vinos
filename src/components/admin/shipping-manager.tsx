@@ -10,7 +10,7 @@ import { AR_PROVINCES } from "@/lib/ar";
 import { formatARS } from "@/lib/money";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Checkbox, Field, Input, Select } from "@/ui/field";
+import { Checkbox, Field, Input } from "@/ui/field";
 import { ConfirmationModal, Modal } from "@/ui/modal";
 import { toast } from "@/ui/toaster";
 import { AdminCard, AdminTable, Td } from "./admin-ui";

@@ -9,8 +9,7 @@ import { resolveBoxForPeriod } from "@/domain/subscriptions/boxes";
 import {
   CYCLE_STATUS_LABELS, SUBSCRIPTION_STATUS_LABELS, SUBSCRIPTION_STATUS_TONES,
 } from "@/domain/subscriptions/status";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_TONES } from "@/domain/orders/status";
-import { formatARS, toNumber } from "@/lib/money";
+import { formatARS } from "@/lib/money";
 import { currentPeriod, formatDate, formatDateTime, periodLabel } from "@/lib/dates";
 import { SubscriptionManager } from "@/components/account/subscription-manager";
 import { Badge } from "@/ui/badge";

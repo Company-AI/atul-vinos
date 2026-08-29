@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { prisma } from "@/infra/db/prisma";
 import { getCurrentUser } from "@/infra/auth/session";
 import { getSettings } from "@/domain/settings/service";
@@ -17,8 +16,6 @@ export const metadata: Metadata = {
  * El resto exige sesión de staff; cada página valida además su permiso.
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const requestHeaders = await headers();
-  const pathname = requestHeaders.get("x-invoke-path") ?? "";
   const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
 
   if (!user?.isStaff) {

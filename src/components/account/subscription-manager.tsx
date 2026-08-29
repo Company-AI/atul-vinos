@@ -8,7 +8,7 @@ import {
   resumeMySubscription, skipMyNextShipment, updateSubscriptionAddress,
 } from "@/app/actions/subscriptions";
 import { Button } from "@/ui/button";
-import { ConfirmationModal, Modal } from "@/ui/modal";
+import { Modal } from "@/ui/modal";
 import { Field, Select, Textarea } from "@/ui/field";
 import { toast } from "@/ui/toaster";
 

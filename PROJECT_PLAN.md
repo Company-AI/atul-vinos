@@ -374,16 +374,19 @@ server-side · logs sin PII sensible.
 | Fase | Contenido | Estado |
 |---|---|---|
 | 0 | Repo, stack, plan, design system, modelo de datos, seed | ✅ |
-| 1 | Foundation: DB, auth, settings, storage, age gate, layout | ⏳ |
-| 2 | Frontend público: home cinematográfica, storytelling, historia, blog | ⏳ |
-| 3 | E-commerce: catálogo, filtros, detalle, packs, carrito, checkout | ⏳ |
-| 4 | Pagos: Mercado Pago + webhooks idempotentes + estados | ⏳ |
-| 5 | Club: landing, planes, alta, ciclos, renovaciones, autogestión | ⏳ |
-| 6 | Admin: dashboard, pedidos, picking, productos, stock, clientes | ⏳ |
-| 7 | Operación: etiquetas, envíos, box del mes, reservas, alertas | ⏳ |
-| 8 | Cupones, beneficios, CMS, banners, newsletter, notificaciones | ⏳ |
-| 9 | Reportes, exports, auditoría, roles y permisos | ⏳ |
-| 10 | Tests de lógica crítica, SEO, performance, responsive, a11y | ⏳ |
+| 1 | Foundation: DB, auth, settings, storage, age gate, layout | ✅ |
+| 2 | Frontend público: home cinematográfica, storytelling, historia, blog | ✅ |
+| 3 | E-commerce: catálogo, filtros, detalle, packs, carrito, checkout | ✅ |
+| 4 | Pagos: Mercado Pago + webhooks idempotentes + estados | ✅ |
+| 5 | Club: landing, planes, alta, ciclos, renovaciones, autogestión | ✅ |
+| 6 | Admin: dashboard, pedidos, picking, productos, stock, clientes | ✅ |
+| 7 | Operación: etiquetas, envíos, box del mes, reservas, alertas | ✅ |
+| 8 | Cupones, beneficios, CMS, banners, newsletter, notificaciones | ✅ |
+| 9 | Reportes, exports, auditoría, roles y permisos | ✅ |
+| 10 | Tests de lógica crítica, SEO, performance, responsive, a11y | ✅ |
+
+Pendiente de credenciales del cliente (contrato definido, adapter listo):
+integración real con Andreani/OCA/Correo Argentino, WhatsApp y storage S3.
 
 ## 13. Casos de aceptación (spec §82)
 

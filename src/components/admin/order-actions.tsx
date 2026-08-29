@@ -15,14 +15,12 @@ import { toast } from "@/ui/toaster";
 
 export function OrderActions({
   orderId,
-  status,
   allowedTransitions,
   shipment,
   carriers,
   internalNote,
 }: {
   orderId: string;
-  status: OrderStatus;
   allowedTransitions: OrderStatus[];
   shipment: { id: string; trackingNumber: string | null; trackingUrl: string | null; carrierCode: string | null } | null;
   carriers: { code: string; name: string }[];

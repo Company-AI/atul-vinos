@@ -6,7 +6,7 @@ import { prisma } from "@/infra/db/prisma";
 import { getMemberBenefits } from "@/domain/promotions/club-benefits";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_TONES, REVENUE_STATUSES } from "@/domain/orders/status";
 import { SUBSCRIPTION_STATUS_LABELS, SUBSCRIPTION_STATUS_TONES } from "@/domain/subscriptions/status";
-import { formatARS, toNumber } from "@/lib/money";
+import { formatARS } from "@/lib/money";
 import { formatDate } from "@/lib/dates";
 import { Badge } from "@/ui/badge";
 import { buttonVariants } from "@/ui/button";

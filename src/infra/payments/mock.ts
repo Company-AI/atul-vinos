@@ -37,7 +37,7 @@ export class MockPaymentProvider implements PaymentProvider {
     };
   }
 
-  async createPreapproval(input: PreapprovalInput): Promise<PreapprovalResult> {
+  async createPreapproval(_input: PreapprovalInput): Promise<PreapprovalResult> {
     const externalId = `mock-sub-${nanoid(10)}`;
     return {
       externalId,

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
-  AlertTriangle, Box, ClipboardList, Package, Plus, Printer, Wine, Zap,
+  AlertTriangle, Box, ClipboardList, Package, Printer, Wine, Zap,
 } from "lucide-react";
 
 /** Atajos del dashboard (spec §77). */

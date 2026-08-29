@@ -45,7 +45,6 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
   const billing = order.billingSnapshot as Record<string, string> | null;
   const snapshot = order.subscriptionSnapshot as Record<string, unknown> | null;
   const shipment = order.shipments[0] ?? null;
-  const payment = order.payments[0] ?? null;
   const canSeePrices = user.isSuperAdmin || user.permissions.has("orders.edit") || user.permissions.has("payments.view");
 
   return (
@@ -66,7 +65,6 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
       <AdminCard className="mb-4">
         <OrderActions
           orderId={order.id}
-          status={order.status}
           allowedTransitions={ALLOWED_TRANSITIONS[order.status]}
           shipment={
             shipment
