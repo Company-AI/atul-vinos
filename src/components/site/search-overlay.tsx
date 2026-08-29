@@ -114,7 +114,7 @@ export function SearchOverlay({
                           {p.imageUrl && (
                             <Image
                               src={p.imageUrl} alt="" width={40} height={53}
-                              className="h-13 w-10 shrink-0 object-contain"
+                              className="h-13 w-10 shrink-0 object-cover"
                             />
                           )}
                           <span className="min-w-0 flex-1">

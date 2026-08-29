@@ -413,7 +413,7 @@ export function CheckoutForm({
                 {line.imageUrl && (
                   <Image
                     src={line.imageUrl} alt="" width={40} height={53}
-                    className="h-13 w-10 shrink-0 object-contain"
+                    className="h-13 w-10 shrink-0 object-cover"
                   />
                 )}
                 <span className="min-w-0 flex-1">

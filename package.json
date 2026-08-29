@@ -13,10 +13,10 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force",
-    "assets:placeholders": "node scripts/generate-placeholders.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build:check": "next build --no-lint"
+    "build:check": "next build --no-lint",
+    "assets:stock": "node scripts/fetch-stock-media.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

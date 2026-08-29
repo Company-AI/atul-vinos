@@ -111,7 +111,7 @@ export function CartDrawer({
                       alt={line.name}
                       width={72}
                       height={96}
-                      className="h-24 w-[72px] object-contain"
+                      className="h-24 w-[72px] object-cover"
                     />
                   )}
                 </Link>
@@ -179,7 +179,7 @@ export function CartDrawer({
                     {p.imageUrl && (
                       <Image
                         src={p.imageUrl} alt="" width={32} height={43}
-                        className="h-11 w-8 shrink-0 object-contain"
+                        className="h-11 w-8 shrink-0 object-cover"
                       />
                     )}
                     <span className="min-w-0 flex-1">

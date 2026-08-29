@@ -62,7 +62,7 @@ export function CartPageClient({
                     alt={line.name}
                     width={96}
                     height={128}
-                    className="h-32 w-24 object-contain"
+                    className="h-32 w-24 object-cover"
                   />
                 )}
               </Link>
@@ -130,7 +130,7 @@ export function CartPageClient({
                     {p.imageUrl && (
                       <Image
                         src={p.imageUrl} alt="" width={48} height={64}
-                        className="h-16 w-12 shrink-0 object-contain"
+                        className="h-16 w-12 shrink-0 object-cover"
                       />
                     )}
                     <div className="min-w-0">

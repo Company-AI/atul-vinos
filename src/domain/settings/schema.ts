@@ -42,7 +42,7 @@ export const ageGateSettings = z.object({
     .string()
     .default("Beber con moderación. Prohibida su venta a menores de 18 años."),
   imageUrl: z.string().default(""),
-  backgroundUrl: z.string().default("/media/age-gate.png"),
+  backgroundUrl: z.string().default("/media/scenes/pouring-dark.jpg"),
   exitUrl: z.string().default("https://www.google.com"),
   rememberDays: z.number().int().default(180),
 });
@@ -91,7 +91,7 @@ export const seoSettings = z.object({
     .default(
       "Vinos de altura elaborados con paciencia. Comprá online o sumate al Club y recibí una selección todos los meses.",
     ),
-  ogImageUrl: z.string().default("/media/og.png"),
+  ogImageUrl: z.string().default("/media/scenes/hero-vineyard-mountains.jpg"),
   ga4Id: z.string().default(""),
   metaPixelId: z.string().default(""),
   indexable: z.boolean().default(true),

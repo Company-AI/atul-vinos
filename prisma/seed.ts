@@ -225,7 +225,7 @@ async function main() {
       data: {
         name, slug: slugify(name),
         story: "Elaboración propia con uvas de viñedos de la familia.",
-        imageUrl: "/media/cellar.png",
+        imageUrl: "/media/scenes/cellar.jpg",
       },
     });
     wineries.set(name, w.id);
@@ -238,7 +238,7 @@ async function main() {
   const regions = new Map<string, string>();
   for (const [name, province] of regionData) {
     const r = await prisma.region.create({
-      data: { name, slug: slugify(name), province, imageUrl: "/media/mountains.png" },
+      data: { name, slug: slugify(name), province, imageUrl: "/media/scenes/mountains.jpg" },
     });
     regions.set(name, r.id);
   }
@@ -249,7 +249,7 @@ async function main() {
   const lines = new Map<string, string>();
   for (const [name, order] of lineData) {
     const l = await prisma.wineLine.create({
-      data: { name, slug: slugify(name), sortOrder: order, imageUrl: "/media/story-2.png" },
+      data: { name, slug: slugify(name), sortOrder: order, imageUrl: "/media/scenes/barrels-storage.jpg" },
     });
     lines.set(name, l.id);
   }
@@ -310,7 +310,7 @@ async function main() {
         lineId: lines.get(w.line)!,
         images: {
           create: [{
-            url: `/media/wines/${w.image}.png`,
+            url: `/media/wines/${w.image}.jpg`,
             alt: `Botella de ${w.name} ${w.vintage} de Bodega Aurora`,
             isPrimary: true, sortOrder: 0, width: 600, height: 800,
           }],
@@ -349,7 +349,7 @@ async function main() {
         wineryId: wineries.get("Bodega Aurora")!,
         images: {
           create: [{
-            url: `/media/wines/${p.image}.png`, alt: `${p.name} de Bodega Aurora`,
+            url: `/media/wines/${p.image}.jpg`, alt: `${p.name} de Bodega Aurora`,
             isPrimary: true, sortOrder: 0, width: 600, height: 800,
           }],
         },
@@ -450,7 +450,7 @@ async function main() {
       firstCycleDiscountPercent: 20,
       perks: ["3 botellas por mes", "Fichas de cata", "10% de descuento en la tienda", "Cambiás o pausás cuando quieras"],
       benefits: ["store_discount", "early_access"],
-      imageUrl: "/media/story-1.png",
+      imageUrl: "/media/scenes/vineyard-valley.jpg",
     },
     {
       name: "Club Reserva", slug: "club-reserva",
@@ -460,7 +460,7 @@ async function main() {
       featured: true,
       perks: ["4 botellas seleccionadas", "Envío sin cargo", "Un vino exclusivo por mes", "10% de descuento en la tienda", "Acceso anticipado a nuevas añadas"],
       benefits: ["store_discount", "free_shipping", "early_access", "exclusive_wines"],
-      imageUrl: "/media/club-box.png",
+      imageUrl: "/media/scenes/cellar.jpg",
     },
     {
       name: "Club Ícono", slug: "club-icono",
@@ -470,7 +470,7 @@ async function main() {
       trialDays: 0,
       perks: ["6 botellas premium", "Envío sin cargo", "Vinos de alta gama y ediciones limitadas", "15% de descuento en la tienda", "Cata de barricas anual en la bodega"],
       benefits: ["store_discount", "free_shipping", "early_access", "exclusive_wines", "cellar_visit"],
-      imageUrl: "/media/story-3.png",
+      imageUrl: "/media/scenes/grapes-cluster.jpg",
     },
   ];
   const plans = new Map<string, { id: string; price: number; name: string; bottleCount: number }>();
@@ -676,8 +676,8 @@ async function main() {
     ...PACKS.map((p) => [p.slug, p.sku] as [string, string]),
   ]);
   const imageBySlug = new Map<string, string>([
-    ...WINES.map((w) => [w.slug, `/media/wines/${w.image}.png`] as [string, string]),
-    ...PACKS.map((p) => [p.slug, `/media/wines/${p.image}.png`] as [string, string]),
+    ...WINES.map((w) => [w.slug, `/media/wines/${w.image}.jpg`] as [string, string]),
+    ...PACKS.map((p) => [p.slug, `/media/wines/${p.image}.jpg`] as [string, string]),
   ]);
 
   let storeOrders = 0;

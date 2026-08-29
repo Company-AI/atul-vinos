@@ -66,7 +66,7 @@ export const WINES: WineSeed[] = [
       "Cosecha manual en cajones de 18 kg. Maceración pre-fermentativa en frío durante 48 horas. Fermentación a 26 °C con levaduras autóctonas. Tres meses en tanque antes del embotellado.",
     stock: { onHand: 240, minStock: 48, location: "A-01-03" },
     bestSeller: true,
-    image: "malbec-clasico",
+    image: "tinto-alt",
   },
   {
     name: "Malbec Reserva",
@@ -103,7 +103,7 @@ export const WINES: WineSeed[] = [
     stock: { onHand: 168, minStock: 36, location: "A-02-01" },
     featured: true,
     bestSeller: true,
-    image: "malbec-reserva",
+    image: "tinto",
   },
   {
     name: "Malbec Gran Reserva",
@@ -135,7 +135,7 @@ export const WINES: WineSeed[] = [
     awards: [{ title: "97 puntos", organization: "Descorchados", year: 2024, score: "97 pts" }],
     stock: { onHand: 54, minStock: 12, location: "B-01-01" },
     featured: true,
-    image: "malbec-gran-reserva",
+    image: "tinto",
   },
   {
     name: "Cabernet Franc Reserva",
@@ -166,7 +166,7 @@ export const WINES: WineSeed[] = [
       "Fermentación con 20% de racimo entero. Doce meses en roble francés de tercer uso y foudre.",
     stock: { onHand: 96, minStock: 24, location: "A-03-02" },
     featured: true,
-    image: "cabernet-franc",
+    image: "tinto-alt",
   },
   {
     name: "Cabernet Sauvignon Reserva",
@@ -195,7 +195,7 @@ export const WINES: WineSeed[] = [
       "Aromas de grosella negra, menta fresca, pimienta y cedro. Taninos marcados pero maduros, cuerpo medio-alto y final con recuerdo balsámico.",
     winemaking: "Fermentación en acero con remontajes diarios. Doce meses en roble francés y americano.",
     stock: { onHand: 112, minStock: 24, location: "A-03-04" },
-    image: "cabernet-sauvignon",
+    image: "tinto",
   },
   {
     name: "Pinot Noir",
@@ -224,7 +224,7 @@ export const WINES: WineSeed[] = [
       "Rojo rubí translúcido. Frambuesa, cereza ácida, un toque de té negro y tierra húmeda. Boca ligera, acidez alta, taninos apenas perceptibles.",
     winemaking: "Racimo entero en un 40%. Fermentación con levaduras indígenas. Ocho meses en foudre.",
     stock: { onHand: 72, minStock: 18, location: "C-01-02" },
-    image: "pinot-noir",
+    image: "tinto-alt",
   },
   {
     name: "Syrah",
@@ -253,7 +253,7 @@ export const WINES: WineSeed[] = [
       "Violeta oscuro. Pimienta negra, mora, cuero y humo. Boca carnosa, con volumen y un final cálido y especiado.",
     winemaking: "Fermentación en concreto. Diez meses en barrica de segundo uso.",
     stock: { onHand: 88, minStock: 24, location: "A-04-01" },
-    image: "syrah",
+    image: "tinto",
   },
   {
     name: "Aurora Ícono",
@@ -292,7 +292,7 @@ export const WINES: WineSeed[] = [
     ],
     stock: { onHand: 24, minStock: 6, location: "B-01-05" },
     featured: true,
-    image: "blend-icono",
+    image: "tinto-alt",
   },
   {
     name: "Chardonnay Reserva",
@@ -322,7 +322,7 @@ export const WINES: WineSeed[] = [
     winemaking: "Prensado suave de racimo entero. 40% en barrica usada, 60% en acero. Ocho meses sobre borras.",
     stock: { onHand: 132, minStock: 30, location: "D-01-01" },
     featured: true,
-    image: "chardonnay",
+    image: "blanco",
   },
   {
     name: "Sauvignon Blanc",
@@ -352,7 +352,7 @@ export const WINES: WineSeed[] = [
     winemaking: "Prensado en frío, decantación estática, fermentación a 14 °C en acero inoxidable.",
     stock: { onHand: 156, minStock: 36, location: "D-01-04" },
     isNew: true,
-    image: "sauvignon-blanc",
+    image: "blanco",
   },
   {
     name: "Torrontés",
@@ -381,7 +381,7 @@ export const WINES: WineSeed[] = [
     winemaking: "Cosecha nocturna. Maceración en frío de 6 horas. Fermentación lenta a 13 °C.",
     stock: { onHand: 108, minStock: 24, location: "D-02-01" },
     isNew: true,
-    image: "torrontes",
+    image: "blanco",
   },
   {
     name: "Rosé de Malbec",
@@ -410,7 +410,7 @@ export const WINES: WineSeed[] = [
     winemaking: "Prensado directo a baja presión. Fermentación a 14 °C. Tres meses sobre borras finas.",
     stock: { onHand: 96, minStock: 24, location: "D-02-03" },
     isNew: true,
-    image: "rose-malbec",
+    image: "rosado",
   },
   {
     name: "Espumante Brut Nature",
@@ -444,7 +444,7 @@ export const WINES: WineSeed[] = [
     awards: [{ title: "Medalla de Plata", organization: "Vinandino", year: 2024 }],
     stock: { onHand: 64, minStock: 18, location: "E-01-01" },
     featured: true,
-    image: "espumante-brut-nature",
+    image: "espumante",
   },
   {
     name: "Espumante Extra Brut",
@@ -475,7 +475,7 @@ export const WINES: WineSeed[] = [
     tastingNotes: "Cítricos, pera y flores. Burbuja cremosa, boca liviana y final seco.",
     winemaking: "Método Charmat largo, nueve meses en autoclave.",
     stock: { onHand: 84, minStock: 24, location: "E-01-03" },
-    image: "espumante-extra-brut",
+    image: "espumante",
   },
   {
     name: "Naranjo Experimental",
@@ -505,7 +505,7 @@ export const WINES: WineSeed[] = [
     winemaking: "Fermentación y crianza con hollejos durante seis meses en tinajas de barro. Sin filtrar.",
     stock: { onHand: 36, minStock: 9, location: "F-01-01" },
     isNew: true,
-    image: "naranjo-experimental",
+    image: "naranjo",
   },
 ];
 
@@ -542,7 +542,7 @@ export const PACKS: PackSeed[] = [
       { slug: "malbec-reserva-2021", quantity: 1 },
       { slug: "malbec-gran-reserva-2019", quantity: 1 },
     ],
-    image: "pack-malbec",
+    image: "pack",
     featured: true,
     bestSeller: true,
   },
@@ -565,7 +565,7 @@ export const PACKS: PackSeed[] = [
       { slug: "rose-de-malbec-2024", quantity: 1 },
       { slug: "espumante-extra-brut", quantity: 1 },
     ],
-    image: "pack-degustacion",
+    image: "pack",
     featured: true,
   },
   {
@@ -584,7 +584,7 @@ export const PACKS: PackSeed[] = [
       { slug: "cabernet-sauvignon-reserva-2020", quantity: 1 },
       { slug: "syrah-2021", quantity: 1 },
     ],
-    image: "pack-asado",
+    image: "pack",
     bestSeller: true,
   },
   {
@@ -602,6 +602,6 @@ export const PACKS: PackSeed[] = [
       { slug: "malbec-gran-reserva-2019", quantity: 1 },
       { slug: "espumante-brut-nature", quantity: 1 },
     ],
-    image: "pack-regalo",
+    image: "pack",
   },
 ];

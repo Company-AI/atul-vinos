@@ -46,7 +46,7 @@ export function ProductGallery({
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-8"
+            className="object-cover"
           />
         )}
       </div>
@@ -71,7 +71,7 @@ export function ProductGallery({
                   alt=""
                   fill
                   sizes="80px"
-                  className="object-contain p-1.5"
+                  className="object-cover"
                 />
               </button>
             </li>
