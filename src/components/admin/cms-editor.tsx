@@ -31,10 +31,13 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
   video_hero: [
     { key: "eyebrow", label: "Volanta", kind: "text" },
     { key: "title", label: "Título", kind: "textarea" },
+    { key: "titleAccent", label: "Segunda línea (itálica)", kind: "text", hint: "Se compone debajo del título." },
     { key: "subtitle", label: "Bajada", kind: "textarea" },
-    { key: "overlay", label: "Oscurecimiento", kind: "select", options: ["scrim-bottom", "scrim-full", "none"] },
+    { key: "overlay", label: "Oscurecimiento", kind: "select", options: ["scrim-bottom", "scrim-full", "scrim-side", "none"] },
     { key: "align", label: "Alineación", kind: "select", options: ["center", "left"] },
     { key: "height", label: "Altura", kind: "select", options: ["full", "tall", "medium"] },
+    { key: "scale", label: "Escala del título", kind: "select", options: ["page", "hero"] },
+    { key: "scrollCue", label: "Indicador de scroll", kind: "text", hint: "Texto corto al pie. Vacío lo oculta." },
   ],
   editorial: [
     { key: "eyebrow", label: "Volanta", kind: "text" },
@@ -87,10 +90,35 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "body", label: "Texto", kind: "textarea" },
     { key: "tone", label: "Fondo", kind: "select", options: ["light", "linen", "dark"] },
   ],
+  statement: [
+    { key: "eyebrow", label: "Volanta", kind: "text" },
+    { key: "text", label: "Declaración", kind: "textarea", hint: "Corta: se compone muy grande." },
+    { key: "textAccent", label: "Cierre en itálica", kind: "text" },
+    { key: "attribution", label: "Firma", kind: "text" },
+    { key: "backgroundUrl", label: "Foto de fondo (URL)", kind: "text", hint: "Opcional. Se usa muy tenue." },
+    { key: "tone", label: "Fondo", kind: "select", options: ["dark", "linen", "light"] },
+  ],
+  figures: [
+    { key: "eyebrow", label: "Volanta", kind: "text" },
+    { key: "title", label: "Título", kind: "textarea" },
+    { key: "tone", label: "Fondo", kind: "select", options: ["linen", "light", "dark"] },
+  ],
+  split_sticky: [
+    { key: "eyebrow", label: "Volanta", kind: "text" },
+    { key: "title", label: "Título", kind: "textarea" },
+    { key: "mediaSide", label: "Lado de la foto", kind: "select", options: ["left", "right"] },
+    { key: "tone", label: "Fondo", kind: "select", options: ["light", "linen", "dark"] },
+  ],
+  gallery: [
+    { key: "eyebrow", label: "Volanta", kind: "text" },
+    { key: "title", label: "Título", kind: "textarea" },
+    { key: "body", label: "Texto", kind: "textarea" },
+    { key: "tone", label: "Fondo", kind: "select", options: ["light", "linen", "dark"] },
+  ],
 };
 
-const HAS_MEDIA: BlockType[] = ["video_hero", "editorial", "club_teaser"];
-const HAS_CTA: BlockType[] = ["video_hero", "editorial", "showcase", "club_teaser", "featured_wines"];
+const HAS_MEDIA: BlockType[] = ["video_hero", "editorial", "club_teaser", "split_sticky"];
+const HAS_CTA: BlockType[] = ["video_hero", "editorial", "showcase", "club_teaser", "featured_wines", "statement", "split_sticky"];
 
 export function CmsEditor({ sections, canEdit }: { sections: SectionRow[]; canEdit: boolean }) {
   const pages = [...new Set(sections.map((s) => s.page))];

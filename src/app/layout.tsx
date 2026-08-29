@@ -56,7 +56,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const settings = await getSettings();
 
   return (
-    <html lang="es-AR" className={`${cormorant.variable} ${inter.variable}`}>
+    /*
+      El script inline de revelado agrega `reveal-ready` a <html> antes de que
+      hidrate React, así que la clase del servidor y la del cliente difieren a
+      propósito. suppressHydrationWarning silencia sólo los atributos de este
+      elemento, no el chequeo del árbol.
+    */
+    <html
+      lang="es-AR"
+      className={`${cormorant.variable} ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-dvh antialiased">
         <a
           href="#contenido"

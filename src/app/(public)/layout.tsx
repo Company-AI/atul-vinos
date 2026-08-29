@@ -4,6 +4,7 @@ import { getCartCount } from "@/domain/cart/service";
 import { getSession } from "@/infra/auth/session";
 import { SiteHeader, type NavItem } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { RevealNoFlashScript, RevealObserver } from "@/ui/reveal-observer";
 
 const NAV: NavItem[] = [
   { label: "Vinos", href: "/vinos" },
@@ -23,6 +24,9 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <RevealNoFlashScript />
+      <RevealObserver />
+
       <SiteHeader
         nav={NAV}
         companyName={settings.company.name}

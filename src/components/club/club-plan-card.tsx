@@ -43,7 +43,12 @@ export function ClubPlanCard({
     >
       {plan.featured && (
         <div className="absolute right-4 top-4 z-10">
-          <Badge tone="gold">El más elegido</Badge>
+          <Badge
+            tone="gold"
+            className="bg-carbon-950/85 text-gold-400 ring-gold-400/50 backdrop-blur-sm"
+          >
+            El más elegido
+          </Badge>
         </div>
       )}
 

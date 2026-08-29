@@ -21,14 +21,19 @@ const media = z.object({
 export const videoHeroBlock = z.object({
   eyebrow: z.string().default(""),
   title: z.string().default(""),
+  /** Segunda línea del titular, en itálica. Se compone debajo de `title`. */
+  titleAccent: z.string().default(""),
   subtitle: z.string().default(""),
   ctaPrimary: link.prefault({}),
   ctaSecondary: link.prefault({}),
   media: media.prefault({}),
-  overlay: z.enum(["scrim-bottom", "scrim-full", "none"]).default("scrim-bottom"),
+  overlay: z.enum(["scrim-bottom", "scrim-full", "scrim-side", "none"]).default("scrim-bottom"),
   align: z.enum(["left", "center"]).default("center"),
   height: z.enum(["full", "tall", "medium"]).default("full"),
   showLogo: z.boolean().default(true),
+  /** display-2xl para el hero de portada; display-xl para heroes interiores. */
+  scale: z.enum(["hero", "page"]).default("page"),
+  scrollCue: z.string().default(""),
 });
 
 export const editorialBlock = z.object({
@@ -115,6 +120,70 @@ export const richTextBlock = z.object({
   tone: z.enum(["light", "linen", "dark"]).default("light"),
 });
 
+export const statementBlock = z.object({
+  eyebrow: z.string().default(""),
+  /** Declaración corta. Se compone grande; conviene que no pase de dos líneas. */
+  text: z.string().default(""),
+  /** Se muestra en itálica al final del texto. */
+  textAccent: z.string().default(""),
+  attribution: z.string().default(""),
+  cta: link.prefault({}),
+  /** Foto de fondo tenue. Opcional: sin ella el bloque es puramente tipográfico. */
+  backgroundUrl: z.string().default(""),
+  tone: z.enum(["light", "linen", "dark"]).default("dark"),
+});
+
+export const figuresBlock = z.object({
+  eyebrow: z.string().default(""),
+  title: z.string().default(""),
+  items: z
+    .array(
+      z.object({
+        value: z.string().default(""),
+        label: z.string().default(""),
+        detail: z.string().default(""),
+      }),
+    )
+    .default([]),
+  tone: z.enum(["light", "linen", "dark"]).default("linen"),
+});
+
+export const splitStickyBlock = z.object({
+  eyebrow: z.string().default(""),
+  title: z.string().default(""),
+  media: media.prefault({}),
+  mediaSide: z.enum(["left", "right"]).default("left"),
+  /** Cada entrada se lee mientras la foto queda fija al costado. */
+  entries: z
+    .array(
+      z.object({
+        title: z.string().default(""),
+        body: z.string().default(""),
+      }),
+    )
+    .default([]),
+  cta: link.prefault({}),
+  tone: z.enum(["light", "linen", "dark"]).default("light"),
+});
+
+export const galleryBlock = z.object({
+  eyebrow: z.string().default(""),
+  title: z.string().default(""),
+  body: z.string().default(""),
+  items: z
+    .array(
+      z.object({
+        imageUrl: z.string().default(""),
+        imageAlt: z.string().default(""),
+        caption: z.string().default(""),
+        /** "tall" ocupa dos filas; el mosaico deja de ser una grilla plana. */
+        size: z.enum(["normal", "tall", "wide"]).default("normal"),
+      }),
+    )
+    .default([]),
+  tone: z.enum(["light", "linen", "dark"]).default("light"),
+});
+
 export const BLOCK_SCHEMAS = {
   video_hero: videoHeroBlock,
   editorial: editorialBlock,
@@ -125,6 +194,10 @@ export const BLOCK_SCHEMAS = {
   faq: faqBlock,
   footer: footerBlock,
   rich_text: richTextBlock,
+  statement: statementBlock,
+  figures: figuresBlock,
+  split_sticky: splitStickyBlock,
+  gallery: galleryBlock,
 } as const;
 
 export type BlockType = keyof typeof BLOCK_SCHEMAS;
@@ -139,6 +212,10 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   faq: "Preguntas frecuentes",
   footer: "Footer",
   rich_text: "Texto",
+  statement: "Declaración tipográfica",
+  figures: "Cifras clave",
+  split_sticky: "Foto fija con texto",
+  gallery: "Mosaico de fotos",
 };
 
 export type BlockData<T extends BlockType> = z.infer<(typeof BLOCK_SCHEMAS)[T]>;

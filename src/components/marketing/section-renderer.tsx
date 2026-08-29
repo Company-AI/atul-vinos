@@ -8,6 +8,10 @@ import { ShowcaseSection } from "./showcase-section";
 import { StepsSection } from "./steps-section";
 import { VideoHero } from "./video-hero";
 import { RichTextSection } from "./rich-text-section";
+import { StatementSection } from "./statement-section";
+import { FiguresSection } from "./figures-section";
+import { SplitStickySection } from "./split-sticky-section";
+import { GallerySection } from "./gallery-section";
 
 /**
  * Traduce los bloques del CMS a componentes. Los tipos desconocidos se ignoran
@@ -55,6 +59,14 @@ export function SectionRenderer({
             return <FaqSection key={section.id} data={section.data as BlockData<"faq">} id={id} />;
           case "rich_text":
             return <RichTextSection key={section.id} data={section.data as BlockData<"rich_text">} />;
+          case "statement":
+            return <StatementSection key={section.id} data={section.data as BlockData<"statement">} id={id} />;
+          case "figures":
+            return <FiguresSection key={section.id} data={section.data as BlockData<"figures">} id={id} />;
+          case "split_sticky":
+            return <SplitStickySection key={section.id} data={section.data as BlockData<"split_sticky">} id={id} />;
+          case "gallery":
+            return <GallerySection key={section.id} data={section.data as BlockData<"gallery">} id={id} />;
           default:
             return null;
         }

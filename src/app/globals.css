@@ -232,3 +232,126 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   V2 — Capa editorial
+   Tipografía más dramática, reglas finas, revelado por scroll y rieles.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* Un escalón por encima de display-xl para el hero principal. */
+  --text-display-2xl: clamp(3.25rem, 11vw, 9.5rem);
+  --text-display-2xl--line-height: 0.88;
+  --text-display-2xl--letter-spacing: -0.035em;
+
+  /* Lead: bajada del hero y entradas de sección. */
+  --text-lead: clamp(1.0625rem, 1.5vw, 1.375rem);
+  --text-lead--line-height: 1.55;
+}
+
+/* Palabra acentuada dentro de un titular: itálica, sin gritar. */
+@utility accent-italic {
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* Eyebrow precedido por una línea fina. Marca sección sin ocupar espacio. */
+@utility eyebrow-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--text-eyebrow--letter-spacing);
+  text-transform: uppercase;
+  font-weight: 500;
+
+  &::before {
+    content: "";
+    width: 2.5rem;
+    height: 1px;
+    background-color: currentColor;
+    opacity: 0.45;
+  }
+}
+
+/* Riel horizontal con snap: la línea de vinos se recorre, no se pagina. */
+@utility rail-snap {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+
+  &::-webkit-scrollbar { display: none; }
+  & > * { scroll-snap-align: start; flex: none; }
+}
+
+/* Degradado lateral para heroes con texto alineado a la izquierda.
+   Llega hasta ~80% porque el titular en display-2xl ocupa casi todo el ancho;
+   se suma una base inferior para los botones sobre zonas claras del paisaje. */
+@utility scrim-side {
+  background:
+    linear-gradient(
+      to right,
+      rgb(13 11 10 / 0.86) 0%,
+      rgb(13 11 10 / 0.70) 30%,
+      rgb(13 11 10 / 0.44) 58%,
+      rgb(13 11 10 / 0.14) 82%,
+      rgb(13 11 10 / 0) 100%
+    ),
+    linear-gradient(to top, rgb(13 11 10 / 0.55) 0%, rgb(13 11 10 / 0) 42%);
+}
+
+/* Grano sutil sobre fotografía: quita el aspecto plano del stock. */
+@utility grain {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.055;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* ─── Revelado por scroll ──────────────────────────────────────────────────
+   Server components marcan `data-reveal`; un único observador en cliente
+   agrega `data-revealed`. La clase `reveal-ready` la pone un script inline
+   antes del primer paint: sin JS nada se oculta y no hay flash.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 22px));
+    transition:
+      opacity var(--duration-cinematic) var(--ease-out-expo),
+      transform var(--duration-cinematic) var(--ease-out-expo),
+      clip-path var(--duration-cinematic) var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  /* Cortina: la foto se descubre de abajo hacia arriba. */
+  .reveal-ready [data-reveal="mask"] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 100% 0);
+  }
+
+  /* Titular que sube desde su propia línea de base. */
+  .reveal-ready [data-reveal="line"] {
+    --reveal-y: 0.42em;
+    clip-path: inset(-0.25em 0 -0.15em 0);
+  }
+
+  .reveal-ready [data-revealed] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+}

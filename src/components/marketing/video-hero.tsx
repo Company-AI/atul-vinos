@@ -142,7 +142,9 @@ export function VideoHero({
           aria-hidden
           className={cn(
             "absolute inset-0 -z-10",
-            data.overlay === "scrim-bottom" ? "scrim-bottom" : "scrim-full",
+            data.overlay === "scrim-bottom" && "scrim-bottom",
+            data.overlay === "scrim-side" && "scrim-side",
+            data.overlay === "scrim-full" && "scrim-full",
           )}
         />
       )}
@@ -179,18 +181,27 @@ export function VideoHero({
 
         <h1
           className={cn(
-            "max-w-[19ch] font-display text-display-xl font-light text-bone opacity-0",
+            "font-display font-light text-bone opacity-0",
             "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_320ms_forwards]",
+            data.scale === "hero"
+              ? "max-w-[15ch] text-display-2xl"
+              : "max-w-[19ch] text-display-xl",
             data.align === "center" && "mx-auto",
           )}
         >
           {data.title}
+          {data.titleAccent && (
+            <>
+              <br />
+              <span className="accent-italic text-linen-200">{data.titleAccent}</span>
+            </>
+          )}
         </h1>
 
         {data.subtitle && (
           <p
             className={cn(
-              "mt-6 max-w-[52ch] text-[16px] leading-relaxed text-linen-200 opacity-0 lg:text-[17px]",
+              "mt-7 max-w-[52ch] text-lead text-linen-200 opacity-0",
               "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_460ms_forwards]",
               data.align === "center" && "mx-auto",
             )}
@@ -230,9 +241,14 @@ export function VideoHero({
       {data.height === "full" && (
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 text-linen-300/70"
+          className={cn(
+            "pointer-events-none absolute bottom-7 flex items-center gap-3 text-linen-300/70",
+            "opacity-0 animate-[fade-in_900ms_ease-out_1200ms_forwards]",
+            data.align === "center" ? "left-1/2 -translate-x-1/2" : "left-gutter",
+          )}
         >
-          <ChevronDown className="size-5 animate-bounce [animation-duration:2.4s]" />
+          {data.scrollCue && <span className="eyebrow">{data.scrollCue}</span>}
+          <ChevronDown className="size-4 animate-bounce [animation-duration:2.4s]" />
         </div>
       )}
     </section>
