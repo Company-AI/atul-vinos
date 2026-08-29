@@ -4,18 +4,24 @@ import { parseBlock } from "@/domain/cms/blocks";
 import { prisma } from "@/infra/db/prisma";
 import {
   ArqClub,
+  ArqEditorial,
   ArqFigures,
+  ArqGallery,
   ArqHero,
+  ArqLines,
   ArqManifesto,
+  ArqPlace,
   ArqSelection,
+  ArqStatement,
+  ArqWineries,
 } from "@/components/variants/arquitectura";
 
 export const revalidate = 300;
 
 /**
- * Arquitectura muestra bastante más contenido que Maison sobre exactamente el
- * mismo material del CMS: acá el peso lo da la grilla y la acumulación, no el
- * aire. El largo distinto entre variantes es parte de cada lenguaje.
+ * Arquitectura cubre el mismo material que Maison con el peso puesto en la
+ * grilla y la acumulación: bloques al ras, dos secciones sobre el color
+ * profundo del tema y las fotos de líneas en blanco y negro hasta el hover.
  */
 export default async function ArquitecturaPage() {
   const [sections, products, plan] = await Promise.all([
@@ -31,8 +37,14 @@ export default async function ArquitecturaPage() {
   const find = (key: string) => sections.find((s) => s.key === key);
 
   const hero = parseBlock("video_hero", find("home.hero")?.data);
-  const proceso = parseBlock("split_sticky", find("home.proceso")?.data);
+  const statement = parseBlock("statement", find("home.declaracion")?.data);
+  const criterio = parseBlock("editorial", find("home.criterio")?.data);
   const cifras = parseBlock("figures", find("home.cifras")?.data);
+  const mendoza = parseBlock("editorial", find("home.mendoza")?.data);
+  const lines = parseBlock("showcase", find("home.lines")?.data);
+  const proceso = parseBlock("split_sticky", find("home.proceso")?.data);
+  const mosaico = parseBlock("gallery", find("home.mosaico")?.data);
+  const bodegas = parseBlock("showcase", find("home.bodegas")?.data);
   const club = parseBlock("club_teaser", find("home.club")?.data);
 
   return (
@@ -42,15 +54,47 @@ export default async function ArquitecturaPage() {
         title={hero.title}
         accent={hero.titleAccent}
         subtitle={hero.subtitle}
-        imageUrl={hero.media.imageUrl || "/media/scenes/mendoza-vineyard-rows.jpg"}
-        imageAlt={hero.media.imageAlt}
+        media={hero.media}
+      />
+
+      <ArqStatement
+        text={statement.text}
+        accent={statement.textAccent}
+        attribution={statement.attribution}
+      />
+
+      <ArqEditorial
+        label={criterio.eyebrow}
+        title={criterio.title}
+        body={criterio.body}
+        quote={criterio.quote}
+        imageUrl={criterio.media.imageUrl}
+        imageAlt={criterio.media.imageAlt}
       />
 
       <ArqManifesto label={proceso.eyebrow} title={proceso.title} entries={proceso.entries} />
 
       <ArqFigures label={cifras.eyebrow} title={cifras.title} items={cifras.items} />
 
+      <ArqPlace
+        label={mendoza.eyebrow}
+        title={mendoza.title}
+        body={mendoza.body}
+        media={mendoza.media}
+      />
+
+      <ArqLines label={lines.eyebrow} title={lines.title} body={lines.body} items={lines.items} />
+
       <ArqSelection products={products} label="La selección" title="Lo que estamos recomendando." />
+
+      <ArqGallery label={mosaico.eyebrow} title={mosaico.title} items={mosaico.items} />
+
+      <ArqWineries
+        label={bodegas.eyebrow}
+        title={bodegas.title}
+        body={bodegas.body}
+        items={bodegas.items}
+      />
 
       <ArqClub
         title={club.title}

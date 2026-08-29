@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ProductCard } from "@/domain/catalog/types";
+import { BackgroundMedia, type BackgroundMediaData } from "@/components/marketing/background-media";
 import { Reveal, stagger } from "@/ui/reveal";
 import { VBody, VContainer, VLabel, VLink, VSection, VTitle, formatPrice } from "./shared";
 
@@ -39,16 +40,14 @@ export function TerroirHero({
   title,
   accent,
   subtitle,
-  imageUrl,
-  imageAlt,
+  media,
   annotations,
 }: {
   eyebrow: string;
   title: string;
   accent: string;
   subtitle: string;
-  imageUrl: string;
-  imageAlt: string;
+  media: BackgroundMediaData;
   annotations: { k: string; v: string }[];
 }) {
   return (
@@ -94,16 +93,13 @@ export function TerroirHero({
           </Reveal>
         </div>
 
-        <Reveal variant="mask" delay={0.3} className="relative mt-20 aspect-[21/9] w-full overflow-hidden">
-          <Image
-            src={imageUrl}
-            alt={imageAlt}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-            style={{ borderRadius: "var(--v-radius)" }}
-          />
+        <Reveal
+          variant="mask"
+          delay={0.3}
+          className="relative isolate mt-20 aspect-[21/9] w-full overflow-hidden"
+          style={{ borderRadius: "var(--v-radius)" }}
+        >
+          <BackgroundMedia media={media} priority />
         </Reveal>
       </VContainer>
     </section>
@@ -284,6 +280,386 @@ export function TerroirClub({
               </div>
             </Reveal>
           </div>
+        </div>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/* ══════════════════ Secciones restantes de la variante ═══════════════════ */
+
+/** Declaración compuesta como asiento de cuaderno, con su número de entrada. */
+export function TerroirStatement({
+  text,
+  accent,
+  attribution,
+}: {
+  text: string;
+  accent: string;
+  attribution: string;
+}) {
+  return (
+    <VSection surface="sunk">
+      <VContainer size="narrow">
+        <Reveal>
+          <span
+            className="text-[11px] uppercase tracking-[0.2em]"
+            style={{ fontFamily: "var(--v-mono)", color: "var(--v-accent)" }}
+          >
+            Entrada 01
+          </span>
+        </Reveal>
+        <Reveal variant="line" delay={0.12}>
+          <p className="v-hero-type mt-8" style={{ fontSize: "calc(var(--v-hero) * 0.66)" }}>
+            {text}{" "}
+            <em className="font-normal italic" style={{ color: "var(--v-accent)" }}>
+              {accent}
+            </em>
+          </p>
+        </Reveal>
+        <Reveal delay={0.24}>
+          <p
+            className="mt-10 border-t pt-6 text-[12px]"
+            style={{ fontFamily: "var(--v-mono)", borderColor: "var(--v-rule)", color: "var(--v-muted)" }}
+          >
+            {attribution}
+          </p>
+        </Reveal>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/** Editorial con la foto al costado y la cita tratada como nota al pie. */
+export function TerroirEditorial({
+  label,
+  title,
+  body,
+  quote,
+  imageUrl,
+  imageAlt,
+}: {
+  label: string;
+  title: string;
+  body: string;
+  quote: string;
+  imageUrl: string;
+  imageAlt: string;
+}) {
+  return (
+    <VSection>
+      <VContainer size="wide">
+        <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+          <div className="lg:col-span-6">
+            <Reveal>
+              <VLabel>{label}</VLabel>
+              <VTitle className="mt-6">{title}</VTitle>
+            </Reveal>
+            <Reveal delay={0.14}>
+              <VBody className="mt-8">
+                {body.split("\n\n").map((p) => (
+                  <p key={p.slice(0, 24)}>{p}</p>
+                ))}
+              </VBody>
+            </Reveal>
+            {quote && (
+              <Reveal delay={0.24}>
+                <p
+                  className="mt-10 border-l pl-6 text-[13px] leading-[1.7]"
+                  style={{ fontFamily: "var(--v-mono)", borderColor: "var(--v-accent)", color: "var(--v-muted)" }}
+                >
+                  {quote}
+                </p>
+              </Reveal>
+            )}
+          </div>
+
+          <Reveal variant="mask" delay={0.1} className="relative aspect-[4/5] lg:col-span-6">
+            <Image
+              src={imageUrl}
+              alt={imageAlt}
+              fill
+              sizes="(max-width: 1024px) 100vw, 48vw"
+              className="object-cover"
+              style={{ borderRadius: "var(--v-radius)" }}
+            />
+          </Reveal>
+        </div>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/** El lugar: video a sangre con las anotaciones sobre una ficha clara. */
+export function TerroirPlace({
+  label,
+  title,
+  body,
+  media,
+  annotations,
+}: {
+  label: string;
+  title: string;
+  body: string;
+  media: BackgroundMediaData;
+  annotations: { k: string; v: string }[];
+}) {
+  return (
+    <section className="relative isolate min-h-[92svh] overflow-hidden">
+      <BackgroundMedia media={media} />
+      <div aria-hidden className="absolute inset-0 -z-10" style={{ backgroundColor: "rgb(18 24 20 / 0.42)" }} />
+
+      <VContainer size="wide" className="flex min-h-[92svh] items-center py-20">
+        <Reveal
+          className="max-w-lg p-9 lg:p-12"
+          style={{ backgroundColor: "var(--v-bg)", borderRadius: "var(--v-radius)" }}
+        >
+          <VLabel style={{ color: "var(--v-accent)" }}>{label}</VLabel>
+          <VTitle className="mt-6">{title}</VTitle>
+          <VBody className="mt-6">
+            {body.split("\n\n").map((p) => (
+              <p key={p.slice(0, 24)}>{p}</p>
+            ))}
+          </VBody>
+
+          <div className="mt-9 space-y-3 border-t pt-7" style={{ borderColor: "var(--v-rule)" }}>
+            {annotations.map((a) => (
+              <Annotation key={a.k} k={a.k} v={a.v} />
+            ))}
+          </div>
+        </Reveal>
+      </VContainer>
+    </section>
+  );
+}
+
+/** Niveles como clasificación: cada uno con su número de orden. */
+export function TerroirLines({
+  label,
+  title,
+  body,
+  items,
+}: {
+  label: string;
+  title: string;
+  body: string;
+  items: { title: string; subtitle: string; imageUrl: string; href: string }[];
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <VSection surface="sunk">
+      <VContainer size="wide">
+        <Reveal className="max-w-2xl">
+          <VLabel>{label}</VLabel>
+          <VTitle className="mt-6">{title}</VTitle>
+          {body && (
+            <VBody className="mt-7">
+              <p>{body}</p>
+            </VBody>
+          )}
+        </Reveal>
+
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item, i) => (
+            <Link
+              key={item.title}
+              href={item.href}
+              data-reveal
+              style={{ ...stagger(i, 0.08), backgroundColor: "var(--v-surface)", borderRadius: "var(--v-radius)" }}
+              className="group block overflow-hidden p-5"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden" style={{ borderRadius: "var(--v-radius)" }}>
+                <Image
+                  src={item.imageUrl}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 90vw, 24vw"
+                  className="object-cover transition-transform duration-[1200ms] ease-out-expo group-hover:scale-[1.06]"
+                />
+              </div>
+              <p
+                className="mt-5 text-[10px] uppercase tracking-[0.2em]"
+                style={{ fontFamily: "var(--v-mono)", color: "var(--v-accent)" }}
+              >
+                Nivel {String(i + 1).padStart(2, "0")}
+              </p>
+              <h3 className="v-title-type mt-2" style={{ fontSize: "calc(var(--v-title) * 0.5)" }}>
+                {item.title}
+              </h3>
+              <p className="mt-2 text-[13px]" style={{ color: "var(--v-muted)" }}>
+                {item.subtitle}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/** Protocolo: los pasos numerados como método, no como storytelling. */
+export function TerroirProtocol({
+  label,
+  title,
+  entries,
+}: {
+  label: string;
+  title: string;
+  entries: { title: string; body: string }[];
+}) {
+  if (entries.length === 0) return null;
+
+  return (
+    <VSection>
+      <VContainer size="wide">
+        <Reveal className="max-w-2xl">
+          <VLabel>{label}</VLabel>
+          <VTitle className="mt-6">{title}</VTitle>
+        </Reveal>
+
+        <div className="mt-16 grid gap-x-12 gap-y-12 sm:grid-cols-2">
+          {entries.map((entry, i) => (
+            <div
+              key={entry.title}
+              data-reveal
+              style={{ ...stagger(i, 0.08), borderColor: "var(--v-rule)" }}
+              className="flex gap-6 border-t pt-7"
+            >
+              <span
+                className="shrink-0 text-[12px] tabular"
+                style={{ fontFamily: "var(--v-mono)", color: "var(--v-accent)" }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3 className="v-title-type" style={{ fontSize: "calc(var(--v-title) * 0.48)" }}>
+                  {entry.title}
+                </h3>
+                <p className="mt-3 text-[14px] leading-[1.75]" style={{ color: "var(--v-muted)" }}>
+                  {entry.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/** Mosaico como láminas: cada foto lleva su pie visible, no en hover. */
+export function TerroirPlates({
+  label,
+  title,
+  body,
+  items,
+}: {
+  label: string;
+  title: string;
+  body: string;
+  items: { imageUrl: string; imageAlt: string; caption: string; size: string }[];
+}) {
+  const photos = items.filter((i) => i.imageUrl);
+  if (photos.length === 0) return null;
+
+  return (
+    <VSection surface="raised">
+      <VContainer size="wide">
+        <Reveal className="max-w-2xl">
+          <VLabel>{label}</VLabel>
+          <VTitle className="mt-6">{title}</VTitle>
+          {body && (
+            <VBody className="mt-7">
+              <p>{body}</p>
+            </VBody>
+          )}
+        </Reveal>
+
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {photos.map((photo, i) => (
+            <figure key={photo.imageUrl} data-reveal style={stagger(i, 0.07)}>
+              <div
+                className="relative aspect-[4/3] overflow-hidden"
+                style={{ borderRadius: "var(--v-radius)" }}
+              >
+                <Image
+                  src={photo.imageUrl}
+                  alt={photo.imageAlt}
+                  fill
+                  sizes="(max-width: 640px) 90vw, 32vw"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption
+                className="mt-4 flex items-baseline gap-3 border-t pt-3"
+                style={{ borderColor: "var(--v-rule)" }}
+              >
+                <span
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                  style={{ fontFamily: "var(--v-mono)", color: "var(--v-accent)" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="text-[13px]" style={{ color: "var(--v-muted)" }}>
+                  {photo.caption || photo.imageAlt}
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/** Bodegas: ficha de procedencia por cada casa representada. */
+export function TerroirWineries({
+  label,
+  title,
+  body,
+  items,
+}: {
+  label: string;
+  title: string;
+  body: string;
+  items: { title: string; subtitle: string; imageUrl: string; href: string }[];
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <VSection>
+      <VContainer size="wide">
+        <Reveal className="max-w-2xl">
+          <VLabel>{label}</VLabel>
+          <VTitle className="mt-6">{title}</VTitle>
+          {body && (
+            <VBody className="mt-7">
+              <p>{body}</p>
+            </VBody>
+          )}
+        </Reveal>
+
+        <div className="mt-16 grid gap-10 sm:grid-cols-3">
+          {items.map((item, i) => (
+            <Link key={item.title} href={item.href} data-reveal style={stagger(i, 0.08)} className="group block">
+              <div className="relative aspect-[3/2] overflow-hidden" style={{ borderRadius: "var(--v-radius)" }}>
+                <Image
+                  src={item.imageUrl}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 90vw, 32vw"
+                  className="object-cover transition-transform duration-[1200ms] ease-out-expo group-hover:scale-[1.05]"
+                />
+              </div>
+              <h3 className="v-title-type mt-6" style={{ fontSize: "calc(var(--v-title) * 0.5)" }}>
+                {item.title}
+              </h3>
+              <div className="mt-4 space-y-2.5">
+                <Annotation k="Origen" v={item.subtitle} />
+              </div>
+            </Link>
+          ))}
         </div>
       </VContainer>
     </VSection>
