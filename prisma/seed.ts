@@ -302,7 +302,7 @@ async function main() {
         tastingNotes: w.tastingNotes, agingPotential: w.agingPotential,
         intensity: w.intensity, winemaking: w.winemaking,
         featured: w.featured ?? false, isNew: w.isNew ?? false, bestSeller: w.bestSeller ?? false,
-        seoTitle: `${w.name} ${w.vintage} · Bodega Aurora`,
+        seoTitle: `${w.name} ${w.vintage}`,
         seoDescription: w.shortDescription,
         categoryId: categories.get(w.category)!,
         wineryId: wineries.get(w.winery)!,
@@ -344,7 +344,7 @@ async function main() {
         shortDescription: p.shortDescription, description: p.description,
         price: p.price, compareAtPrice: p.compareAtPrice ?? null,
         featured: p.featured ?? false, bestSeller: p.bestSeller ?? false,
-        seoTitle: `${p.name} · Bodega Aurora`, seoDescription: p.shortDescription,
+        seoTitle: p.name, seoDescription: p.shortDescription,
         categoryId: categories.get(p.category)!,
         wineryId: wineries.get("Bodega Aurora")!,
         images: {
@@ -624,7 +624,7 @@ async function main() {
       data: {
         title: p.title, slug: p.slug, excerpt: p.excerpt, coverUrl: p.coverUrl,
         content: p.content, author: p.author, categoryId: postCategories.get(p.category)!,
-        seoTitle: `${p.title} · Bodega Aurora`, seoDescription: p.excerpt,
+        seoTitle: p.title, seoDescription: p.excerpt,
         isPublished: true, publishedAt: p.publishedAt, createdAt: p.publishedAt,
       },
     });

@@ -140,9 +140,12 @@ export default async function ProductPage({ params }: PageProps) {
             <div className="flex flex-wrap items-center gap-2">
               {product.isNew && <Badge tone="dark">Novedad</Badge>}
               {product.bestSeller && <Badge tone="gold">Más vendido</Badge>}
-              {product.tags.map((t) => (
-                <Badge key={t.tagId} tone="outline">{t.tag.name}</Badge>
-              ))}
+              {/* Las etiquetas que repiten un distintivo propio no se muestran dos veces. */}
+              {product.tags
+                .filter((t) => !["Novedad", "Más vendido"].includes(t.tag.name))
+                .map((t) => (
+                  <Badge key={t.tagId} tone="outline">{t.tag.name}</Badge>
+                ))}
             </div>
 
             <Eyebrow className="mt-6">
