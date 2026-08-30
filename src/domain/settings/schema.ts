@@ -9,7 +9,7 @@ import { z } from "zod";
 export const companySettings = z.object({
   name: z.string().default("Atul"),
   legalName: z.string().default("Atul S.R.L."),
-  tagline: z.string().default("Distribuidores de vinos de Mendoza"),
+  tagline: z.string().default("Vinos de todo el país"),
   logoUrl: z.string().default("/brand/logo.svg"),
   logoLightUrl: z.string().default("/brand/logo-light.svg"),
   faviconUrl: z.string().default("/favicon.ico"),
@@ -84,12 +84,12 @@ export const paymentSettings = z.object({
 });
 
 export const seoSettings = z.object({
-  defaultTitle: z.string().default("Atul — Vinos de Mendoza"),
+  defaultTitle: z.string().default("Atul — Vinos de Argentina"),
   titleTemplate: z.string().default("%s · Atul"),
   defaultDescription: z
     .string()
     .default(
-      "Distribuimos vinos de bodegas de Mendoza y probamos todo lo que vendemos. Comprá online o sumate al Club y recibí nuestra selección todos los meses.",
+      "Distribuimos vinos de bodegas de todo el país, de Jujuy a la Patagonia, y probamos todo lo que vendemos. Comprá online o sumate al Club y recibí nuestra selección todos los meses.",
     ),
   ogImageUrl: z.string().default("/media/scenes/mendoza-vineyard-rows.jpg"),
   ga4Id: z.string().default(""),

@@ -51,8 +51,9 @@ export default async function TerroirPage() {
   const club = parseBlock("club_teaser", find("home.club")?.data);
 
   const annotations = [
-    { k: "Provincia", v: "Mendoza, Argentina" },
-    { k: "Zonas", v: regions.map((r) => r.name).join(" · ") || "—" },
+    { k: "País", v: "Argentina" },
+    { k: "Alcance", v: "De Jujuy a la Patagonia" },
+    { k: "Regiones en catálogo", v: regions.map((r) => r.name).join(" · ") || "—" },
     { k: "Bodegas", v: String(wineries) },
     { k: "Etiquetas", v: String(labels) },
   ];

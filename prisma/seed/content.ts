@@ -1,9 +1,10 @@
 /**
  * Contenido inicial del sitio. Todo editable desde /admin/contenido.
  *
- * Posicionamiento: NO producimos vino. Somos distribuidores de bodegas de
- * Mendoza y lo que vendemos es criterio de selección. Todos los textos parten
- * de ahí; si algún día se cambia el modelo, se cambian acá.
+ * Posicionamiento: NO producimos vino. Somos distribuidores y lo que vendemos
+ * es criterio de selección. El alcance es nacional —de la Quebrada en Jujuy
+ * hasta la Patagonia—, no una sola provincia. Todos los textos parten de ahí;
+ * si algún día se cambia el modelo, se cambian acá.
  */
 
 export const CMS_SECTIONS = [
@@ -14,16 +15,16 @@ export const CMS_SECTIONS = [
     title: "Hero de la home",
     sortOrder: 10,
     data: {
-      eyebrow: "Distribuidores de vinos de Mendoza",
+      eyebrow: "Vinos de todo el país",
       title: "No hacemos el vino.",
       titleAccent: "Elegimos cuál vale la pena.",
       subtitle:
-        "Trabajamos con bodegas del Valle de Uco y Luján de Cuyo. Probamos todo antes de comprarlo: si está en esta lista, es porque lo pondríamos en nuestra propia mesa.",
+        "Recorremos el país de punta a punta: la Quebrada en Jujuy, los valles de Salta, Mendoza, el Alto Valle y la Patagonia. Probamos todo antes de comprarlo, y si está en esta lista es porque lo pondríamos en nuestra propia mesa.",
       ctaPrimary: { label: "Ver la selección", href: "/vinos" },
       ctaSecondary: { label: "Conocé el Club", href: "/club" },
       media: {
         imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
-        imageAlt: "Viñedos de Mendoza con la cordillera de fondo",
+        imageAlt: "Viñedos argentinos al pie de la cordillera",
         videoDesktopUrl: "/media/video/hero-desktop.mp4",
         videoMobileUrl: "/media/video/hero-mobile.mp4",
         posterUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
@@ -46,7 +47,7 @@ export const CMS_SECTIONS = [
       eyebrow: "Nuestra posición",
       text: "Un catálogo corto no es una limitación.",
       textAccent: "Es el trabajo.",
-      attribution: "Atul · Mendoza, Argentina",
+      attribution: "Atul · De Jujuy a la Patagonia",
       cta: { label: "", href: "" },
       backgroundUrl: "/media/scenes/mendoza-farmland-snow.jpg",
       tone: "dark",
@@ -62,13 +63,13 @@ export const CMS_SECTIONS = [
       eyebrow: "En números",
       title: "Dónde está puesto el foco.",
       imageUrl: "/media/scenes/harvest.jpg",
-      imageAlt: "Cosecha manual de uva en Mendoza",
+      imageAlt: "Cosecha manual de uva",
       tone: "linen",
       items: [
         {
-          value: "2",
-          label: "Zonas",
-          detail: "Valle de Uco y Luján de Cuyo. Nada fuera de Mendoza.",
+          value: "Jujuy → Chubut",
+          label: "El país entero",
+          detail: "De la Quebrada de Humahuaca a los valles patagónicos.",
         },
         {
           value: "3",
@@ -118,14 +119,14 @@ export const CMS_SECTIONS = [
     title: "De dónde viene",
     sortOrder: 30,
     data: {
-      eyebrow: "Mendoza",
-      title: "Todo lo que vendemos viene de la misma provincia.",
+      eyebrow: "El país",
+      title: "Argentina se toma de punta a punta.",
       body:
-        "Valle de Uco y Luján de Cuyo. No es una limitación: es la decisión de conocer bien un lugar en vez de tener un poco de todo. Sabemos qué hace cada zona, qué cambia entre Gualtallary y La Consulta, y por qué un Malbec de Perdriel no se parece a uno de altura.\n\nEsa diferencia es lo que te contamos cuando comprás. Está en cada ficha y en la tarjeta que va dentro de la caja.",
-      cta: { label: "Ver las zonas", href: "/vinos" },
+        "Arriba, la Quebrada de Humahuaca y los valles de Salta: viñedos de mucha altura, sol fuerte y noches frías, donde el Torrontés y el Malbec salen tensos y perfumados. En el medio, San Juan y Mendoza, con la cordillera marcando cada valle. Abajo, el Alto Valle de Río Negro y la Patagonia: menos altura, más viento y vinos de acidez filosa.\n\nNo es lo mismo un Malbec de Cafayate que uno de Gualtallary o uno de Neuquén. Esa diferencia es exactamente lo que te contamos cuando comprás: está en cada ficha y en la tarjeta que va dentro de la caja.",
+      cta: { label: "Ver las regiones", href: "/vinos" },
       media: {
         imageUrl: "/media/scenes/potrerillos-andes.jpg",
-        imageAlt: "Los Andes vistos desde Potrerillos, Mendoza",
+        imageAlt: "Cordillera de los Andes sobre el viñedo",
         videoDesktopUrl: "/media/video/vineyard-road.mp4",
         videoMobileUrl: "",
         posterUrl: "/media/scenes/potrerillos-andes.jpg",
@@ -235,12 +236,12 @@ export const CMS_SECTIONS = [
     key: "home.mosaico",
     page: "home",
     type: "gallery",
-    title: "Mosaico de Mendoza",
+    title: "Mosaico del país",
     sortOrder: 58,
     data: {
-      eyebrow: "Mendoza",
-      title: "El lugar del que hablamos.",
-      body: "Valle de Uco y Luján de Cuyo: la cordillera, la altura y la amplitud térmica que explican por qué acá el Malbec se comporta distinto.",
+      eyebrow: "Los lugares",
+      title: "De dónde viene cada botella.",
+      body: "Altura, amplitud térmica y viento: los tres factores que cambian de la Quebrada a la Patagonia y explican por qué la misma uva da vinos que no se parecen en nada.",
       tone: "dark",
       items: [
         {
@@ -263,7 +264,7 @@ export const CMS_SECTIONS = [
         },
         {
           imageUrl: "/media/scenes/mendoza-valley.jpg",
-          imageAlt: "Valle de Mendoza al atardecer",
+          imageAlt: "Valle vitivinícola al atardecer",
           caption: "Altura y amplitud térmica",
           size: "wide",
         },
@@ -292,7 +293,7 @@ export const CMS_SECTIONS = [
       eyebrow: "Con quiénes trabajamos",
       title: "Pocas bodegas, relación directa.",
       body:
-        "Preferimos representar pocas casas y conocerlas bien. Compramos directo, sin intermediarios, y eso es lo que nos permite sostener el precio y la disponibilidad.",
+        "Preferimos representar pocas casas por región y conocerlas bien. Compramos directo, sin intermediarios, y eso es lo que nos permite sostener el precio y la disponibilidad en todo el país.",
       cta: { label: "Ver todas las etiquetas", href: "/vinos" },
       tone: "light",
       items: [
@@ -438,7 +439,7 @@ export const CMS_SECTIONS = [
       ctaSecondary: { label: "", href: "" },
       media: {
         imageUrl: "/media/scenes/mendoza-farmland-snow.jpg",
-        imageAlt: "Campo al pie de la cordillera nevada, Mendoza",
+        imageAlt: "Campo al pie de la cordillera nevada",
         videoDesktopUrl: "/media/video/vineyard-aerial.mp4",
         videoMobileUrl: "",
         posterUrl: "/media/scenes/mendoza-farmland-snow.jpg",
@@ -459,7 +460,7 @@ export const CMS_SECTIONS = [
       eyebrow: "Cómo empezó",
       title: "Al principio comprábamos para tomar nosotros.",
       body:
-        "Íbamos a Mendoza dos veces por año, volvíamos con el auto lleno y repartíamos entre amigos. Cuando los amigos empezaron a encargar por caja, dejó de ser un viaje y pasó a ser un trabajo.\n\nLa parte que no cambió es la manera de elegir: seguimos yendo, seguimos probando y seguimos diciendo que no. Lo único distinto es que ahora hay un depósito, una camioneta y facturas.",
+        "Empezamos yendo a Mendoza dos veces por año, volvíamos con el auto lleno y repartíamos entre amigos. Después fue Cafayate, después el Alto Valle, y un día el mapa era el país entero. Cuando los amigos empezaron a encargar por caja, dejó de ser un viaje y pasó a ser un trabajo.\n\nLa parte que no cambió es la manera de elegir: seguimos yendo, seguimos probando y seguimos diciendo que no. Lo único distinto es que ahora hay un depósito, una camioneta y facturas.",
       media: {
         imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
         imageAlt: "Casa de campo entre viñedos con la montaña detrás",
@@ -481,7 +482,7 @@ export const CMS_SECTIONS = [
       title: "Qué pasa antes de que una botella entre al catálogo.",
       tone: "linen",
       steps: [
-        { title: "Visitamos", body: "Dos o tres viajes por año a Mendoza. Vemos el viñedo y hablamos con quien hace el vino." },
+        { title: "Visitamos", body: "Salimos a recorrer varias veces al año, de Jujuy a la Patagonia. Vemos el viñedo y hablamos con quien hace el vino." },
         { title: "Probamos", body: "A ciegas y con la añada que se va a vender. Si bajó, sale de la lista." },
         { title: "Negociamos", body: "Compramos directo a la bodega. Sin intermediarios el precio cierra mejor para todos." },
         { title: "Traemos", body: "Transporte con temperatura controlada. El vino no viaja al sol." },
@@ -499,7 +500,7 @@ export const CMS_SECTIONS = [
     title: "Footer",
     sortOrder: 10,
     data: {
-      tagline: "Distribuimos vinos de Mendoza. Probamos todo lo que vendemos.",
+      tagline: "Distribuimos vinos de todo el país. Probamos todo lo que vendemos.",
       newsletterTitle: "Qué entró este mes",
       newsletterBody:
         "Te avisamos cuando llega una partida nueva y cuando algo se está por terminar. Dos o tres emails por mes, nada más.",
@@ -539,7 +540,7 @@ export const CMS_SECTIONS = [
 ];
 
 export const FAQS = [
-  { question: "¿Ustedes hacen el vino?", answer: "No. Somos distribuidores: compramos directo a bodegas de Mendoza y las representamos acá. Lo que aportamos es la selección, el asesoramiento y la logística. El vino lo hacen ellos, y lo decimos siempre.", group: "general", sortOrder: 10 },
+  { question: "¿Ustedes hacen el vino?", answer: "No. Somos distribuidores: compramos directo a bodegas de todo el país y las representamos acá. Lo que aportamos es la selección, el asesoramiento y la logística. El vino lo hacen ellos, y lo decimos siempre.", group: "general", sortOrder: 10 },
   { question: "¿Por qué el catálogo es tan corto?", answer: "Porque probamos todo lo que vendemos. Preferimos veinte etiquetas que podemos defender una por una antes que doscientas que no conocemos. Cuando entra algo nuevo, es porque lo probamos y nos convenció.", group: "general", sortOrder: 20 },
   { question: "¿Venden a restaurantes o por mayor?", answer: "Sí. Trabajamos con restaurantes, vinotecas y eventos, con lista de precios propia y entrega programada. Escribinos desde Contacto y te pasamos las condiciones.", group: "general", sortOrder: 30 },
   { question: "¿Venden a menores de 18 años?", answer: "No. La venta de bebidas alcohólicas a menores de 18 años está prohibida por ley. Al ingresar al sitio y al confirmar la compra declarás ser mayor de edad, y el transportista puede pedir documento en la entrega.", group: "general", sortOrder: 40 },
@@ -564,7 +565,7 @@ export const POSTS = [
   {
     title: "Gualtallary, La Consulta, Perdriel: por qué no es lo mismo",
     slug: "gualtallary-la-consulta-perdriel-por-que-no-es-lo-mismo",
-    excerpt: "Tres zonas de Mendoza, la misma uva y tres vinos que no se parecen en nada.",
+    excerpt: "Tres regiones del país, la misma uva y tres vinos que no se parecen en nada.",
     coverUrl: "/media/scenes/mendoza-valley.jpg",
     author: "Equipo de selección",
     category: "Regiones",
@@ -580,7 +581,7 @@ export const POSTS = [
     author: "Equipo de selección",
     category: "Nosotros",
     content:
-      "No compramos por puntaje. Los puntajes sirven para orientarse, pero un 92 no dice nada sobre si ese vino va a funcionar en la mesa de alguien que quiere tomar algo rico un jueves.\n\nEl proceso es bastante simple y bastante lento. Vamos a Mendoza dos o tres veces por año. Probamos con el enólogo la añada que se va a vender, no la que ya se vendió. Cuando podemos, probamos a ciegas contra otras dos o tres etiquetas del mismo rango de precio.\n\nDespués discutimos. Es la parte más importante y la que más tiempo lleva. La pregunta que nos hacemos no es «¿está bueno?» sino «¿a quién se lo daríamos?». Si no hay una respuesta clara, no entra.\n\nY revisamos todos los años. Hay etiquetas que estuvieron en la lista tres años y salieron porque la añada nueva no estaba a la altura. Eso a veces molesta, incluso a las bodegas. Pero es exactamente lo que nos hace útiles.",
+      "No compramos por puntaje. Los puntajes sirven para orientarse, pero un 92 no dice nada sobre si ese vino va a funcionar en la mesa de alguien que quiere tomar algo rico un jueves.\n\nEl proceso es bastante simple y bastante lento. Salimos a recorrer varias veces al año, de los valles del norte a la Patagonia. Probamos con el enólogo la añada que se va a vender, no la que ya se vendió. Cuando podemos, probamos a ciegas contra otras dos o tres etiquetas del mismo rango de precio.\n\nDespués discutimos. Es la parte más importante y la que más tiempo lleva. La pregunta que nos hacemos no es «¿está bueno?» sino «¿a quién se lo daríamos?». Si no hay una respuesta clara, no entra.\n\nY revisamos todos los años. Hay etiquetas que estuvieron en la lista tres años y salieron porque la añada nueva no estaba a la altura. Eso a veces molesta, incluso a las bodegas. Pero es exactamente lo que nos hace útiles.",
     publishedAt: new Date("2026-07-09"),
   },
   {
