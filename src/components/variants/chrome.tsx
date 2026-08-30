@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { VContainer, VLabel } from "./shared";
+import { VMobileNav } from "./mobile-nav";
 
 export type VariantKey = "maison" | "arquitectura" | "terroir" | "casa";
 
@@ -97,7 +98,7 @@ export function VHeader({
       <VContainer
         className={cn(
           "flex items-center gap-8 py-7",
-          variant === "maison" ? "justify-center sm:justify-between" : "justify-between",
+          "justify-between",
         )}
       >
         <Link href={VARIANTS.find((v) => v.key === variant)!.route} className="v-label text-current">
@@ -115,6 +116,8 @@ export function VHeader({
             </Link>
           ))}
         </nav>
+
+        <VMobileNav items={nav} />
       </VContainer>
     </header>
   );

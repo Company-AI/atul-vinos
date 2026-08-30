@@ -81,29 +81,18 @@ function FilterGroup({
   );
 }
 
-export function CasaFilters({
+/** Los grupos, sin envoltorio: se reutilizan en el panel mobile y en el fijo. */
+function FilterBody({
   options,
   filters,
   params,
-  activeCount,
 }: {
   options: FilterOptions;
   filters: CatalogFilters;
   params: Raw;
-  activeCount: number;
 }) {
   return (
-    <aside aria-label="Filtros" className="space-y-7">
-      <div className="flex items-baseline justify-between">
-        <VLabel style={{ color: "var(--v-ink)" }}>Filtrar</VLabel>
-        {activeCount > 0 && (
-          <Link href="/v6/tienda" className="text-[13px] underline underline-offset-4" style={{ color: "var(--v-accent)" }}>
-            Limpiar ({activeCount})
-          </Link>
-        )}
-      </div>
-      <VRule />
-
+    <div className="space-y-7">
       <FilterGroup
         title="Tipo"
         paramKey={PARAM_KEYS.tipo}
@@ -147,7 +136,71 @@ export function CasaFilters({
         active={filters.linea ?? []}
         options={options.lines.map((l) => ({ label: l.name, value: l.slug, count: l.count }))}
       />
-    </aside>
+    </div>
+  );
+}
+
+/**
+ * En desktop los filtros van fijos en su columna. En mobile van dentro de un
+ * <details> cerrado: las 24 opciones ocupaban 1205px y empujaban el primer
+ * producto casi 1600px hacia abajo, o sea que en el celular la tienda abría
+ * sin mostrar una sola botella. Se usa <details> nativo y no un panel con
+ * estado para no perder el funcionamiento sin JavaScript.
+ */
+export function CasaFilters({
+  options,
+  filters,
+  params,
+  activeCount,
+}: {
+  options: FilterOptions;
+  filters: CatalogFilters;
+  params: Raw;
+  activeCount: number;
+}) {
+  const limpiar =
+    activeCount > 0 ? (
+      <Link
+        href="/v6/tienda"
+        className="text-[13px] underline underline-offset-4"
+        style={{ color: "var(--v-accent)" }}
+      >
+        Limpiar ({activeCount})
+      </Link>
+    ) : null;
+
+  return (
+    <>
+      {/* Mobile: plegado por defecto */}
+      <details className="lg:hidden">
+        <summary
+          className="flex cursor-pointer items-center justify-between border-y py-4 marker:content-none [&::-webkit-details-marker]:hidden"
+          style={{ borderColor: "var(--v-rule)" }}
+        >
+          <span className="v-label" style={{ color: "var(--v-ink)" }}>
+            Filtrar{activeCount > 0 ? ` · ${activeCount}` : ""}
+          </span>
+          <span className="v-label" style={{ color: "var(--v-accent)" }}>
+            Ver opciones
+          </span>
+        </summary>
+
+        <div className="pt-7">
+          {limpiar && <div className="mb-5">{limpiar}</div>}
+          <FilterBody options={options} filters={filters} params={params} />
+        </div>
+      </details>
+
+      {/* Desktop: siempre a la vista */}
+      <aside aria-label="Filtros" className="hidden space-y-7 lg:block">
+        <div className="flex items-baseline justify-between">
+          <VLabel style={{ color: "var(--v-ink)" }}>Filtrar</VLabel>
+          {limpiar}
+        </div>
+        <VRule />
+        <FilterBody options={options} filters={filters} params={params} />
+      </aside>
+    </>
   );
 }
 
