@@ -43,6 +43,17 @@ const nextConfig: NextConfig = {
     return [
       { source: "/tienda", destination: "/vinos", permanent: true },
       { source: "/suscripcion", destination: "/club", permanent: true },
+
+      /*
+        Las direcciones de diseño se numeraron /v2 /v3 /v4 /v6 /v7: nunca hubo
+        una v5. En vez de renumerar y romper los links que ya circulan, /v5
+        cae en la variante siguiente para que nadie se coma un 404.
+
+        Temporal a propósito: cuando se elija una dirección, estas rutas se van
+        y un 308 quedaría cacheado en el navegador apuntando a una URL muerta.
+      */
+      { source: "/v5", destination: "/v6", permanent: false },
+      { source: "/v5/:path*", destination: "/v6/:path*", permanent: false },
     ];
   },
 };
