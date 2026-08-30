@@ -184,7 +184,7 @@ export function VideoHero({
             "font-display font-light text-bone opacity-0",
             "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_320ms_forwards]",
             data.scale === "hero"
-              ? "max-w-[15ch] text-display-2xl"
+              ? "max-w-[26ch] text-display-2xl"
               : "max-w-[19ch] text-display-xl",
             data.align === "center" && "mx-auto",
           )}

@@ -240,9 +240,13 @@
 
 @theme {
   /* Un escalón por encima de display-xl para el hero principal. */
-  --text-display-2xl: clamp(3.25rem, 11vw, 9.5rem);
-  --text-display-2xl--line-height: 0.88;
-  --text-display-2xl--letter-spacing: -0.035em;
+  /* A 11vw trepaba a 152px en desktop y el titular se llevaba casi un tercio
+     del alto del hero. Va junto con la medida de 26ch en <VideoHero>: el ancho
+     está en ch, así que bajar la escala sin ensanchar la medida hace que el
+     texto ocupe más líneas y el titular termine MÁS alto. */
+  --text-display-2xl: clamp(2.5rem, 7.5vw, 6rem);
+  --text-display-2xl--line-height: 1.04;
+  --text-display-2xl--letter-spacing: -0.025em;
 
   /* Lead: bajada del hero y entradas de sección. */
   --text-lead: clamp(1.0625rem, 1.5vw, 1.375rem);
@@ -653,19 +657,3 @@
 /* La foto de fondo de la declaración se apagaba de más sobre negro. */
 [data-theme="oscuro"] .opacity-\[0\.10\] { opacity: 0.2; }
 
-/* El titular del hero a 11vw trepaba a 152px en desktop y se comía el bloque.
-   Se baja la escala sólo en /v8; la home clara mantiene la suya.
-
-   La medida se ensancha junto con la bajada de tamaño: el ancho está en ch,
-   así que al achicar la fuente el bloque se angosta en píxeles y el texto
-   pasa a ocupar MÁS líneas. Bajar la escala sola dejaba el titular más alto
-   que antes, que es justo lo contrario de lo buscado. */
-[data-theme="oscuro"] .text-display-2xl {
-  font-size: clamp(2.5rem, 7.5vw, 6rem);
-  line-height: 1.04;
-  letter-spacing: -0.025em;
-}
-
-[data-theme="oscuro"] h1.text-display-2xl {
-  max-width: 26ch;
-}
