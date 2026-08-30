@@ -26,7 +26,7 @@ export function BackgroundMedia({
   priority = false,
   sizes = "100vw",
 }: {
-  media: BackgroundMediaData;
+  media?: BackgroundMediaData;
   className?: string;
   imageClassName?: string;
   priority?: boolean;
@@ -37,8 +37,14 @@ export function BackgroundMedia({
   const [mountVideo, setMountVideo] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  const poster = media.posterUrl || media.imageUrl;
-  const hasVideo = Boolean(media.videoDesktopUrl || media.videoMobileUrl);
+  /*
+    El bloque llega de un JSONB, así que TypeScript no garantiza su forma en
+    runtime: una sección vieja o mal migrada puede no traer `media`. Sin esta
+    guarda el componente tira y se cae la página entera detrás del error
+    boundary, en vez de simplemente no mostrar el fondo.
+  */
+  const poster = media?.posterUrl || media?.imageUrl;
+  const hasVideo = Boolean(media?.videoDesktopUrl || media?.videoMobileUrl);
 
   useEffect(() => {
     if (!hasVideo) return;
@@ -49,7 +55,7 @@ export function BackgroundMedia({
     if (connection?.effectiveType && ["slow-2g", "2g", "3g"].includes(connection.effectiveType)) return;
 
     const isMobile = window.innerWidth < 768;
-    if (isMobile && !media.videoMobileUrl) return;
+    if (isMobile && !media?.videoMobileUrl) return;
 
     const element = containerRef.current;
     if (!element) return;
@@ -69,7 +75,7 @@ export function BackgroundMedia({
     );
     observer.observe(element);
     return () => observer.disconnect();
-  }, [hasVideo, media.videoMobileUrl]);
+  }, [hasVideo, media?.videoMobileUrl]);
 
   const showVideo = mountVideo && !failed;
 
@@ -78,7 +84,7 @@ export function BackgroundMedia({
       {poster && (
         <Image
           src={poster}
-          alt={media.imageAlt ?? ""}
+          alt={media?.imageAlt ?? ""}
           fill
           priority={priority}
           sizes={sizes}
@@ -104,10 +110,10 @@ export function BackgroundMedia({
           onError={() => setFailed(true)}
           className="size-full object-cover"
         >
-          {media.videoMobileUrl && (
+          {media?.videoMobileUrl && (
             <source src={media.videoMobileUrl} media="(max-width: 767px)" type="video/mp4" />
           )}
-          {media.videoDesktopUrl && <source src={media.videoDesktopUrl} type="video/mp4" />}
+          {media?.videoDesktopUrl && <source src={media.videoDesktopUrl} type="video/mp4" />}
         </video>
       )}
     </div>

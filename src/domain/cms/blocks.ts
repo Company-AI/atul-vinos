@@ -136,6 +136,9 @@ export const statementBlock = z.object({
 export const figuresBlock = z.object({
   eyebrow: z.string().default(""),
   title: z.string().default(""),
+  /** Foto de apoyo opcional. Sin ella el bloque va sólo con los números. */
+  imageUrl: z.string().default(""),
+  imageAlt: z.string().default(""),
   items: z
     .array(
       z.object({

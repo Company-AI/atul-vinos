@@ -61,6 +61,8 @@ export const CMS_SECTIONS = [
     data: {
       eyebrow: "En números",
       title: "Dónde está puesto el foco.",
+      imageUrl: "/media/scenes/harvest.jpg",
+      imageAlt: "Cosecha manual de uva en Mendoza",
       tone: "linen",
       items: [
         {

@@ -3,13 +3,15 @@ import Link from "next/link";
 import type { ProductCard } from "@/domain/catalog/types";
 import { cn } from "@/lib/cn";
 import { Reveal, stagger } from "@/ui/reveal";
+import { BackgroundMedia, type BackgroundMediaData } from "@/components/marketing/background-media";
 import { VBody, VContainer, VLabel, VLink, VRule, VSection, VTitle, formatPrice } from "./shared";
 
 /**
  * Casa — cálida y clásica, con la tienda al frente.
  *
  * Reglas de la variante:
- *  - Sin video en ninguna sección: manda la fotografía fija y grande.
+ *  - Fotografía grande y video sólo en los tres momentos que lo justifican:
+ *    el hero, el lugar y el Club. El resto se sostiene con foto fija.
  *  - Las etiquetas van en versalitas reales (font-variant-caps), no en
  *    mayúscula forzada: es de ahí que sale el aire tradicional.
  *  - La venta aparece arriba de todo, no al final: la primera sección después
@@ -21,19 +23,17 @@ export function CasaHero({
   title,
   accent,
   subtitle,
-  imageUrl,
-  imageAlt,
+  media,
 }: {
   eyebrow: string;
   title: string;
   accent: string;
   subtitle: string;
-  imageUrl: string;
-  imageAlt: string;
+  media: BackgroundMediaData;
 }) {
   return (
-    <section className="relative flex min-h-[88svh] items-end overflow-hidden pb-20 pt-40">
-      <Image src={imageUrl} alt={imageAlt} fill priority sizes="100vw" className="-z-10 object-cover" />
+    <section className="relative isolate flex min-h-[94svh] items-end overflow-hidden pb-20 pt-40">
+      <BackgroundMedia media={media} priority />
       <div
         aria-hidden
         className="absolute inset-0 -z-10"
@@ -420,14 +420,14 @@ export function CasaClub({
   title,
   body,
   bullets,
-  imageUrl,
+  media,
   planName,
   planPrice,
 }: {
   title: string;
   body: string;
   bullets: string[];
-  imageUrl: string;
+  media: BackgroundMediaData;
   planName: string;
   planPrice: number;
 }) {
@@ -472,7 +472,213 @@ export function CasaClub({
             </Reveal>
           </div>
 
-          <Reveal variant="mask" className="relative aspect-[4/5] w-full overflow-hidden">
+          <Reveal variant="mask" className="relative isolate aspect-[4/5] w-full overflow-hidden">
+            <BackgroundMedia media={media} sizes="(max-width: 1024px) 100vw, 48vw" />
+          </Reveal>
+        </div>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/**
+ * El lugar: video a sangre. Junto al hero y al Club, es uno de los tres
+ * momentos donde la variante deja entrar movimiento.
+ */
+export function CasaPlace({
+  label,
+  title,
+  body,
+  media,
+}: {
+  label: string;
+  title: string;
+  body: string;
+  media: BackgroundMediaData;
+}) {
+  return (
+    <section className="relative isolate flex min-h-[88svh] items-center overflow-hidden">
+      <BackgroundMedia media={media} />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10"
+        style={{
+          background:
+            "linear-gradient(to right, rgb(45 34 26 / 0.88) 0%, rgb(45 34 26 / 0.66) 44%, rgb(45 34 26 / 0.22) 100%)",
+        }}
+      />
+
+      <VContainer size="wide">
+        <div className="max-w-xl" style={{ color: "var(--v-surface)" }}>
+          <Reveal>
+            <VLabel style={{ color: "color-mix(in srgb, var(--v-surface) 76%, transparent)" }}>{label}</VLabel>
+          </Reveal>
+          <Reveal delay={0.12} variant="line">
+            <VTitle className="mt-5">{title}</VTitle>
+          </Reveal>
+          <Reveal delay={0.24}>
+            <div
+              className="mt-6 text-[15px] leading-[1.8] [&_p+p]:mt-5"
+              style={{ color: "color-mix(in srgb, var(--v-surface) 80%, transparent)" }}
+            >
+              {body.split("\n\n").map((p) => (
+                <p key={p.slice(0, 24)}>{p}</p>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </VContainer>
+    </section>
+  );
+}
+
+/** Declaración sobre madera, con foto tenue detrás. */
+export function CasaStatement({
+  text,
+  accent,
+  attribution,
+  backgroundUrl,
+}: {
+  text: string;
+  accent: string;
+  attribution: string;
+  backgroundUrl: string;
+}) {
+  return (
+    <VSection surface="sunk" className="relative overflow-hidden">
+      {backgroundUrl && (
+        <Image src={backgroundUrl} alt="" aria-hidden fill sizes="100vw" className="object-cover opacity-[0.14]" />
+      )}
+
+      <VContainer size="narrow" className="relative text-center">
+        <Reveal variant="line">
+          <p className="v-hero-type" style={{ fontSize: "calc(var(--v-hero) * 0.7)" }}>
+            {text} <span style={{ fontStyle: "italic" }}>{accent}</span>
+          </p>
+        </Reveal>
+        <Reveal delay={0.2}>
+          <VLabel
+            className="mt-10 justify-center"
+            style={{ color: "color-mix(in srgb, var(--v-bg) 66%, transparent)" }}
+          >
+            {attribution}
+          </VLabel>
+        </Reveal>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/** Cifras con la foto del lugar al costado, para que el número no vaya solo. */
+export function CasaFigures({
+  label,
+  title,
+  items,
+  imageUrl,
+  imageAlt,
+}: {
+  label: string;
+  title: string;
+  items: { value: string; label: string; detail: string }[];
+  imageUrl: string;
+  imageAlt: string;
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <VSection>
+      <VContainer size="wide">
+        <div className={cn("grid gap-14 lg:gap-20", imageUrl && "lg:grid-cols-2")}>
+          {imageUrl && (
+            <Reveal variant="mask" className="relative aspect-[4/3] w-full overflow-hidden lg:aspect-auto">
+              <Image
+                src={imageUrl}
+                alt={imageAlt}
+                fill
+                sizes="(max-width: 1024px) 100vw, 48vw"
+                className="object-cover"
+              />
+            </Reveal>
+          )}
+
+          <div>
+            <Reveal>
+              <VLabel style={{ color: "var(--v-accent)" }}>{label}</VLabel>
+              <VTitle className="mt-4">{title}</VTitle>
+            </Reveal>
+
+            <dl className="mt-10 grid gap-x-8 gap-y-9 sm:grid-cols-2">
+              {items.map((item, i) => (
+                <div key={item.label} data-reveal style={stagger(i, 0.08)}>
+                  <dt className="sr-only">{item.label}</dt>
+                  <dd>
+                    <p className="v-title-type tabular" style={{ color: "var(--v-accent)" }}>
+                      {item.value}
+                    </p>
+                    <VRule className="mt-3" />
+                    <p className="mt-3 text-[15px]">{item.label}</p>
+                    <p className="mt-1.5 text-[13px] leading-[1.65]" style={{ color: "var(--v-muted)" }}>
+                      {item.detail}
+                    </p>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </VContainer>
+    </VSection>
+  );
+}
+
+/** Proceso: pasos con foto de apoyo, alternando el lado. */
+export function CasaProcess({
+  label,
+  title,
+  entries,
+  imageUrl,
+}: {
+  label: string;
+  title: string;
+  entries: { title: string; body: string }[];
+  imageUrl: string;
+}) {
+  if (entries.length === 0) return null;
+
+  return (
+    <VSection surface="raised">
+      <VContainer size="wide">
+        <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
+          <div>
+            <Reveal>
+              <VLabel style={{ color: "var(--v-accent)" }}>{label}</VLabel>
+              <VTitle className="mt-4">{title}</VTitle>
+            </Reveal>
+
+            <div className="mt-10">
+              {entries.map((entry, i) => (
+                <div key={entry.title} data-reveal style={stagger(i, 0.08)}>
+                  <VRule />
+                  <div className="py-7">
+                    <div className="flex items-baseline gap-4">
+                      <span className="v-label tabular" style={{ color: "var(--v-accent)" }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <h3 className="v-title-type" style={{ fontSize: "calc(var(--v-title) * 0.52)" }}>
+                        {entry.title}
+                      </h3>
+                    </div>
+                    <p className="mt-3 pl-9 text-[14px] leading-[1.75]" style={{ color: "var(--v-muted)" }}>
+                      {entry.body}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              <VRule />
+            </div>
+          </div>
+
+          <Reveal variant="mask" className="relative aspect-[3/4] w-full overflow-hidden lg:sticky lg:top-24 lg:aspect-auto lg:h-[70vh]">
             <Image src={imageUrl} alt="" fill sizes="(max-width: 1024px) 100vw, 48vw" className="object-cover" />
           </Reveal>
         </div>

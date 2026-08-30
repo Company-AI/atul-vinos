@@ -101,6 +101,8 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
   figures: [
     { key: "eyebrow", label: "Volanta", kind: "text" },
     { key: "title", label: "Título", kind: "textarea" },
+    { key: "imageUrl", label: "Foto de apoyo (URL)", kind: "text", hint: "Opcional. La usan las variantes que acompañan las cifras con una imagen." },
+    { key: "imageAlt", label: "Texto alternativo", kind: "text" },
     { key: "tone", label: "Fondo", kind: "select", options: ["linen", "light", "dark"] },
   ],
   split_sticky: [
