@@ -2,12 +2,13 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { VContainer, VLabel } from "./shared";
 
-export type VariantKey = "maison" | "arquitectura" | "terroir";
+export type VariantKey = "maison" | "arquitectura" | "terroir" | "casa";
 
 export const VARIANTS: { key: VariantKey; route: string; name: string; idea: string }[] = [
   { key: "maison", route: "/v2", name: "Maison", idea: "Lujo por resta" },
   { key: "arquitectura", route: "/v3", name: "Arquitectura", idea: "La bodega como edificio" },
   { key: "terroir", route: "/v4", name: "Terroir", idea: "El viñedo como ciencia" },
+  { key: "casa", route: "/v6", name: "Casa", idea: "Cálida y clásica, tienda al frente" },
 ];
 
 /**
@@ -71,12 +72,25 @@ export function VHeader({
   companyName: string;
   variant: VariantKey;
 }) {
-  const nav = [
-    { label: "Vinos", href: "/vinos" },
-    { label: "Club", href: "/club" },
-    { label: "Historia", href: "/historia" },
-    { label: "Contacto", href: "/contacto" },
-  ];
+  /*
+    Casa ordena la navegación por venta —la tienda primero— y se mueve dentro
+    de su propia variante. Las otras tres arrancan por la marca y linkean al
+    sitio principal.
+  */
+  const nav =
+    variant === "casa"
+      ? [
+          { label: "Tienda", href: "/v6/tienda" },
+          { label: "El Club", href: "/v6/club" },
+          { label: "Nosotros", href: "/historia" },
+          { label: "Contacto", href: "/contacto" },
+        ]
+      : [
+          { label: "Vinos", href: "/vinos" },
+          { label: "Club", href: "/club" },
+          { label: "Historia", href: "/historia" },
+          { label: "Contacto", href: "/contacto" },
+        ];
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">

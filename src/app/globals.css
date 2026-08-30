@@ -489,3 +489,43 @@
   padding-top: var(--v-rhythm);
   padding-bottom: var(--v-rhythm);
 }
+
+/* ─── Casa (/v6) ──────────────────────────────────────────────────────────
+   Cálida y clásica. Papel tostado, tinta gris tibia y madera profunda para
+   los bloques pesados. Las versalitas hacen el trabajo de los títulos y el
+   acento es terracota, no vino: la calidez viene de la tierra, no de la uva.
+   Sin video en toda la variante: acá manda la fotografía fija.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-variant="casa"] {
+  --v-bg: #F4EFE7;
+  --v-surface: #FBF8F3;
+  --v-sunk: #3A2E24;
+  --v-ink: #55504A;
+  --v-muted: #857C72;
+  --v-rule: #DCD2C4;
+  --v-accent: #7A3B2E;
+  --v-on-accent: #FBF8F3;
+
+  --v-display: var(--font-alegreya), ui-serif, Georgia, serif;
+  --v-sans: var(--font-alegreya-sans), ui-sans-serif, system-ui, sans-serif;
+  --v-mono: var(--font-alegreya-sc), ui-sans-serif, system-ui, sans-serif;
+
+  --v-display-weight: 400;
+  --v-hero: clamp(2.5rem, 5.5vw, 4.75rem);
+  --v-hero-lh: 1.1;
+  --v-hero-ls: 0.005em;
+  --v-title: clamp(1.75rem, 3vw, 2.75rem);
+  --v-title-lh: 1.2;
+  --v-label-ls: 0.14em;
+  --v-measure: 64ch;
+  --v-radius: 0px;
+  --v-rhythm: clamp(4.5rem, 10vh, 8rem);
+}
+
+/* En Casa las etiquetas van en versalitas reales, no en mayúscula forzada. */
+[data-variant="casa"] .v-label {
+  text-transform: none;
+  font-variant-caps: small-caps;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}

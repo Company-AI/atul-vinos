@@ -89,14 +89,20 @@ export function VTitle({
   className,
   children,
   hero = false,
+  style,
 }: {
   level?: 1 | 2 | 3;
   className?: string;
   children: React.ReactNode;
   hero?: boolean;
+  style?: React.CSSProperties;
 }) {
   const Tag = `h${level}` as React.ElementType;
-  return <Tag className={cn(hero ? "v-hero-type" : "v-title-type", className)}>{children}</Tag>;
+  return (
+    <Tag className={cn(hero ? "v-hero-type" : "v-title-type", className)} style={style}>
+      {children}
+    </Tag>
+  );
 }
 
 export function VBody({

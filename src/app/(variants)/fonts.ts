@@ -1,4 +1,12 @@
-import { Archivo, Fraunces, JetBrains_Mono, Jost } from "next/font/google";
+import {
+  Alegreya,
+  Alegreya_Sans,
+  Alegreya_Sans_SC,
+  Archivo,
+  Fraunces,
+  JetBrains_Mono,
+  Jost,
+} from "next/font/google";
 
 /**
  * Fuentes propias de cada variante de diseño.
@@ -36,5 +44,29 @@ export const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-jetbrains",
+  display: "swap",
+});
+
+/** Casa: superfamilia Alegreya. La serifa lleva la voz. */
+export const alegreya = Alegreya({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-alegreya",
+  display: "swap",
+});
+
+/** Casa: la sans de la misma familia, para el cuerpo y la interfaz. */
+export const alegreyaSans = Alegreya_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-alegreya-sans",
+  display: "swap",
+});
+
+/** Casa: versalitas reales para etiquetas y volantas. */
+export const alegreyaSC = Alegreya_Sans_SC({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-alegreya-sc",
   display: "swap",
 });
