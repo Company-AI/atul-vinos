@@ -13,7 +13,7 @@ export const companySettings = z.object({
   logoUrl: z.string().default("/brand/logo.svg"),
   logoLightUrl: z.string().default("/brand/logo-light.svg"),
   faviconUrl: z.string().default("/favicon.ico"),
-  email: z.string().default("hola@atul.test"),
+  email: z.string().default("hola@atulwines.com"),
   phone: z.string().default("+54 358 400 0000"),
   whatsapp: z.string().default("5493584000000"),
   addressLine: z.string().default("Sarmiento 1240"),
@@ -78,7 +78,7 @@ export const paymentSettings = z.object({
   provider: z.enum(["mercadopago"]).default("mercadopago"),
   sandbox: z.boolean().default(true),
   publicKey: z.string().default(""),
-  statementDescriptor: z.string().default("AURORA SELECCION"),
+  statementDescriptor: z.string().default("ATUL VINOS"),
   installmentsEnabled: z.boolean().default(true),
   maxInstallments: z.number().int().default(6),
 });
@@ -99,7 +99,7 @@ export const seoSettings = z.object({
 
 export const emailSettings = z.object({
   fromName: z.string().default("Atul"),
-  fromEmail: z.string().default("hola@atul.test"),
+  fromEmail: z.string().default("hola@atulwines.com"),
   replyTo: z.string().default(""),
   footerText: z
     .string()

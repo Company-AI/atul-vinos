@@ -177,21 +177,21 @@ async function main() {
   const [superAdmin] = await Promise.all([
     prisma.user.create({
       data: {
-        email: "admin@auroraseleccion.test", passwordHash: staffPassword,
+        email: "admin@atulwines.com", passwordHash: staffPassword,
         firstName: "Facundo", lastName: "Administrador", isStaff: true,
         roleId: roles.super_admin, emailVerifiedAt: NOW,
       },
     }),
     prisma.user.create({
       data: {
-        email: "deposito@auroraseleccion.test", passwordHash: staffPassword,
+        email: "deposito@atulwines.com", passwordHash: staffPassword,
         firstName: "Marcos", lastName: "Depósito", isStaff: true,
         roleId: roles.deposito, emailVerifiedAt: NOW,
       },
     }),
     prisma.user.create({
       data: {
-        email: "atencion@auroraseleccion.test", passwordHash: staffPassword,
+        email: "atencion@atulwines.com", passwordHash: staffPassword,
         firstName: "Carla", lastName: "Atención", isStaff: true,
         roleId: roles.atencion_cliente, emailVerifiedAt: NOW,
       },
@@ -1158,8 +1158,8 @@ async function main() {
 
   console.log("\n─────────────────────────────────────────────");
   console.log(`Productos: ${productCount}   Pedidos: ${orderCount}   Alertas de stock: ${invAlerts[0].count}`);
-  console.log("\nAcceso admin:    admin@auroraseleccion.test / Aurora2026!");
-  console.log("Acceso depósito: deposito@auroraseleccion.test / Aurora2026!");
+  console.log("\nAcceso admin:    admin@atulwines.com / Aurora2026!");
+  console.log("Acceso depósito: deposito@atulwines.com / Aurora2026!");
   console.log("Acceso cliente:  juan.perez@example.com / Cliente2026!");
   console.log("─────────────────────────────────────────────\n");
 }

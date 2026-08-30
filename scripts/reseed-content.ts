@@ -14,7 +14,7 @@ import { CMS_SECTIONS } from "../prisma/seed/content";
 const prisma = new PrismaClient();
 
 async function main() {
-  const actor = "admin@auroraseleccion.test";
+  const actor = "admin@atulwines.com";
   const keys = CMS_SECTIONS.map((s) => s.key);
 
   // Las secciones que dejaron de estar declaradas se van con el refresco.
