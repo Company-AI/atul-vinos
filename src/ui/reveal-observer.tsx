@@ -56,40 +56,49 @@ export function RevealObserver() {
     mutations.observe(document.body, { childList: true, subtree: true });
 
     /*
-      Red de seguridad. Si el observador no entrega callbacks —pestaña que no
-      compone frames, fallo del motor, una extensión de por medio— el contenido
-      quedaría invisible de forma permanente.
+      Red de seguridad.
 
-      El chequeo es un sondeo acotado y no se apoya en scroll ni en
-      requestAnimationFrame: son justamente las señales que se pausan cuando la
-      página no compone, es decir el escenario que hay que cubrir. Mientras
-      haya elementos marcados dentro del viewport y ninguno se haya revelado,
-      se apaga el sistema entero. Preferimos perder la animación antes que
-      perder el contenido.
+      Antes se desarmaba en cuanto UN elemento se revelaba, asumiendo que el
+      observador andaba bien. Pero puede andar para unos y no para otros —así
+      quedaron ocultas para siempre las fotos de las galerías—, y en ese caso
+      nadie los rescataba.
+
+      Ahora no desactiva nada: revisa a los rezagados y los revela de a uno.
+      Si un elemento estuvo en viewport dos rondas seguidas y sigue sin
+      revelarse, se lo marca a mano. La animación sigue funcionando para todo
+      el resto y nada queda invisible.
     */
+    const enVista = new WeakMap<Element, number>();
     let ticks = 0;
+
     const failsafe = window.setInterval(() => {
       ticks += 1;
 
-      // Con un solo revelado sabemos que el observador funciona: no miramos más.
-      if (revealedCount > 0 || ticks > 15) {
+      const pendientes = document.querySelectorAll("[data-reveal]:not([data-revealed])");
+      if (pendientes.length === 0 || ticks > 20) {
         window.clearInterval(failsafe);
         return;
       }
 
-      const pending = document.querySelectorAll("[data-reveal]:not([data-revealed])");
-      const anyVisible = [...pending].some((el) => {
+      for (const el of pendientes) {
         const rect = el.getBoundingClientRect();
-        return rect.top < window.innerHeight && rect.bottom > 0;
-      });
+        const visible = rect.top < window.innerHeight && rect.bottom > 0;
 
-      if (!anyVisible) return;
+        if (!visible) {
+          enVista.delete(el);
+          continue;
+        }
 
-      window.clearInterval(failsafe);
-      observer.disconnect();
-      mutations.disconnect();
-      root.classList.remove("reveal-ready");
-    }, 1000);
+        const rondas = (enVista.get(el) ?? 0) + 1;
+        enVista.set(el, rondas);
+
+        // Dos rondas a la vista sin que el observador lo tome: se revela igual.
+        if (rondas >= 2) {
+          el.setAttribute("data-revealed", "");
+          observer.unobserve(el);
+        }
+      }
+    }, 700);
 
     return () => {
       window.clearInterval(failsafe);

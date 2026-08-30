@@ -331,28 +331,42 @@
     transform: translateY(var(--reveal-y, 22px));
     transition:
       opacity var(--duration-cinematic) var(--ease-out-expo),
-      transform var(--duration-cinematic) var(--ease-out-expo),
-      clip-path var(--duration-cinematic) var(--ease-out-expo);
+      transform var(--duration-cinematic) var(--ease-out-expo);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
-  /* Cortina: la foto se descubre de abajo hacia arriba. */
+  /*
+    Cortina: la foto se descubre de abajo hacia arriba.
+
+    El clip va en los HIJOS y no en el elemento observado. Con el clip-path
+    encima, el elemento queda con área visible cero y el IntersectionObserver
+    deja de verlo: nunca dispara y la cortina no se abre nunca. La animación
+    se mordía la cola. Clipeando el contenido, la caja observada sigue siendo
+    visible para el observador y el efecto es idéntico.
+  */
   .reveal-ready [data-reveal="mask"] {
     opacity: 1;
     transform: none;
+  }
+
+  .reveal-ready [data-reveal="mask"] > * {
     clip-path: inset(0 0 100% 0);
+    transition: clip-path var(--duration-cinematic) var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal-ready [data-reveal="mask"][data-revealed] > * {
+    clip-path: inset(0 0 0 0);
   }
 
   /* Titular que sube desde su propia línea de base. */
   .reveal-ready [data-reveal="line"] {
     --reveal-y: 0.42em;
-    clip-path: inset(-0.25em 0 -0.15em 0);
   }
 
   .reveal-ready [data-revealed] {
     opacity: 1;
     transform: none;
-    clip-path: inset(0 0 0 0);
   }
 }
 
