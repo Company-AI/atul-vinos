@@ -46,7 +46,7 @@ export const CMS_SECTIONS = [
       eyebrow: "Nuestra posición",
       text: "Un catálogo corto no es una limitación.",
       textAccent: "Es el trabajo.",
-      attribution: "Aurora Selección · Mendoza, Argentina",
+      attribution: "Atul · Mendoza, Argentina",
       cta: { label: "", href: "" },
       backgroundUrl: "/media/scenes/mendoza-farmland-snow.jpg",
       tone: "dark",

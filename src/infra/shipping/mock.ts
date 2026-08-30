@@ -12,7 +12,7 @@ import { toNumber } from "@/lib/money";
  */
 export class MockShippingProvider implements ShippingProvider {
   readonly code = "mock";
-  readonly name = "Logística Aurora (interno)";
+  readonly name = "Logística Atul (interno)";
 
   isConfigured(): boolean {
     return true;

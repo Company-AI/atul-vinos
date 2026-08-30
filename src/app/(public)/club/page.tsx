@@ -9,9 +9,9 @@ import { ClubPlansSection } from "@/components/club/club-plans-section";
 export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { company } = await getSettings();
   return {
-    title: `Club ${company.name}`,
+    // La plantilla de títulos ya agrega la marca: repetirla daría "Club Atul · Atul".
+    title: "El Club",
     description:
       "Suscribite al Club y recibí todos los meses una selección de vinos elegida por nuestro enólogo, con envío incluido y beneficios en la tienda.",
     alternates: { canonical: "/club" },

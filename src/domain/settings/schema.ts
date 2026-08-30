@@ -7,13 +7,13 @@ import { z } from "zod";
  */
 
 export const companySettings = z.object({
-  name: z.string().default("Aurora Selección"),
-  legalName: z.string().default("Aurora Selección S.R.L."),
+  name: z.string().default("Atul"),
+  legalName: z.string().default("Atul S.R.L."),
   tagline: z.string().default("Distribuidores de vinos de Mendoza"),
   logoUrl: z.string().default("/brand/logo.svg"),
   logoLightUrl: z.string().default("/brand/logo-light.svg"),
   faviconUrl: z.string().default("/favicon.ico"),
-  email: z.string().default("hola@auroraseleccion.test"),
+  email: z.string().default("hola@atul.test"),
   phone: z.string().default("+54 358 400 0000"),
   whatsapp: z.string().default("5493584000000"),
   addressLine: z.string().default("Sarmiento 1240"),
@@ -84,8 +84,8 @@ export const paymentSettings = z.object({
 });
 
 export const seoSettings = z.object({
-  defaultTitle: z.string().default("Aurora Selección — Vinos de Mendoza"),
-  titleTemplate: z.string().default("%s · Aurora Selección"),
+  defaultTitle: z.string().default("Atul — Vinos de Mendoza"),
+  titleTemplate: z.string().default("%s · Atul"),
   defaultDescription: z
     .string()
     .default(
@@ -98,8 +98,8 @@ export const seoSettings = z.object({
 });
 
 export const emailSettings = z.object({
-  fromName: z.string().default("Aurora Selección"),
-  fromEmail: z.string().default("hola@auroraseleccion.test"),
+  fromName: z.string().default("Atul"),
+  fromEmail: z.string().default("hola@atul.test"),
   replyTo: z.string().default(""),
   footerText: z
     .string()

@@ -433,7 +433,7 @@ async function main() {
 
   // ══════════════════════ Logística: carriers y tarifas ══════════════════════
   const carrierData = [
-    { code: "mock", name: "Logística Aurora (interno)", sortOrder: 10,
+    { code: "mock", name: "Logística Atul (interno)", sortOrder: 10,
       trackingUrlTemplate: "/seguimiento/{tracking}" },
     { code: "andreani", name: "Andreani", sortOrder: 20,
       trackingUrlTemplate: "https://www.andreani.com/#!/informacionEnvio/{tracking}" },
