@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 import { VContainer, VLabel } from "./shared";
 import { VMobileNav } from "./mobile-nav";
 
-export type VariantKey = "maison" | "arquitectura" | "terroir" | "casa" | "nocturno";
+export type VariantKey = "maison" | "arquitectura" | "terroir" | "casa" | "nocturno" | "oscuro";
 
 export const VARIANTS: { key: VariantKey; route: string; name: string; idea: string }[] = [
   { key: "maison", route: "/v2", name: "Maison", idea: "Lujo por resta" },
@@ -11,6 +11,7 @@ export const VARIANTS: { key: VariantKey; route: string; name: string; idea: str
   { key: "terroir", route: "/v4", name: "Terroir", idea: "El viñedo como ciencia" },
   { key: "casa", route: "/v6", name: "Casa", idea: "Cálida y clásica, tienda al frente" },
   { key: "nocturno", route: "/v7", name: "Nocturno", idea: "Oscura y cinematográfica" },
+  { key: "oscuro", route: "/v8", name: "Oscuro", idea: "La home principal en negro" },
 ];
 
 /**

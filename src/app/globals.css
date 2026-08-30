@@ -581,3 +581,74 @@
 [data-variant="nocturno"] :focus-visible {
   outline-color: var(--color-gold-400);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   /v8 — La home principal en oscuro
+   ═══════════════════════════════════════════════════════════════════════════
+   No es una variante nueva: es exactamente el mismo sitio de "/" con la
+   paleta invertida.
+
+   No se invierten los tokens sino las CLASES, porque el sistema principal los
+   tiene sobrecargados: --color-carbon-900 es a la vez el color del texto (58
+   usos) y el fondo de las secciones oscuras (13 usos), y --color-linen-200 es
+   fondo claro y también texto claro sobre fondo oscuro. Dar vuelta el token
+   arreglaría un uso y rompería el otro. Mapeando por rol, cada clase va a
+   donde corresponde.
+
+   Las clases que ya eran claras sobre oscuro —text-bone, text-linen-*,
+   text-stone-400, text-clay-400— no se tocan: siguen sirviendo igual.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="oscuro"] {
+  background-color: #0D0B0A;
+  color: #F2ECE1;
+  color-scheme: dark;
+}
+
+/* ─── Fondos que eran claros ─────────────────────────────────────────────── */
+[data-theme="oscuro"] .bg-bone       { background-color: #0D0B0A; }
+[data-theme="oscuro"] .bg-bone-pure  { background-color: #141110; }
+[data-theme="oscuro"] .bg-linen-100  { background-color: #141110; }
+[data-theme="oscuro"] .bg-linen-200  { background-color: #1C1815; }
+[data-theme="oscuro"] .bg-linen-300  { background-color: #241F1B; }
+
+/* ─── Fondos que ya eran oscuros: se separan entre sí para no aplanarse ──── */
+[data-theme="oscuro"] .bg-carbon-950 { background-color: #000000; }
+[data-theme="oscuro"] .bg-carbon-900 { background-color: #17130F; }
+[data-theme="oscuro"] .bg-carbon-800 { background-color: #1E1915; }
+
+/* ─── Texto que era oscuro ───────────────────────────────────────────────── */
+[data-theme="oscuro"] .text-carbon-900 { color: #F2ECE1; }
+[data-theme="oscuro"] .text-carbon-800 { color: #DAD3C7; }
+[data-theme="oscuro"] .text-stone-600  { color: #A79E92; }
+[data-theme="oscuro"] .text-stone-500  { color: #958C80; }
+[data-theme="oscuro"] .text-oak-700    { color: var(--color-gold-400); }
+
+/* ─── Acentos: sobre negro el vino se apaga, así que se levanta ──────────── */
+[data-theme="oscuro"] .text-wine-700  { color: #C4667A; }
+[data-theme="oscuro"] .text-clay-500  { color: var(--color-clay-400); }
+[data-theme="oscuro"] .hover\:text-wine-700:hover { color: #C4667A; }
+
+/* ─── Bordes y divisores ─────────────────────────────────────────────────── */
+[data-theme="oscuro"] .border-linen-200,
+[data-theme="oscuro"] .divide-linen-200 > * + * { border-color: #272119; }
+[data-theme="oscuro"] .border-linen-300 { border-color: #342C24; }
+[data-theme="oscuro"] .border-carbon-900 { border-color: #F2ECE1; }
+
+/* Botón contorneado: invierte al pasar el mouse, como en claro pero al revés. */
+[data-theme="oscuro"] .hover\:bg-carbon-900:hover { background-color: #F2ECE1; }
+[data-theme="oscuro"] .hover\:text-bone:hover { color: #0D0B0A; }
+
+/* ─── Degradados: usan el token, no la clase de fondo ────────────────────── */
+[data-theme="oscuro"] .from-bone { --tw-gradient-from: #0D0B0A; }
+[data-theme="oscuro"] .via-bone  { --tw-gradient-via: #0D0B0A; }
+[data-theme="oscuro"] .to-bone   { --tw-gradient-to: #0D0B0A; }
+[data-theme="oscuro"] .from-carbon-900 { --tw-gradient-from: #17130F; }
+[data-theme="oscuro"] .via-carbon-900  { --tw-gradient-via: #17130F; }
+[data-theme="oscuro"] .to-carbon-900   { --tw-gradient-to: #17130F; }
+
+/* El borde por defecto del reset base también es claro. */
+[data-theme="oscuro"] * { border-color: #272119; }
+
+/* La foto de fondo de la declaración se apagaba de más sobre negro. */
+[data-theme="oscuro"] .opacity-\[0\.10\] { opacity: 0.2; }

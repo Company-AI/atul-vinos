@@ -13,7 +13,7 @@ import { AnnouncementBar, type Announcement } from "./announcement-bar";
 export type NavItem = { label: string; href: string };
 
 /** Rutas que arrancan con hero a pantalla completa: el header nace transparente. */
-const OVERLAY_ROUTES = ["/", "/club", "/historia"];
+const OVERLAY_ROUTES = ["/", "/club", "/historia", "/v8"];
 
 export function SiteHeader({
   nav,
