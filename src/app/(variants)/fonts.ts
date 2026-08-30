@@ -3,6 +3,7 @@ import {
   Alegreya_Sans,
   Alegreya_Sans_SC,
   Archivo,
+  Bodoni_Moda,
   Fraunces,
   JetBrains_Mono,
   Jost,
@@ -68,5 +69,13 @@ export const alegreyaSC = Alegreya_Sans_SC({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-alegreya-sc",
+  display: "swap",
+});
+
+/** Nocturno: didone de alto contraste, sólo para titulares grandes. */
+export const bodoni = Bodoni_Moda({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-bodoni",
   display: "swap",
 });

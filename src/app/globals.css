@@ -529,3 +529,41 @@
   font-size: 0.8125rem;
   font-weight: 500;
 }
+
+/* ─── Nocturno (/v7) ──────────────────────────────────────────────────────
+   La única variante de fondo oscuro. Casi negro cálido, marfil y un oro
+   contenido. Didone de alto contraste para el display: a tamaño grande el
+   trazo fino se sostiene sobre negro y es lo que le da el aire de joyería.
+   Cada sección ocupa una pantalla entera y la selección se recorre en
+   horizontal, no en grilla: es también otra mecánica, no sólo otro color.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-variant="nocturno"] {
+  --v-bg: #0A0908;
+  --v-surface: #131110;
+  --v-sunk: #000000;
+  --v-ink: #EDE7DC;
+  --v-muted: #8A8177;
+  --v-rule: #2A2622;
+  --v-accent: #C8A55C;
+  --v-on-accent: #0A0908;
+
+  --v-display: var(--font-bodoni), ui-serif, Georgia, serif;
+  --v-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --v-mono: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --v-display-weight: 400;
+  --v-hero: clamp(3rem, 9vw, 8rem);
+  --v-hero-lh: 0.98;
+  --v-hero-ls: -0.02em;
+  --v-title: clamp(2rem, 4vw, 3.75rem);
+  --v-title-lh: 1.06;
+  --v-label-ls: 0.34em;
+  --v-measure: 52ch;
+  --v-radius: 0px;
+  --v-rhythm: clamp(6rem, 14vh, 12rem);
+}
+
+/* El foco sobre negro necesita el oro, no el barro del tema claro. */
+[data-variant="nocturno"] :focus-visible {
+  outline-color: var(--color-gold-400);
+}
