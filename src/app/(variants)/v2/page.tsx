@@ -16,8 +16,6 @@ import {
   MaisonWineries,
 } from "@/components/variants/maison";
 
-export const revalidate = 300;
-
 /**
  * Maison cubre todo el material de la home principal. Lo que la distingue no
  * es cuánto muestra sino cómo: composición centrada, medida angosta y una

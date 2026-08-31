@@ -1,0 +1,28 @@
+# Deploy en Netlify. El plugin oficial de Next.js traduce el App Router,
+# los Server Actions y las rutas de API a funciones.
+#
+# IMPORTANTE: las variables de entorno NO van acá —este archivo se commitea—
+# sino en Site configuration → Environment variables. La lista completa está
+# en DEPLOY.md.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# El webhook de pagos y el admin nunca se cachean.
+[[headers]]
+  for = "/api/webhooks/*"
+  [headers.values]
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Robots-Tag = "noindex, nofollow"

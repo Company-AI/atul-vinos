@@ -16,8 +16,6 @@ import {
   CasaWineries,
 } from "@/components/variants/casa";
 
-export const revalidate = 300;
-
 /**
  * Casa pone la venta arriba: la primera sección después del hero ya son
  * botellas con precio, y recién después se cuenta el criterio y el lugar.

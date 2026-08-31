@@ -24,14 +24,11 @@ export function RevealObserver() {
 
     root.classList.add("reveal-ready");
 
-    let revealedCount = 0;
-
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           entry.target.setAttribute("data-revealed", "");
-          revealedCount += 1;
           observer.unobserve(entry.target);
         }
       },

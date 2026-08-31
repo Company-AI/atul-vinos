@@ -16,8 +16,6 @@ import {
   TerroirWineries,
 } from "@/components/variants/terroir";
 
-export const revalidate = 300;
-
 /**
  * Terroir cubre el mismo material con las anotaciones de campo como hilo:
  * cada bloque lleva su dato al margen en monoespaciada. Todas las anotaciones

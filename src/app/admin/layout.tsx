@@ -6,6 +6,13 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminSearch } from "@/components/admin/admin-search";
 import { AdminShortcuts } from "@/components/admin/admin-shortcuts";
 
+/*
+  El admin es siempre dinámico. Es autenticado y por usuario, así que
+  prerenderizarlo no sólo es inútil: en el build corre los queries de Prisma
+  contra una base que puede no existir todavía y tumba el deploy.
+*/
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: { default: "Administración", template: "%s · Administración" },
   robots: { index: false, follow: false },

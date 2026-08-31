@@ -12,8 +12,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export const revalidate = 300;
-
 /**
  * Planes del Club en el lenguaje de Casa.
  *

@@ -8,6 +8,12 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { RevealNoFlashScript, RevealObserver } from "@/ui/reveal-observer";
 import { VariantSwitcher } from "@/components/variants/chrome";
 
+/*
+  Las direcciones de diseño son internas y van noindex: prerenderizarlas no
+  aporta nada y obliga a tener base disponible durante el build.
+*/
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Oscuro · Dirección de diseño",
   robots: { index: false, follow: false },

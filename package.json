@@ -17,7 +17,8 @@
     "test:watch": "vitest",
     "build:check": "next build --no-lint",
     "assets:stock": "node scripts/fetch-stock-media.mjs",
-    "assets:packshots": "node scripts/fetch-product-shots.mjs"
+    "assets:packshots": "node scripts/fetch-product-shots.mjs",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

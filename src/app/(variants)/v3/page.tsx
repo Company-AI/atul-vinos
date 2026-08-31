@@ -16,8 +16,6 @@ import {
   ArqWineries,
 } from "@/components/variants/arquitectura";
 
-export const revalidate = 300;
-
 /**
  * Arquitectura cubre el mismo material que Maison con el peso puesto en la
  * grilla y la acumulación: bloques al ras, dos secciones sobre el color

@@ -5,6 +5,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  /*
+    "native" es para desarrollo local. El segundo target es el motor que
+    necesitan las funciones serverless: Netlify y Vercel corren sobre AWS
+    Lambda con Amazon Linux y OpenSSL 3. Sin este target el build pasa y
+    Prisma explota en el primer query en producción.
+  */
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {

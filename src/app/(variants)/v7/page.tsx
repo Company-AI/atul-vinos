@@ -11,8 +11,6 @@ import {
   NocturnoStatement,
 } from "@/components/variants/nocturno";
 
-export const revalidate = 300;
-
 /**
  * Nocturno muestra menos secciones que las otras variantes a propósito: cada
  * una ocupa una pantalla entera y lleva poco texto. La página es larga por el
