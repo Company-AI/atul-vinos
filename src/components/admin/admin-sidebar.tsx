@@ -5,9 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
-  BarChart3, Box, ClipboardList, FileText, LayoutDashboard, LogOut, Megaphone,
-  Menu, Package, Percent, ScrollText, Settings, ShieldCheck, ShoppingCart,
-  Truck, Users, Wine, X,
+  BarChart3, Box, ClipboardList, FileText, Landmark, LayoutDashboard, LogOut,
+  MapPin, Megaphone, Menu, Package, Percent, ScrollText, Settings, ShieldCheck,
+  ShoppingCart, Truck, Users, Wine, X,
 } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { cn } from "@/lib/cn";
@@ -59,6 +59,8 @@ export function AdminSidebar({
       title: "Catálogo",
       items: [
         { href: "/admin/productos", label: "Productos", Icon: Wine, permission: "products.view" },
+        { href: "/admin/bodegas", label: "Bodegas", Icon: Landmark, permission: "products.view" },
+        { href: "/admin/regiones", label: "Regiones", Icon: MapPin, permission: "products.view" },
         { href: "/admin/stock", label: "Stock", Icon: Box, permission: "stock.view", badge: counters.lowStock },
       ],
     },
