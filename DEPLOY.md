@@ -22,14 +22,20 @@ DATABASE_URL="<url-de-produccion>" npx prisma migrate deploy
 El seed es opcional y **carga datos demo**: no correrlo en producción salvo que
 quieras el catálogo de prueba.
 
-## 2. Archivos subidos
+## 2. Archivos subidos — SIN RESOLVER
 
-`STORAGE_DRIVER=local` escribe con `mkdir`/`writeFile`, y en serverless el
-filesystem es efímero: las fotos que subas desde el admin desaparecen en el
-próximo deploy.
+Hoy **ninguna de las dos opciones sirve en producción**:
 
-En producción va `STORAGE_DRIVER=s3`. El adaptador ya está escrito; sirve
-cualquier compatible con S3 (AWS S3, Cloudflare R2, Backblaze B2).
+- `STORAGE_DRIVER=local` escribe con `mkdir`/`writeFile`. En serverless el
+  filesystem es efímero: las fotos que subas desde el admin desaparecen en el
+  próximo deploy.
+- `STORAGE_DRIVER=s3` **es un stub**: `S3StorageProvider.put()` lanza
+  "todavía no está implementado", y `@aws-sdk/client-s3` no está instalado.
+  Ponerlo rompe la subida en lugar de arreglarla.
+
+Mientras no se implemente el driver S3, dejar `STORAGE_DRIVER` sin definir
+(cae en `local`) y cargar las fotos de producto por URL en lugar de subirlas.
+Las fotos que ya están en `/public/media` se sirven bien: viajan en el repo.
 
 ## 3. Variables de entorno
 
@@ -58,18 +64,22 @@ webhook**, nunca por el redirect del navegador.
 
 ### Archivos
 
-| Variable | Notas |
-|---|---|
-| `STORAGE_DRIVER` | `s3` en producción. |
-| `S3_ENDPOINT` `S3_REGION` `S3_BUCKET` | |
-| `S3_ACCESS_KEY_ID` `S3_SECRET_ACCESS_KEY` | |
-| `S3_PUBLIC_URL` | Base pública del bucket. Se agrega sola a `images.remotePatterns`. |
+No cargar nada todavía: ver la sección 2. El driver S3 está sin implementar.
 
-### Mail y varios
+### Mail
 
-`SMTP_HOST` `SMTP_PORT` `SMTP_USER` `SMTP_PASS` `EMAIL_FROM` para las
-notificaciones, `SHIPPING_DEFAULT_PROVIDER` y `CRON_SECRET` si se usan tareas
-programadas.
+`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` y `SMTP_PASS`. Sin esto las
+notificaciones quedan registradas en `NotificationLog` pero no se envían.
+
+### Variables del ejemplo que el código NO lee
+
+Están en `.env.example` pero hoy no las consume nadie. Cargarlas no hace nada:
+
+`EMAIL_FROM` · `CRON_SECRET` · `SHIPPING_DEFAULT_PROVIDER` · `S3_ENDPOINT` ·
+`S3_REGION` · `MP_PUBLIC_KEY`
+
+El remitente del mail sale de la configuración del sitio (`/admin/configuracion`),
+no de `EMAIL_FROM`.
 
 ## 4. Antes del primer deploy
 
