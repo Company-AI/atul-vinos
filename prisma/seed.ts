@@ -173,7 +173,13 @@ async function main() {
     roles[slug] = role.id;
   }
 
-  const staffPassword = await bcrypt.hash("Aurora2026!", 12);
+  /*
+    La clave del staff sale del entorno. Antes estaba escrita en este archivo,
+    que está en un repo público: cualquiera que viera el código entraba al
+    admin de un sitio desplegado. Para desarrollo local el default alcanza.
+  */
+  const staffPlainPassword = process.env.SEED_ADMIN_PASSWORD ?? "Aurora2026!";
+  const staffPassword = await bcrypt.hash(staffPlainPassword, 12);
   const [superAdmin] = await Promise.all([
     prisma.user.create({
       data: {
@@ -1158,8 +1164,11 @@ async function main() {
 
   console.log("\n─────────────────────────────────────────────");
   console.log(`Productos: ${productCount}   Pedidos: ${orderCount}   Alertas de stock: ${invAlerts[0].count}`);
-  console.log("\nAcceso admin:    admin@atulwines.com / Aurora2026!");
-  console.log("Acceso depósito: deposito@atulwines.com / Aurora2026!");
+  const claveMostrada = process.env.SEED_ADMIN_PASSWORD
+    ? "(la de SEED_ADMIN_PASSWORD)"
+    : staffPlainPassword;
+  console.log(`\nAcceso admin:    admin@atulwines.com / ${claveMostrada}`);
+  console.log(`Acceso depósito: deposito@atulwines.com / ${claveMostrada}`);
   console.log("Acceso cliente:  juan.perez@example.com / Cliente2026!");
   console.log("─────────────────────────────────────────────\n");
 }
