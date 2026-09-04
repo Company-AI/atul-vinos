@@ -1,12 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 172 44" role="img" aria-label="Atul">
-  <g fill="none" stroke="#F7F3EC" stroke-width="1.1">
-    <path d="M14 34c0-9 5-16 5-16s5 7 5 16" stroke-linecap="round"/>
-    <path d="M19 18V8" stroke-linecap="round"/>
-    <circle cx="19" cy="6" r="1.6" fill="#F7F3EC" stroke="none"/>
-    <path d="M9 34h20" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 226 64" role="img" aria-label="Atul Vinos">
+  <!--
+    Versión horizontal para el header: el badge circular no entra en un slot
+    de 36px de alto y arrastra su propio fondo, que sobre el video del hero se
+    lee como una calcomanía. El badge completo vive en badge.svg.
+  -->
+  <g transform="translate(2 7) scale(0.53)" fill="#F3E4CB">
+    <path d="M48 6 L6 88 L17 88 L48 24 Z"/>
+    <path d="M48 6 L90 88 L79 88 L48 24 Z"/>
+    <rect x="2.5" y="88" width="20" height="1.8"/>
+    <rect x="73.5" y="88" width="20" height="1.8"/>
   </g>
-  <text x="42" y="26" font-family="Cormorant Garamond, Georgia, serif" font-size="24" font-weight="300"
-        letter-spacing="15" fill="#F7F3EC">ATUL</text>
-  <text x="43" y="37" font-family="Inter, system-ui, sans-serif" font-size="6" font-weight="500"
-        letter-spacing="3.1" fill="#C7C0B6">VINOS DE ARGENTINA</text>
+  <g transform="translate(2 7) scale(0.53)" fill="none" stroke="#F3E4CB" stroke-width="2.1" stroke-linecap="round">
+    <path d="M27 57 Q48 79 69 57"/>
+    <path d="M48 74 V85"/>
+    <path d="M35 86.4 H61"/>
+  </g>
+
+  <text x="64" y="35" font-family="Cormorant Garamond, Georgia, serif" font-size="31"
+        font-weight="300" letter-spacing="9.5" fill="#F3E4CB">ATUL</text>
+  <text x="66" y="49" font-family="Inter, system-ui, sans-serif" font-size="8.5"
+        font-weight="500" letter-spacing="5" fill="#BCAC90">VINOS</text>
 </svg>
