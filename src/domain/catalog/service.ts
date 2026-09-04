@@ -1,6 +1,12 @@
 import { cache } from "react";
 import type { Prisma, WineIntensity, WineType } from "@prisma/client";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
+import {
+  demoFilterOptions,
+  demoListProducts,
+  demoProductDetail,
+} from "@/infra/demo/catalog";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { toNumber } from "@/lib/money";
 import type { CatalogFilters, CatalogSort, ProductCard } from "./types";
@@ -123,6 +129,8 @@ export type CatalogPage = {
 };
 
 export async function listProducts(filters: CatalogFilters = {}): Promise<CatalogPage> {
+  if (IS_DEMO) return demoListProducts(filters);
+
   const page = Math.max(1, filters.page ?? 1);
   const perPage = Math.min(48, filters.perPage ?? 12);
   const where = buildWhere(filters);
@@ -170,6 +178,8 @@ export const getShowcaseProducts = cache(
 );
 
 export const getProductDetail = cache(async (slug: string) => {
+  if (IS_DEMO) return demoProductDetail(slug);
+
   const product = await prisma.product.findFirst({
     where: { slug, status: { not: "ARCHIVED" } },
     include: {
@@ -267,6 +277,8 @@ export async function getCrossSellProducts(
 
 /** Opciones para el panel de filtros, con conteo real de productos activos. */
 export const getFilterOptions = cache(async () => {
+  if (IS_DEMO) return demoFilterOptions();
+
   const [types, grapes, regions, wineries, lines, pairings, vintages, priceRange] =
     await Promise.all([
       prisma.product.groupBy({

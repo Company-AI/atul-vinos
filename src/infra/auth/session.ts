@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import { cache } from "react";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
 
 const COOKIE_NAME = "bodega_session";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -62,6 +63,8 @@ export const getSession = cache(async (): Promise<SessionPayload | null> => {
 
 /** Usuario actual con rol y permisos resueltos. */
 export const getCurrentUser = cache(async () => {
+  if (IS_DEMO) return null;
+
   const session = await getSession();
   if (!session) return null;
 

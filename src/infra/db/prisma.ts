@@ -1,17 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 
 /*
-  Sin DATABASE_URL, Prisma tira un error de validación de schema que no dice
-  nada útil en los logs de la plataforma. Este chequeo falla igual, pero
-  explicando qué falta y dónde cargarlo.
+  Sin DATABASE_URL el sitio corre en modo demo y los servicios de lectura no
+  llegan hasta acá (ver src/infra/demo). El cliente se instancia igual porque
+  hay módulos que lo importan aunque no lo usen; si algo intenta consultar de
+  verdad, Prisma falla con su propio error, que es lo correcto: significa que
+  quedó un camino de escritura sin cubrir.
 */
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "Falta la variable DATABASE_URL. Cargala en las variables de entorno del " +
-      "proveedor (Netlify: Site configuration → Environment variables) con la " +
-      "URL de Postgres con pooler. Los pasos están en SETUP-DEMO.md.",
-  );
-}
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 

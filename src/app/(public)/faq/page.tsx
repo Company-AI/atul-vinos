@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { getFaqs } from "@/domain/cms/service";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
-import { prisma } from "@/infra/db/prisma";
 import { Container, Eyebrow, Heading, Prose } from "@/ui/layout";
 import { EmptyState } from "@/ui/empty-state";
 
@@ -21,10 +21,11 @@ const GROUP_LABELS: Record<string, string> = {
 };
 
 export default async function FaqPage() {
-  const faqs = await prisma.faq.findMany({
-    where: { isActive: true },
-    orderBy: [{ group: "asc" }, { sortOrder: "asc" }],
-  });
+  // getFaqs ordena por sortOrder; el agrupado de esta página necesita además
+  // que las preguntas de un mismo grupo queden juntas.
+  const faqs = (await getFaqs()).sort(
+    (a, b) => a.group.localeCompare(b.group) || a.sortOrder - b.sortOrder,
+  );
 
   const groups = [...new Set(faqs.map((faq) => faq.group))];
 

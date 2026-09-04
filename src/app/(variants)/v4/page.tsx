@@ -2,6 +2,9 @@ import { getShowcaseProducts } from "@/domain/catalog/service";
 import { getPageSections } from "@/domain/cms/service";
 import { parseBlock } from "@/domain/cms/blocks";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { demoTaxonomy } from "@/infra/demo/catalog";
+import { getEntryPlan } from "@/domain/subscriptions/plans";
 import {
   TerroirClub,
   TerroirEditorial,
@@ -25,14 +28,14 @@ export default async function TerroirPage() {
   const [sections, products, plan, regions, wineries, labels] = await Promise.all([
     getPageSections("home"),
     getShowcaseProducts("featured", 4),
-    prisma.subscriptionPlan.findFirst({
-      where: { isActive: true },
-      orderBy: { price: "asc" },
-      select: { name: true, price: true },
-    }),
-    prisma.region.findMany({ select: { name: true }, orderBy: { name: "asc" } }),
-    prisma.winery.count(),
-    prisma.product.count({ where: { kind: "WINE", status: "ACTIVE" } }),
+    getEntryPlan(),
+    IS_DEMO
+      ? demoTaxonomy().regions
+      : prisma.region.findMany({ select: { name: true }, orderBy: { name: "asc" } }),
+    IS_DEMO ? demoTaxonomy().wineryCount : prisma.winery.count(),
+    IS_DEMO
+      ? demoTaxonomy().labelCount
+      : prisma.product.count({ where: { kind: "WINE", status: "ACTIVE" } }),
   ]);
 
   const find = (key: string) => sections.find((s) => s.key === key);
@@ -118,7 +121,7 @@ export default async function TerroirPage() {
         bullets={club.bullets}
         imageUrl={club.media.imageUrl || "/media/scenes/pouring.jpg"}
         planName={plan?.name ?? ""}
-        planPrice={Number(plan?.price ?? 0)}
+        planPrice={plan?.price ?? 0}
       />
     </>
   );

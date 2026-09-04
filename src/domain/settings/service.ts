@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
 import {
   GROUP_SCHEMAS,
   defaultSettings,
@@ -13,6 +14,9 @@ import {
  * `cache()` la resuelve una sola vez por request.
  */
 export const getSettings = cache(async (): Promise<Settings> => {
+  // En demo no hay base: los defaults del schema ya describen el sitio.
+  if (IS_DEMO) return defaultSettings();
+
   const rows = await prisma.setting.findMany();
   const raw: Record<string, unknown> = {};
   for (const row of rows) raw[row.key] = row.value;

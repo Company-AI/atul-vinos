@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { demoPosts } from "@/infra/demo/content";
 import { formatLongDate } from "@/lib/dates";
 import { EmptyState } from "@/ui/empty-state";
 import { Container, Eyebrow, Heading, Prose } from "@/ui/layout";
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 export default async function StoriesPage() {
-  const posts = await prisma.post.findMany({
+  const posts = IS_DEMO ? demoPosts() : await prisma.post.findMany({
     where: { isPublished: true },
     orderBy: { publishedAt: "desc" },
     include: { category: true },

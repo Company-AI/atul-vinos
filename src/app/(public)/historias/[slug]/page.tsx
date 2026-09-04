@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { demoPostBySlug, demoPosts } from "@/infra/demo/content";
 import { getSettings } from "@/domain/settings/service";
 import { formatLongDate } from "@/lib/dates";
 import { Container, Divider, Eyebrow, Heading } from "@/ui/layout";
@@ -14,7 +16,7 @@ type PageProps = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({ where: { slug } });
+  const post = IS_DEMO ? demoPostBySlug(slug) : await prisma.post.findUnique({ where: { slug } });
   if (!post) return { title: "Nota no encontrada" };
 
   return {

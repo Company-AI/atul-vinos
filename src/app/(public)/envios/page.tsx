@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { demoShippingZones } from "@/infra/demo/content";
 import { getSettings } from "@/domain/settings/service";
 import { formatARS, toNumber } from "@/lib/money";
 import { Container, Eyebrow, Heading, Prose } from "@/ui/layout";
@@ -14,11 +16,13 @@ export const metadata: Metadata = {
 
 export default async function ShippingInfoPage() {
   const [zones, settings] = await Promise.all([
-    prisma.shippingZone.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: "asc" },
-      include: { rates: { where: { isActive: true }, orderBy: { sortOrder: "asc" } } },
-    }),
+    IS_DEMO
+      ? demoShippingZones()
+      : prisma.shippingZone.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          include: { rates: { where: { isActive: true }, orderBy: { sortOrder: "asc" } } },
+        }),
     getSettings(),
   ]);
 

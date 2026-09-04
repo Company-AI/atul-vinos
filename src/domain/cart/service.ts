@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import { nanoid } from "nanoid";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
 import { getSession } from "@/infra/auth/session";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { getMemberBenefits } from "@/domain/promotions/club-benefits";
@@ -99,6 +100,8 @@ export async function getOrCreateCart(): Promise<{ id: string; token: string }> 
 }
 
 export const getCart = cache(async (): Promise<CartSummary> => {
+  if (IS_DEMO) return EMPTY_CART;
+
   const token = await getCartToken();
   if (!token) return EMPTY_CART;
 
@@ -243,6 +246,8 @@ export const getCart = cache(async (): Promise<CartSummary> => {
 
 /** Cantidad de unidades en el carrito, para el badge del header. */
 export const getCartCount = cache(async (): Promise<number> => {
+  if (IS_DEMO) return 0;
+
   const token = await getCartToken();
   if (!token) return 0;
   const result = await prisma.cartItem.aggregate({

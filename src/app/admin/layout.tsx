@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { prisma } from "@/infra/db/prisma";
 import { getCurrentUser } from "@/infra/auth/session";
 import { getSettings } from "@/domain/settings/service";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminSearch } from "@/components/admin/admin-search";
 import { AdminShortcuts } from "@/components/admin/admin-shortcuts";
+import { DEMO_NOTICE, IS_DEMO } from "@/infra/demo/mode";
 
 /*
   El admin es siempre dinámico. Es autenticado y por usuario, así que
@@ -23,6 +25,31 @@ export const metadata: Metadata = {
  * El resto exige sesión de staff; cada página valida además su permiso.
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  /*
+    Sin base no hay nada que administrar: ni usuarios para autenticar ni datos
+    para editar. Se avisa en lugar de dejar que requireStaff falle con un
+    error de conexión.
+  */
+  if (IS_DEMO) {
+    return (
+      <div className="grid min-h-dvh place-items-center bg-bone px-gutter">
+        <div className="max-w-md text-center">
+          <p className="eyebrow text-stone-500">Panel de administración</p>
+          <h1 className="mt-5 font-display text-display-sm font-light text-carbon-900">
+            No disponible en esta vista
+          </h1>
+          <p className="mt-4 text-[15px] leading-relaxed text-stone-600">{DEMO_NOTICE}</p>
+          <Link
+            href="/"
+            className="mt-8 inline-block text-sm underline underline-offset-4 hover:text-wine-700"
+          >
+            Volver al sitio
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
 
   if (!user?.isStaff) {

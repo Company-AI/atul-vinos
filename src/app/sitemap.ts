@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/infra/db/prisma";
 import { getSettings } from "@/domain/settings/service";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { DEMO_PRODUCTS } from "@/infra/demo/catalog";
+import { demoPosts } from "@/infra/demo/content";
+import { getPlanSlugs } from "@/domain/subscriptions/plans";
 
 export const revalidate = 3600;
 
@@ -13,20 +17,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [{ url: base, lastModified: new Date(), priority: 1 }];
   }
 
-  const [products, posts, plans] = await Promise.all([
-    prisma.product.findMany({
-      where: { status: "ACTIVE" },
-      select: { slug: true, updatedAt: true, kind: true },
-    }),
-    prisma.post.findMany({
-      where: { isPublished: true },
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.subscriptionPlan.findMany({
-      where: { isActive: true },
-      select: { slug: true, updatedAt: true },
-    }),
-  ]);
+  const ahora = new Date();
+
+  /*
+    En modo demo no hay base: las URLs salen del catálogo en memoria. Se usa
+    la fecha del build como lastModified, que es lo único cierto que hay.
+  */
+  const [products, posts, plans] = IS_DEMO
+    ? [
+        DEMO_PRODUCTS.map((p) => ({ slug: p.slug, updatedAt: ahora, kind: p.kind })),
+        demoPosts().map((p) => ({ slug: p.slug, updatedAt: ahora })),
+        (await getPlanSlugs()).map((slug) => ({ slug, updatedAt: ahora })),
+      ]
+    : await Promise.all([
+        prisma.product.findMany({
+          where: { status: "ACTIVE" },
+          select: { slug: true, updatedAt: true, kind: true },
+        }),
+        prisma.post.findMany({
+          where: { isPublished: true },
+          select: { slug: true, updatedAt: true },
+        }),
+        prisma.subscriptionPlan.findMany({
+          where: { isActive: true },
+          select: { slug: true, updatedAt: true },
+        }),
+      ]);
 
   const staticRoutes: MetadataRoute.Sitemap = ([
     { url: base, changeFrequency: "weekly", priority: 1 },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getPageSections } from "@/domain/cms/service";
 import { parseBlock } from "@/domain/cms/blocks";
-import { prisma } from "@/infra/db/prisma";
+import { getActivePlans } from "@/domain/subscriptions/plans";
 import { BackgroundMedia } from "@/components/marketing/background-media";
 import { VContainer, VLabel, VLink, VRule, VSection, VTitle, formatPrice } from "@/components/variants/shared";
 import { Reveal, stagger } from "@/ui/reveal";
@@ -22,11 +22,7 @@ export const metadata: Metadata = {
 export default async function CasaClubPage() {
   const [sections, plans] = await Promise.all([
     getPageSections("club"),
-    prisma.subscriptionPlan.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: "asc" },
-      include: { benefits: { include: { benefit: true }, orderBy: { benefit: { sortOrder: "asc" } } } },
-    }),
+    getActivePlans(),
   ]);
 
   const find = (key: string) => sections.find((s) => s.key === key);
@@ -153,7 +149,7 @@ export default async function CasaClubPage() {
                   <div className="flex flex-1 flex-col p-8">
                     <h3 className="v-title-type">{plan.name}</h3>
                     <p className="mt-3 text-[14px] leading-[1.7]" style={{ color: "var(--v-muted)" }}>
-                      {plan.description}
+                      {plan.tagline}
                     </p>
 
                     <VRule className="mt-6" />
@@ -171,12 +167,12 @@ export default async function CasaClubPage() {
                     </p>
 
                     <ul className="mt-6 flex-1 space-y-3">
-                      {plan.benefits.map(({ benefit }) => (
-                        <li key={benefit.id} className="flex gap-3 text-[14px]">
+                      {plan.perks.map((perk) => (
+                        <li key={perk} className="flex gap-3 text-[14px]">
                           <span aria-hidden style={{ color: "var(--v-accent)" }}>
                             ·
                           </span>
-                          <span>{benefit.name}</span>
+                          <span>{perk}</span>
                         </li>
                       ))}
                     </ul>

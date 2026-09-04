@@ -1,7 +1,7 @@
 import { getShowcaseProducts } from "@/domain/catalog/service";
 import { getPageSections } from "@/domain/cms/service";
 import { parseBlock } from "@/domain/cms/blocks";
-import { prisma } from "@/infra/db/prisma";
+import { getEntryPlan } from "@/domain/subscriptions/plans";
 import {
   CasaClub,
   CasaEditorial,
@@ -28,11 +28,7 @@ export default async function CasaPage() {
   const [sections, products, plan] = await Promise.all([
     getPageSections("home"),
     getShowcaseProducts("featured", 4),
-    prisma.subscriptionPlan.findFirst({
-      where: { isActive: true },
-      orderBy: { price: "asc" },
-      select: { name: true, price: true },
-    }),
+    getEntryPlan(),
   ]);
 
   const find = (key: string) => sections.find((s) => s.key === key);
@@ -116,7 +112,7 @@ export default async function CasaPage() {
         bullets={club.bullets}
         media={club.media}
         planName={plan?.name ?? ""}
-        planPrice={Number(plan?.price ?? 0)}
+        planPrice={plan?.price ?? 0}
       />
     </>
   );

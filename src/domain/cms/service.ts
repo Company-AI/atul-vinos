@@ -1,6 +1,8 @@
 import { cache } from "react";
 import { prisma } from "@/infra/db/prisma";
 import { parseBlock, type BlockData, type BlockType } from "./blocks";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { demoBanners, demoFaqs, demoPageSections, demoSection } from "@/infra/demo/content";
 
 export type Section<T extends BlockType = BlockType> = {
   id: string;
@@ -14,6 +16,8 @@ export type Section<T extends BlockType = BlockType> = {
 
 /** Todas las secciones activas de una página, ordenadas. */
 export const getPageSections = cache(async (page: string): Promise<Section[]> => {
+  if (IS_DEMO) return demoPageSections(page);
+
   const rows = await prisma.cmsSection.findMany({
     where: { page, isActive: true },
     orderBy: { sortOrder: "asc" },
@@ -32,12 +36,16 @@ export const getPageSections = cache(async (page: string): Promise<Section[]> =>
 /** Una sección puntual por clave (ej. "home.hero", "footer.main"). */
 export const getSection = cache(
   async <T extends BlockType>(key: string, type: T): Promise<BlockData<T>> => {
+    if (IS_DEMO) return parseBlock(type, demoSection(key));
+
     const row = await prisma.cmsSection.findUnique({ where: { key } });
     return parseBlock(type, row?.isActive === false ? {} : row?.data);
   },
 );
 
 export const getActiveBanners = cache(async (position = "top") => {
+  if (IS_DEMO) return demoBanners(position);
+
   const now = new Date();
   return prisma.banner.findMany({
     where: {
@@ -53,7 +61,9 @@ export const getActiveBanners = cache(async (position = "top") => {
 });
 
 export const getFaqs = cache(async (group?: string) =>
-  prisma.faq.findMany({
+  IS_DEMO
+    ? demoFaqs(group)
+    : prisma.faq.findMany({
     where: { isActive: true, ...(group ? { group } : {}) },
     orderBy: { sortOrder: "asc" },
   }),
