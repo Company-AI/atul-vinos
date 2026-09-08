@@ -128,7 +128,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: PageProps
               <Td>
                 <Link
                   href={`/admin/suscripciones/${subscription.id}`}
-                  className="hover:text-wine-700"
+                  className="hover:text-accent-700"
                 >
                   {subscription.user.firstName} {subscription.user.lastName}
                 </Link>
@@ -159,7 +159,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: PageProps
               <Td align="right">
                 <Link
                   href={`/admin/suscripciones/${subscription.id}`}
-                  className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                  className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                 >
                   Ver
                 </Link>

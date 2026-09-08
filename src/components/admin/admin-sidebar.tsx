@@ -139,7 +139,7 @@ export function AdminSidebar({
                         <item.Icon className="size-4 shrink-0" />
                         <span className="flex-1 truncate">{item.label}</span>
                         {item.badge !== undefined && item.badge > 0 && (
-                          <span className="rounded-xs bg-wine-700 px-1.5 text-[10px] tabular text-bone-pure">
+                          <span className="rounded-xs bg-accent-700 px-1.5 text-[10px] tabular text-bone-pure">
                             {item.badge}
                           </span>
                         )}

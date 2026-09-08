@@ -135,7 +135,7 @@ export function UsersManager({
                       setEditingRole(role);
                       setRolePermissions(role.permissionCodes);
                     }}
-                    className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                    className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                   >
                     Editar permisos
                   </button>

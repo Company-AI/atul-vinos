@@ -87,7 +87,7 @@ export function WineCard({
         {meta && <p className="eyebrow text-stone-500">{meta}</p>}
 
         <h3 className="mt-2 font-display text-[19px] font-light leading-snug text-carbon-900">
-          <Link href={`/vinos/${product.slug}`} className="hover:text-wine-700">
+          <Link href={`/vinos/${product.slug}`} className="hover:text-accent-700">
             {product.name}
             {product.vintage ? <span className="text-stone-500"> {product.vintage}</span> : null}
           </Link>

@@ -26,7 +26,7 @@ export async function FeaturedWines({ data }: { data: BlockData<"featured_wines"
           {data.cta.label && (
             <Link
               href={data.cta.href}
-              className="inline-flex shrink-0 items-center gap-2 text-sm underline underline-offset-4 transition-colors hover:text-wine-700"
+              className="inline-flex shrink-0 items-center gap-2 text-sm underline underline-offset-4 transition-colors hover:text-accent-700"
             >
               {data.cta.label}
               <ArrowRight className="size-4" />

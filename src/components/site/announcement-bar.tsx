@@ -35,7 +35,7 @@ export function AnnouncementBar({ items }: { items: Announcement[] }) {
       página: va sobre el acento de la marca y con cuerpo suficiente para
       leerse de un vistazo. Antes iba a 12px sobre casi negro y se perdía.
     */
-    <div className="bg-wine-700 text-bone-pure" role="region" aria-label="Anuncios">
+    <div className="bg-accent-700 text-bone-pure" role="region" aria-label="Anuncios">
       <div className="mx-auto flex max-w-[1440px] items-center justify-center gap-2.5 px-gutter py-3 text-center">
         <p
           aria-live="polite"

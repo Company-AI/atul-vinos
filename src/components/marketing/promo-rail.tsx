@@ -53,13 +53,13 @@ export function PromoRail({ data, id }: { data: BlockData<"promo_rail">; id?: st
                 aria-hidden
                 className={cn(
                   "h-[3px] w-full shrink-0",
-                  dark ? "bg-clay-400" : "bg-wine-700",
+                  dark ? "bg-clay-400" : "bg-accent-700",
                 )}
               />
 
               <div className="flex flex-1 flex-col p-6">
                 {item.kicker && (
-                  <p className={cn("eyebrow", dark ? "text-clay-400" : "text-wine-700")}>
+                  <p className={cn("eyebrow", dark ? "text-clay-400" : "text-accent-700")}>
                     {item.kicker}
                   </p>
                 )}
@@ -84,7 +84,7 @@ export function PromoRail({ data, id }: { data: BlockData<"promo_rail">; id?: st
                 <span
                   className={cn(
                     "mt-5 inline-flex items-center gap-2 text-[13px] font-medium",
-                    dark ? "text-clay-400" : "text-wine-700",
+                    dark ? "text-clay-400" : "text-accent-700",
                   )}
                 >
                   {item.cta || "Ver más"}

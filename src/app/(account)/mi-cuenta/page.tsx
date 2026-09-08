@@ -82,7 +82,7 @@ export default async function AccountHomePage() {
           {subscription && (
             <Link
               href="/mi-cuenta/suscripcion"
-              className="flex items-center gap-1.5 text-[13px] underline underline-offset-4 hover:text-wine-700"
+              className="flex items-center gap-1.5 text-[13px] underline underline-offset-4 hover:text-accent-700"
             >
               Administrar <ArrowRight className="size-3.5" />
             </Link>
@@ -128,7 +128,7 @@ export default async function AccountHomePage() {
           {orders.length > 0 && (
             <Link
               href="/mi-cuenta/pedidos"
-              className="flex items-center gap-1.5 text-[13px] underline underline-offset-4 hover:text-wine-700"
+              className="flex items-center gap-1.5 text-[13px] underline underline-offset-4 hover:text-accent-700"
             >
               Ver todos <ArrowRight className="size-3.5" />
             </Link>

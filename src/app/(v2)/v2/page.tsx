@@ -80,7 +80,7 @@ export default async function MaquetaUnoPage() {
           </h2>
           <Link
             href="/vinos"
-            className="inline-flex items-center gap-2 text-[13px] text-wine-700 transition-colors hover:text-wine-600"
+            className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
           >
             Ver todos
             <ArrowRight className="size-4" aria-hidden />
@@ -114,7 +114,7 @@ export default async function MaquetaUnoPage() {
             </div>
             <Link
               href="/box"
-              className="inline-flex items-center gap-2 text-[13px] text-wine-700 transition-colors hover:text-wine-600"
+              className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
             >
               Ver todos los box
               <ArrowRight className="size-4" aria-hidden />

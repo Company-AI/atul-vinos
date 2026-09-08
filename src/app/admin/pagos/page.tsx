@@ -78,7 +78,7 @@ export default async function AdminPaymentsPage({ searchParams }: PageProps) {
                 <Td>
                   <Link
                     href={`/admin/suscripciones/${cycle.subscriptionId}`}
-                    className="hover:text-wine-700"
+                    className="hover:text-accent-700"
                   >
                     {cycle.subscription.user.firstName} {cycle.subscription.user.lastName}
                   </Link>
@@ -172,13 +172,13 @@ export default async function AdminPaymentsPage({ searchParams }: PageProps) {
               </Td>
               <Td>
                 {payment.order ? (
-                  <Link href={`/admin/pedidos/${payment.order.id}`} className="tabular hover:text-wine-700">
+                  <Link href={`/admin/pedidos/${payment.order.id}`} className="tabular hover:text-accent-700">
                     Pedido #{payment.order.number}
                   </Link>
                 ) : payment.subscription ? (
                   <Link
                     href={`/admin/suscripciones/${payment.subscription.id}`}
-                    className="tabular hover:text-wine-700"
+                    className="tabular hover:text-accent-700"
                   >
                     Suscripción #{payment.subscription.number}
                   </Link>

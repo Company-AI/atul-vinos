@@ -131,7 +131,7 @@ export function Checkbox({
       type="checkbox"
       className={cn(
         "size-4 shrink-0 rounded-xs border border-linen-300 bg-bone-pure",
-        "accent-wine-700 transition-colors",
+        "accent-accent-700 transition-colors",
         className,
       )}
       {...props}

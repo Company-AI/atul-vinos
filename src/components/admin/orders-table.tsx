@@ -176,7 +176,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
             <Td>
               <Link
                 href={`/admin/pedidos/${order.id}`}
-                className="font-medium tabular text-carbon-900 hover:text-wine-700"
+                className="font-medium tabular text-carbon-900 hover:text-accent-700"
               >
                 #{order.number}
               </Link>
@@ -222,7 +222,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                     void navigator.clipboard.writeText(order.trackingNumber!);
                     toast.success("Tracking copiado.");
                   }}
-                  className="flex items-center gap-1.5 tabular text-carbon-800 hover:text-wine-700"
+                  className="flex items-center gap-1.5 tabular text-carbon-800 hover:text-accent-700"
                 >
                   {order.trackingNumber}
                   <Copy className="size-3" />
@@ -234,7 +234,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
             <Td align="right">
               <Link
                 href={`/admin/pedidos/${order.id}`}
-                className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                className="text-[12px] underline underline-offset-2 hover:text-accent-700"
               >
                 Ver
               </Link>

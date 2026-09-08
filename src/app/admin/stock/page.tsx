@@ -161,7 +161,7 @@ export default async function AdminStockPage({ searchParams }: PageProps) {
                 {movement.order ? (
                   <Link
                     href={`/admin/pedidos/${movement.order.id}`}
-                    className="tabular hover:text-wine-700"
+                    className="tabular hover:text-accent-700"
                   >
                     #{movement.order.number}
                   </Link>

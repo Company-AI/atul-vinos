@@ -95,7 +95,7 @@ export default async function AdminCustomerDetailPage({ params }: PageProps) {
                   <Td align="right">
                     <Link
                       href={`/admin/pedidos/${order.id}`}
-                      className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                      className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                     >
                       Ver
                     </Link>
@@ -129,7 +129,7 @@ export default async function AdminCustomerDetailPage({ params }: PageProps) {
                     <Td align="right">
                       <Link
                         href={`/admin/suscripciones/${subscription.id}`}
-                        className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                        className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                       >
                         Ver
                       </Link>
@@ -215,7 +215,7 @@ export default async function AdminCustomerDetailPage({ params }: PageProps) {
                   <li key={favorite.productId}>
                     <Link
                       href={`/admin/productos/${favorite.product.id}`}
-                      className="hover:text-wine-700"
+                      className="hover:text-accent-700"
                     >
                       {favorite.product.name}
                     </Link>

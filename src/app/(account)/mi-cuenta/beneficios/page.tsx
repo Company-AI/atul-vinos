@@ -60,7 +60,7 @@ export default async function BenefitsPage() {
                     <p className="text-[15px] font-medium text-carbon-900">
                       {pb.benefit.name}
                       {pb.benefit.code === "store_discount" && value > 0 && (
-                        <span className="ml-2 text-wine-700">{value}%</span>
+                        <span className="ml-2 text-accent-700">{value}%</span>
                       )}
                     </p>
                     {pb.benefit.description && (
@@ -89,7 +89,7 @@ export default async function BenefitsPage() {
               </ul>
               <Link
                 href="/club#planes"
-                className="mt-5 inline-block text-[13px] underline underline-offset-4 hover:text-wine-700"
+                className="mt-5 inline-block text-[13px] underline underline-offset-4 hover:text-accent-700"
               >
                 Ver qué plan los incluye
               </Link>

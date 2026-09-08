@@ -36,7 +36,7 @@ export function WineCardRow({
     : product.isNew
       ? { texto: "Nuevo", clase: "bg-carbon-900 text-bone-pure" }
       : product.featured
-        ? { texto: "Destacado", clase: "bg-wine-700 text-bone-pure" }
+        ? { texto: "Destacado", clase: "bg-accent-700 text-bone-pure" }
         : null;
 
   const varietal =
@@ -96,7 +96,7 @@ export function WineCardRow({
       {/* Columna de datos */}
       <div className="flex min-w-0 flex-1 flex-col py-5 pr-4 pt-9">
         <h3 className="font-display text-[17px] font-medium leading-tight text-carbon-900">
-          <Link href={`/vinos/${product.slug}`} className="hover:text-wine-700">
+          <Link href={`/vinos/${product.slug}`} className="hover:text-accent-700">
             {product.name}
           </Link>
         </h3>

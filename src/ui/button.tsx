@@ -13,7 +13,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-wine-700 text-bone-pure hover:bg-wine-600 rounded-md",
+        primary: "bg-accent-700 text-bone-pure hover:bg-accent-600 rounded-md",
         dark: "bg-carbon-900 text-bone hover:bg-carbon-800 rounded-md",
         outline:
           "border border-carbon-900 text-carbon-900 hover:bg-carbon-900 hover:text-bone rounded-md",
@@ -22,7 +22,7 @@ const buttonVariants = cva(
         subtle: "bg-linen-200 text-carbon-900 hover:bg-linen-300 rounded-md",
         quiet: "text-carbon-900 hover:bg-linen-200 rounded-md",
         danger: "bg-danger-500 text-white hover:opacity-90 rounded-md",
-        link: "text-carbon-900 underline underline-offset-4 hover:text-wine-700",
+        link: "text-carbon-900 underline underline-offset-4 hover:text-accent-700",
       },
       size: {
         sm: "h-9 px-3.5 text-[13px]",

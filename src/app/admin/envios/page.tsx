@@ -106,7 +106,7 @@ export default async function AdminShippingPage({ searchParams }: PageProps) {
         action={
           <Link
             href={pendientes ? "/admin/envios" : "/admin/envios?pendientes=1"}
-            className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+            className="text-[12px] underline underline-offset-2 hover:text-accent-700"
           >
             {pendientes ? "Ver todos" : "Ver solo pendientes"}
           </Link>
@@ -121,7 +121,7 @@ export default async function AdminShippingPage({ searchParams }: PageProps) {
               <Td>
                 <Link
                   href={`/admin/pedidos/${shipment.order.id}`}
-                  className="tabular hover:text-wine-700"
+                  className="tabular hover:text-accent-700"
                 >
                   #{shipment.order.number}
                 </Link>
@@ -153,7 +153,7 @@ export default async function AdminShippingPage({ searchParams }: PageProps) {
                 <Link
                   href={`/admin/etiquetas?ids=${shipment.id}`}
                   target="_blank"
-                  className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                  className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                 >
                   Imprimir
                 </Link>

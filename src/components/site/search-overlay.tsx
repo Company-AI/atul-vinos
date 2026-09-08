@@ -163,7 +163,7 @@ export function SearchOverlay({
                 <Link
                   href={`/vinos?q=${encodeURIComponent(query)}`}
                   onClick={() => onOpenChange(false)}
-                  className="mt-6 inline-block text-sm underline underline-offset-4 hover:text-wine-700"
+                  className="mt-6 inline-block text-sm underline underline-offset-4 hover:text-accent-700"
                 >
                   Ver todos los resultados en la tienda
                 </Link>

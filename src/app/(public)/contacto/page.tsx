@@ -45,13 +45,13 @@ export default async function ContactPage() {
             <Eyebrow>Directo</Eyebrow>
             <ul className="mt-4 space-y-3 text-[15px]">
               <li>
-                <a href={`mailto:${company.email}`} className="flex items-center gap-3 hover:text-wine-700">
+                <a href={`mailto:${company.email}`} className="flex items-center gap-3 hover:text-accent-700">
                   <Mail className="size-4 shrink-0 text-clay-500" />
                   {company.email}
                 </a>
               </li>
               <li>
-                <a href={`tel:${company.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-wine-700">
+                <a href={`tel:${company.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-accent-700">
                   <Phone className="size-4 shrink-0 text-clay-500" />
                   {company.phone}
                 </a>
@@ -62,7 +62,7 @@ export default async function ContactPage() {
                     href={`https://wa.me/${company.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:text-wine-700"
+                    className="flex items-center gap-3 hover:text-accent-700"
                   >
                     <MessageCircle className="size-4 shrink-0 text-clay-500" />
                     WhatsApp

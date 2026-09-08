@@ -75,7 +75,7 @@ export function SiteTopbar({
                   name="q"
                   type="search"
                   placeholder="Buscar vinos, bodegas, cepas…"
-                  className="h-10 w-[248px] rounded-pill border border-linen-300 bg-bone-pure pl-10 pr-4 text-[13px] text-carbon-900 outline-none transition-colors placeholder:text-stone-500 focus:border-wine-700 lg:w-[280px]"
+                  className="h-10 w-[248px] rounded-pill border border-linen-300 bg-bone-pure pl-10 pr-4 text-[13px] text-carbon-900 outline-none transition-colors placeholder:text-stone-500 focus:border-accent-700 lg:w-[280px]"
                 />
               </div>
             </form>
@@ -83,7 +83,7 @@ export function SiteTopbar({
             <Link
               href="/buscar"
               aria-label="Buscar"
-              className="rounded-sm p-2 text-carbon-800 transition-colors hover:text-wine-700 md:hidden"
+              className="rounded-sm p-2 text-carbon-800 transition-colors hover:text-accent-700 md:hidden"
             >
               <Search className="size-5" aria-hidden />
             </Link>
@@ -91,7 +91,7 @@ export function SiteTopbar({
             <Link
               href={isLoggedIn ? "/mi-cuenta" : "/ingresar"}
               aria-label={isLoggedIn ? "Mi cuenta" : "Ingresar"}
-              className="hidden rounded-sm p-2 text-carbon-800 transition-colors hover:text-wine-700 sm:block"
+              className="hidden rounded-sm p-2 text-carbon-800 transition-colors hover:text-accent-700 sm:block"
             >
               <User className="size-5" aria-hidden />
             </Link>
@@ -100,7 +100,7 @@ export function SiteTopbar({
               type="button"
               onClick={() => setCartOpen(true)}
               aria-label={`Carrito${cartCount > 0 ? `, ${cartCount} productos` : " vacío"}`}
-              className="relative grid size-10 place-items-center rounded-md bg-wine-700 text-bone-pure transition-colors hover:bg-wine-600"
+              className="relative grid size-10 place-items-center rounded-md bg-accent-700 text-bone-pure transition-colors hover:bg-accent-600"
             >
               <ShoppingCart className="size-[18px]" aria-hidden />
               <span

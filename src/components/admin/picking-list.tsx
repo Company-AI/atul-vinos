@@ -144,7 +144,7 @@ export function PickingList({ orders }: { orders: PickingOrder[] }) {
                 </Badge>
                 <Link
                   href={`/admin/pedidos/${order.id}`}
-                  className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                  className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                 >
                   Ver detalle
                 </Link>
@@ -154,7 +154,7 @@ export function PickingList({ orders }: { orders: PickingOrder[] }) {
             <ul className="mt-4 space-y-1.5 border-t border-linen-200 pt-4">
               {order.items.map((item, i) => (
                 <li key={`${order.id}-${i}`} className="flex items-baseline gap-3">
-                  <span className="w-10 shrink-0 text-[22px] font-medium tabular leading-none text-wine-700">
+                  <span className="w-10 shrink-0 text-[22px] font-medium tabular leading-none text-accent-700">
                     {item.quantity}×
                   </span>
                   <span>

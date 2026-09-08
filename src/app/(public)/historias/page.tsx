@@ -69,7 +69,7 @@ export default async function StoriesPage() {
                     .filter(Boolean)
                     .join(" · ")}
                 </Eyebrow>
-                <Heading level={2} size="md" className="mt-4 group-hover:text-wine-700">
+                <Heading level={2} size="md" className="mt-4 group-hover:text-accent-700">
                   {featured.title}
                 </Heading>
                 {featured.excerpt && <Prose className="mt-4">{featured.excerpt}</Prose>}
@@ -100,7 +100,7 @@ export default async function StoriesPage() {
                           .filter(Boolean)
                           .join(" · ")}
                       </Eyebrow>
-                      <h2 className="mt-3 font-display text-display-sm font-light leading-snug text-carbon-900 group-hover:text-wine-700">
+                      <h2 className="mt-3 font-display text-display-sm font-light leading-snug text-carbon-900 group-hover:text-accent-700">
                         {post.title}
                       </h2>
                       {post.excerpt && (

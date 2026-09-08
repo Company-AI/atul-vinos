@@ -35,7 +35,7 @@ export function PromoBar({
   conDetalle?: boolean;
 }) {
   return (
-    <div className="bg-wine-700 text-bone-pure" role="region" aria-label="Beneficios">
+    <div className="bg-accent-700 text-bone-pure" role="region" aria-label="Beneficios">
       <div className="mx-auto flex max-w-[1600px] items-center overflow-x-auto px-4 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden">
         <div className="flex flex-1 items-center justify-center gap-0 sm:justify-start">
           {AVISOS.map(({ Icon, texto }, i) => (

@@ -12,7 +12,7 @@ const badgeVariants = cva(
       tone: {
         neutral: "bg-linen-200 text-carbon-800",
         dark: "bg-carbon-900 text-bone",
-        wine: "bg-wine-700 text-bone-pure",
+        wine: "bg-accent-700 text-bone-pure",
         gold: "bg-gold-500/20 text-oak-700 ring-1 ring-gold-500/40",
         success: "bg-success-100 text-success-500",
         warning: "bg-warning-100 text-warning-500",

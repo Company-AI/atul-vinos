@@ -36,7 +36,7 @@ export function CategoryCircles({
                   className={cn(
                     "relative grid size-[62px] place-items-center overflow-hidden rounded-full border transition-colors sm:size-[68px]",
                     esActivo
-                      ? "border-wine-700 bg-wine-700"
+                      ? "border-accent-700 bg-accent-700"
                       : "border-linen-200 bg-bone-pure group-hover:border-linen-300",
                   )}
                 >
@@ -60,7 +60,7 @@ export function CategoryCircles({
                 <span
                   className={cn(
                     "text-[12px] leading-tight",
-                    esActivo ? "font-medium text-wine-700" : "text-carbon-800",
+                    esActivo ? "font-medium text-accent-700" : "text-carbon-800",
                   )}
                 >
                   {item.label}

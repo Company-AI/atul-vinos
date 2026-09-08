@@ -197,7 +197,7 @@ function FilterPanel({ options, activeCount }: { options: FilterOptions; activeC
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggle(group.key, option.value)}
-                      className="size-4 shrink-0 rounded-xs border border-linen-300 accent-wine-700"
+                      className="size-4 shrink-0 rounded-xs border border-linen-300 accent-accent-700"
                     />
                     <span className={cn("flex-1", checked ? "text-carbon-900" : "text-stone-600")}>
                       {option.label}

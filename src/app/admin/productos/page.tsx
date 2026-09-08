@@ -122,7 +122,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
                   )}
                 </Td>
                 <Td>
-                  <Link href={`/admin/productos/${product.id}`} className="hover:text-wine-700">
+                  <Link href={`/admin/productos/${product.id}`} className="hover:text-accent-700">
                     {product.name}
                     {product.vintage ? ` ${product.vintage}` : ""}
                   </Link>
@@ -177,7 +177,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
                 <Td align="right">
                   <Link
                     href={`/admin/productos/${product.id}`}
-                    className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                    className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                   >
                     Editar
                   </Link>

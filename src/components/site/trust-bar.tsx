@@ -20,7 +20,7 @@ export function TrustBar() {
       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-10 gap-y-4 px-4 py-5 sm:px-6">
         {ITEMS.map(({ Icon, texto }) => (
           <div key={texto} className="flex items-center gap-2.5">
-            <Icon className="size-[17px] shrink-0 text-wine-700" aria-hidden />
+            <Icon className="size-[17px] shrink-0 text-accent-700" aria-hidden />
             <span className="text-[12px] uppercase tracking-[0.1em] text-carbon-800">{texto}</span>
           </div>
         ))}

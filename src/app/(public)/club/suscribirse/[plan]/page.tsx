@@ -114,7 +114,7 @@ export default async function SubscribePage({ params }: PageProps) {
               {plan.firstCycleDiscountPercent ? (
                 <div className="flex justify-between">
                   <dt className="text-stone-500">Primer mes</dt>
-                  <dd className="tabular text-wine-700">
+                  <dd className="tabular text-accent-700">
                     {formatARS(firstAmount)} ({plan.firstCycleDiscountPercent}% off)
                   </dd>
                 </div>

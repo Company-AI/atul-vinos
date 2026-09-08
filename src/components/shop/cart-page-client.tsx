@@ -72,7 +72,7 @@ export function CartPageClient({
                   <div className="min-w-0">
                     <Link
                       href={`/vinos/${line.slug}`}
-                      className="font-display text-[19px] font-light text-carbon-900 hover:text-wine-700"
+                      className="font-display text-[19px] font-light text-carbon-900 hover:text-accent-700"
                     >
                       {line.name} {line.vintage ?? ""}
                     </Link>

@@ -113,7 +113,7 @@ export default async function AdminSubscriptionDetailPage({ params }: PageProps)
                     {cycle.order ? (
                       <Link
                         href={`/admin/pedidos/${cycle.order.id}`}
-                        className="tabular hover:text-wine-700"
+                        className="tabular hover:text-accent-700"
                       >
                         #{cycle.order.number}
                       </Link>
@@ -247,7 +247,7 @@ export default async function AdminSubscriptionDetailPage({ params }: PageProps)
             )}
             <Link
               href={`/admin/clientes/${subscription.userId}`}
-              className="mt-3 inline-block text-[12px] underline underline-offset-2 hover:text-wine-700"
+              className="mt-3 inline-block text-[12px] underline underline-offset-2 hover:text-accent-700"
             >
               Ver ficha del cliente
             </Link>

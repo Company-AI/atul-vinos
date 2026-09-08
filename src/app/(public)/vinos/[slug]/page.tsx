@@ -192,7 +192,7 @@ export default async function ProductPage({ params }: PageProps) {
                     <li key={item.id} className="flex items-center justify-between gap-3 text-[14px]">
                       <Link
                         href={`/vinos/${item.component.slug}`}
-                        className="text-carbon-900 hover:text-wine-700"
+                        className="text-carbon-900 hover:text-accent-700"
                       >
                         {item.quantity}× {item.component.name} {item.component.vintage ?? ""}
                       </Link>

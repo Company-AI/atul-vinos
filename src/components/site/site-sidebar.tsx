@@ -51,11 +51,11 @@ function SidebarContenido({ items, secundarios, tagline, logo }: Props) {
           aria-current={activo ? "page" : undefined}
           className={cn(
             "flex items-center gap-3.5 rounded-sm py-2.5 pl-1 pr-2 text-[15px] transition-colors",
-            activo ? "text-wine-700" : "text-carbon-800 hover:text-wine-700",
+            activo ? "text-accent-700" : "text-carbon-800 hover:text-accent-700",
           )}
         >
           <Icon
-            className={cn("size-[18px] shrink-0", activo ? "text-wine-700" : "text-stone-500")}
+            className={cn("size-[18px] shrink-0", activo ? "text-accent-700" : "text-stone-500")}
             aria-hidden
           />
           {item.label}

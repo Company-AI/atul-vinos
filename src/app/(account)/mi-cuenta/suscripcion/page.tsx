@@ -196,7 +196,7 @@ export default async function MySubscriptionPage() {
                   <div className="min-w-0">
                     <Link
                       href={`/vinos/${product.slug}`}
-                      className="block truncate text-[14px] text-carbon-900 hover:text-wine-700"
+                      className="block truncate text-[14px] text-carbon-900 hover:text-accent-700"
                     >
                       {product.name} {product.vintage ?? ""}
                     </Link>
@@ -242,7 +242,7 @@ export default async function MySubscriptionPage() {
                 {cycle.order && (
                   <Link
                     href={`/mi-cuenta/pedidos/${cycle.order.number}`}
-                    className="text-[13px] underline underline-offset-4 hover:text-wine-700"
+                    className="text-[13px] underline underline-offset-4 hover:text-accent-700"
                   >
                     Pedido #{cycle.order.number}
                   </Link>

@@ -81,7 +81,7 @@ export default async function VinosPage({ searchParams }: PageProps) {
             {banners[0].linkUrl && banners[0].linkLabel && (
               <Link
                 href={banners[0].linkUrl}
-                className="text-[13px] underline underline-offset-4 hover:text-wine-700"
+                className="text-[13px] underline underline-offset-4 hover:text-accent-700"
               >
                 {banners[0].linkLabel}
               </Link>

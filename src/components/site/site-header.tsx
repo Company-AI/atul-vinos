@@ -115,7 +115,7 @@ export function SiteHeader({
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "eyebrow relative py-2 transition-colors",
-                        transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-wine-700",
+                        transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-accent-700",
                         active && "after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:bg-current",
                       )}
                     >
@@ -151,7 +151,7 @@ export function SiteHeader({
               onClick={() => setSearchOpen(true)}
               className={cn(
                 "rounded-sm p-2 transition-colors",
-                transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-wine-700",
+                transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-accent-700",
               )}
             >
               <Search className="size-[18px]" />
@@ -162,7 +162,7 @@ export function SiteHeader({
               aria-label={isLoggedIn ? "Mi cuenta" : "Ingresar"}
               className={cn(
                 "hidden rounded-sm p-2 transition-colors sm:block",
-                transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-wine-700",
+                transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-accent-700",
               )}
             >
               <User className="size-[18px]" />
@@ -174,12 +174,12 @@ export function SiteHeader({
               aria-label={`Carrito${cartCount > 0 ? `, ${cartCount} productos` : " vacío"}`}
               className={cn(
                 "relative rounded-sm p-2 transition-colors",
-                transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-wine-700",
+                transparent ? "text-linen-200 hover:text-bone" : "text-carbon-800 hover:text-accent-700",
               )}
             >
               <ShoppingBag className="size-[18px]" />
               {cartCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid size-[17px] place-items-center rounded-full bg-wine-700 text-[10px] font-medium tabular text-bone-pure">
+                <span className="absolute -right-0.5 -top-0.5 grid size-[17px] place-items-center rounded-full bg-accent-700 text-[10px] font-medium tabular text-bone-pure">
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}

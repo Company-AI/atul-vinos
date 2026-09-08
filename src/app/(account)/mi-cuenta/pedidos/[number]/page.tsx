@@ -73,7 +73,7 @@ export default async function MyOrderDetailPage({ params }: PageProps) {
                 {shipment.trackingUrl && (
                   <Link
                     href={shipment.trackingUrl}
-                    className="text-[12px] font-normal underline underline-offset-4 hover:text-wine-700"
+                    className="text-[12px] font-normal underline underline-offset-4 hover:text-accent-700"
                   >
                     Ver seguimiento
                   </Link>

@@ -122,7 +122,7 @@ export function CartDrawer({
                       <Link
                         href={`/vinos/${line.slug}`}
                         onClick={() => onOpenChange(false)}
-                        className="block text-sm font-medium leading-snug text-carbon-900 hover:text-wine-700"
+                        className="block text-sm font-medium leading-snug text-carbon-900 hover:text-accent-700"
                       >
                         {line.name} {line.vintage ?? ""}
                       </Link>

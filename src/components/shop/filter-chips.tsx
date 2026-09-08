@@ -24,7 +24,7 @@ export function FilterChips({ items, activo }: { items: FilterChip[]; activo?: s
                 className={cn(
                   "inline-flex h-9 items-center rounded-pill border px-4 text-[13px] transition-colors",
                   esActivo
-                    ? "border-wine-700 bg-wine-700 text-bone-pure"
+                    ? "border-accent-700 bg-accent-700 text-bone-pure"
                     : "border-linen-300 bg-bone-pure text-carbon-800 hover:border-carbon-600",
                 )}
               >

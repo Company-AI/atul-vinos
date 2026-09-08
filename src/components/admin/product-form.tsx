@@ -596,7 +596,7 @@ export function ProductForm({
               <Link
                 href={`/vinos/${form.slug}`}
                 target="_blank"
-                className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                className="text-[12px] underline underline-offset-2 hover:text-accent-700"
               >
                 Ver en la tienda
               </Link>
@@ -646,7 +646,7 @@ export function ProductForm({
             {form.id && (
               <Link
                 href="/admin/stock"
-                className="mt-4 inline-block text-[12px] underline underline-offset-2 hover:text-wine-700"
+                className="mt-4 inline-block text-[12px] underline underline-offset-2 hover:text-accent-700"
               >
                 Registrar movimiento de stock
               </Link>

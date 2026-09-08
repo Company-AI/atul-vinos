@@ -31,7 +31,18 @@
   --color-oak-600: #6B5334;
   --color-oak-700: #4A3A25;
 
-  /* ─── Color: acento vino (uso mínimo y deliberado) ───────────────────────── */
+  /* ─── Color: acento de marca ──────────────────────────────────────────────
+     El azul del logo. Es el acento del sitio: botones, links, estados
+     activos e íconos. Cambiar estos tres valores cambia todo el acento.
+     ─────────────────────────────────────────────────────────────────────── */
+  --color-accent-500: #2A3D6E;
+  --color-accent-600: #24345E;
+  --color-accent-700: #1E2D54;
+
+  /* ─── Color: señal comercial ──────────────────────────────────────────────
+     El granate queda reservado a ofertas y descuentos. Un "-15%" en azul no
+     se lee como rebaja: ahí el rojo comunica, no decora.
+     ─────────────────────────────────────────────────────────────────────── */
   --color-wine-500: #8C2537;
   --color-wine-600: #6E1C2B;
   --color-wine-700: #5E1A26;
@@ -151,7 +162,7 @@
   }
 
   ::selection {
-    background-color: var(--color-wine-700);
+    background-color: var(--color-accent-700);
     color: var(--color-bone-pure);
   }
 }
@@ -665,8 +676,10 @@
 [data-theme="oscuro"] .text-oak-700    { color: var(--color-gold-400); }
 
 /* ─── Acentos: sobre negro el vino se apaga, así que se levanta ──────────── */
-[data-theme="oscuro"] .text-wine-700  { color: #C4667A; }
+[data-theme="oscuro"] .text-accent-700 { color: #93A6D6; }
+[data-theme="oscuro"] .text-wine-700   { color: #C4667A; }
 [data-theme="oscuro"] .text-clay-500  { color: var(--color-clay-400); }
+[data-theme="oscuro"] .hover\:text-accent-700:hover { color: #93A6D6; }
 [data-theme="oscuro"] .hover\:text-wine-700:hover { color: #C4667A; }
 
 /* ─── Bordes y divisores ─────────────────────────────────────────────────── */

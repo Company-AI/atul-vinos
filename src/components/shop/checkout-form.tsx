@@ -295,7 +295,7 @@ export function CheckoutForm({
                         value={q.serviceCode}
                         checked={selectedQuote === q.serviceCode}
                         onChange={() => setSelectedQuote(q.serviceCode)}
-                        className="size-4 accent-wine-700"
+                        className="size-4 accent-accent-700"
                       />
                       <span className="flex-1">
                         <span className="block text-[14px] font-medium text-carbon-900">

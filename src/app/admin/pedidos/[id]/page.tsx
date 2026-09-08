@@ -175,7 +175,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               {order.subscription && (
                 <Link
                   href={`/admin/suscripciones/${order.subscription.id}`}
-                  className="mt-4 inline-block text-[12px] underline underline-offset-2 hover:text-wine-700"
+                  className="mt-4 inline-block text-[12px] underline underline-offset-2 hover:text-accent-700"
                 >
                   Ver suscripción #{order.subscription.number}
                 </Link>
@@ -240,7 +240,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             {order.user && (
               <Link
                 href={`/admin/clientes/${order.user.id}`}
-                className="mt-3 inline-block text-[12px] underline underline-offset-2 hover:text-wine-700"
+                className="mt-3 inline-block text-[12px] underline underline-offset-2 hover:text-accent-700"
               >
                 Ver ficha del cliente
               </Link>
@@ -325,7 +325,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                   <Link
                     href={`/admin/etiquetas?order=${order.id}`}
                     target="_blank"
-                    className="mt-3 inline-block text-[12px] underline underline-offset-2 hover:text-wine-700"
+                    className="mt-3 inline-block text-[12px] underline underline-offset-2 hover:text-accent-700"
                   >
                     Imprimir etiqueta ({shipment.labels[0].printCount} impresiones)
                   </Link>

@@ -155,7 +155,7 @@ export default async function AdminDashboardPage() {
               <tr key={`${product.sku}-${product.name}`}>
                 <Td>
                   {product.productId ? (
-                    <Link href={`/admin/productos/${product.productId}`} className="hover:text-wine-700">
+                    <Link href={`/admin/productos/${product.productId}`} className="hover:text-accent-700">
                       {product.name}
                     </Link>
                   ) : product.name}
@@ -185,7 +185,7 @@ export default async function AdminDashboardPage() {
             {metrics.lowStock.slice(0, 10).map((product) => (
               <tr key={product.id}>
                 <Td>
-                  <Link href={`/admin/productos/${product.id}`} className="hover:text-wine-700">
+                  <Link href={`/admin/productos/${product.id}`} className="hover:text-accent-700">
                     {product.name}
                   </Link>
                   <span className="ml-2 text-[11px] text-stone-500">{product.sku}</span>

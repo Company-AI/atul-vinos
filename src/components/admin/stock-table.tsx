@@ -116,7 +116,7 @@ export function StockTable({ rows }: { rows: StockRow[] }) {
               <Td>
                 <Link
                   href={`/admin/productos/${row.productId}`}
-                  className="hover:text-wine-700"
+                  className="hover:text-accent-700"
                 >
                   {row.name}
                 </Link>

@@ -35,7 +35,7 @@ export function Price({
           >
             {formatARS(compareAt!)}
           </span>
-          <span className="rounded-xs bg-wine-700 px-1.5 py-0.5 text-[10px] font-medium text-bone-pure">
+          <span className="rounded-xs bg-accent-700 px-1.5 py-0.5 text-[10px] font-medium text-bone-pure">
             −{off}%
           </span>
         </>

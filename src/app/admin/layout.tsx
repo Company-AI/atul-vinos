@@ -41,7 +41,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <p className="mt-4 text-[15px] leading-relaxed text-stone-600">{DEMO_NOTICE}</p>
           <Link
             href="/"
-            className="mt-8 inline-block text-sm underline underline-offset-4 hover:text-wine-700"
+            className="mt-8 inline-block text-sm underline underline-offset-4 hover:text-accent-700"
           >
             Volver al sitio
           </Link>

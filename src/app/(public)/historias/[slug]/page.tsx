@@ -117,7 +117,7 @@ export default async function StoryPage({ params }: PageProps) {
                   <li key={item.id}>
                     <Link
                       href={`/historias/${item.slug}`}
-                      className="block border-b border-linen-200 pb-4 hover:text-wine-700"
+                      className="block border-b border-linen-200 pb-4 hover:text-accent-700"
                     >
                       <span className="font-display text-display-sm font-light">{item.title}</span>
                       {item.excerpt && (

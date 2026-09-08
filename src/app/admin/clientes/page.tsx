@@ -91,7 +91,7 @@ export default async function AdminCustomersPage({ searchParams }: PageProps) {
           {rows.map(({ customer, spent, lastOrder, subscription }) => (
             <tr key={customer.id}>
               <Td>
-                <Link href={`/admin/clientes/${customer.id}`} className="hover:text-wine-700">
+                <Link href={`/admin/clientes/${customer.id}`} className="hover:text-accent-700">
                   {customer.firstName} {customer.lastName}
                 </Link>
                 {customer.internalNotes && (
@@ -124,7 +124,7 @@ export default async function AdminCustomersPage({ searchParams }: PageProps) {
               <Td align="right">
                 <Link
                   href={`/admin/clientes/${customer.id}`}
-                  className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                  className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                 >
                   Ver
                 </Link>

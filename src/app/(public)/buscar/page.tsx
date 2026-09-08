@@ -89,7 +89,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
           <ul className="mt-6 space-y-4">
             {posts.map((post) => (
               <li key={post.id}>
-                <Link href={`/historias/${post.slug}`} className="block hover:text-wine-700">
+                <Link href={`/historias/${post.slug}`} className="block hover:text-accent-700">
                   <span className="font-display text-display-sm font-light">{post.title}</span>
                   {post.excerpt && (
                     <span className="mt-1 block text-[14px] text-stone-600">{post.excerpt}</span>

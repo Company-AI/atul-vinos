@@ -156,7 +156,7 @@ export function CouponManager({
                         } else toast.error(result.error);
                       })
                     }
-                    className="text-[12px] underline underline-offset-2 hover:text-wine-700"
+                    className="text-[12px] underline underline-offset-2 hover:text-accent-700"
                   >
                     {coupon.isActive ? "Desactivar" : "Activar"}
                   </button>
