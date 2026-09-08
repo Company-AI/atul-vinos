@@ -105,6 +105,16 @@ function buildWhere(filters: CatalogFilters): Prisma.ProductWhereInput {
   if (filters.sinPacks) and.push({ kind: "WINE" });
   if (filters.destacados) and.push({ featured: true });
   if (filters.novedades) and.push({ isNew: true });
+  /*
+    Oferta = tiene precio de comparación y es mayor al vigente. No alcanza con
+    que compareAtPrice exista: puede haber quedado igual o por debajo tras un
+    ajuste, y ahí no hay descuento que mostrar.
+  */
+  if (filters.ofertas) {
+    and.push({
+      compareAtPrice: { not: null, gt: prisma.product.fields.price },
+    });
+  }
 
   if (and.length) where.AND = and;
   return where;

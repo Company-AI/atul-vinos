@@ -44,6 +44,8 @@ export type CatalogFilters = {
   sinPacks?: boolean;
   destacados?: boolean;
   novedades?: boolean;
+  /** Sólo productos con precio tachado mayor al vigente. */
+  ofertas?: boolean;
   orden?: CatalogSort;
   page?: number;
   perPage?: number;

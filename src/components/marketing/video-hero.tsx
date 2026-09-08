@@ -104,19 +104,22 @@ export function VideoHero({
               </p>
             )}
 
+            {/*
+              La primera línea va en mayúsculas y la segunda en itálica: es el
+              contraste que sostiene la identidad de la marca en el hero.
+            */}
             <h1
               className={cn(
-                "mt-5 max-w-[20ch] font-display font-light text-carbon-900 opacity-0",
+                "mt-5 max-w-[20ch] font-display text-carbon-900 opacity-0",
                 "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_240ms_forwards]",
                 data.scale === "hero" ? "text-display-2xl" : "text-display-xl",
               )}
             >
-              {data.title}
+              <span className="block font-medium uppercase tracking-[0.005em]">{data.title}</span>
               {data.titleAccent && (
-                <>
-                  <br />
-                  <span className="accent-italic text-wine-700">{data.titleAccent}</span>
-                </>
+                <span className="mt-1 block font-light italic text-carbon-800">
+                  {data.titleAccent}
+                </span>
               )}
             </h1>
 

@@ -54,6 +54,7 @@
   --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-script: var(--font-parisienne), cursive;
 
   /* Escala editorial: grande y con aire en display, contenida en UI */
   --text-display-xl: clamp(2.75rem, 7.5vw, 6.5rem);
@@ -156,6 +157,13 @@
 }
 
 /* ══════════════════════ Utilidades del sistema ═════════════════════════════ */
+
+/* Remate manuscrito de marca. */
+@utility script {
+  font-family: var(--font-script);
+  font-weight: 400;
+  line-height: 1.25;
+}
 
 @utility eyebrow {
   font-family: var(--font-sans);

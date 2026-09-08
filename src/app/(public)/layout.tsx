@@ -2,62 +2,79 @@ import { getActiveBanners } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
 import { getCartCount } from "@/domain/cart/service";
 import { getSession } from "@/infra/auth/session";
-import { SiteHeader, type NavItem } from "@/components/site/site-header";
+import { PromoBar } from "@/components/site/promo-bar";
+import { SiteTopbar } from "@/components/site/site-topbar";
+import { SidebarColumn, type SidebarItem } from "@/components/site/site-sidebar";
+import { TrustBar } from "@/components/site/trust-bar";
 import { SiteFooter } from "@/components/site/site-footer";
 import { RevealNoFlashScript, RevealObserver } from "@/ui/reveal-observer";
 
 /*
-  El Club sale del menú para el lanzamiento: sin stock profundo por etiqueta,
-  prometer una caja distinta cada mes se rompe al segundo mes. El motor de
-  suscripciones queda intacto y volver a mostrarlo es agregar el ítem acá.
+  El Club no se lanza todavía: sin stock profundo por etiqueta, prometer una
+  caja distinta cada mes se rompe al segundo mes. El motor de suscripciones
+  queda intacto y volver a mostrarlo es agregar el ítem acá.
 */
-const NAV: NavItem[] = [
-  { label: "Vinos", href: "/vinos" },
-  { label: "Box", href: "/box" },
-  { label: "Quiénes somos", href: "/quienes-somos" },
-  { label: "Contacto", href: "/contacto" },
+const NAV: SidebarItem[] = [
+  { label: "Inicio", href: "/", icon: "inicio" },
+  { label: "Vinos", href: "/vinos", icon: "wine" },
+  { label: "Box", href: "/box", icon: "box" },
+  { label: "Novedades", href: "/novedades", icon: "nuevo" },
+  { label: "Ofertas", href: "/ofertas", icon: "oferta" },
 ];
 
+const NAV_SECUNDARIA: SidebarItem[] = [
+  { label: "Quiénes somos", href: "/quienes-somos", icon: "nosotros" },
+  { label: "Contacto", href: "/contacto", icon: "contacto" },
+];
+
+const TAGLINE = ["Vinos", "que", "conectan"];
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [settings, banners, cartCount, session] = await Promise.all([
+  const [settings, cartCount, session] = await Promise.all([
     getSettings(),
-    getActiveBanners("top"),
     getCartCount(),
     getSession(),
   ]);
 
+  // Los banners del CMS siguen disponibles, pero la franja fija de beneficios
+  // los reemplaza en la parte superior.
+  void getActiveBanners;
+
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col bg-bone">
       <RevealNoFlashScript />
       <RevealObserver />
 
-      <SiteHeader
-        nav={NAV}
-        companyName={settings.company.name}
-        logoUrl={settings.company.logoUrl}
-        logoLightUrl={settings.company.logoLightUrl}
-        cartCount={cartCount}
-        isLoggedIn={Boolean(session)}
-        announcements={banners.map((b) => ({
-          id: b.id,
-          message: b.message,
-          linkUrl: b.linkUrl,
-          linkLabel: b.linkLabel,
-        }))}
-      />
+      <PromoBar remate="Buenos vinos, personas reales." />
 
-      {/*
-        El header es fijo. Las páginas con hero a pantalla completa marcan su
-        primer bloque con data-hero y el main quita el padding superior.
-      */}
-      <main
-        id="contenido"
-        className="flex-1 pt-[calc(4rem+1rem)] has-[[data-hero]]:pt-0 lg:pt-[calc(84px+1rem)]"
-      >
-        {children}
-      </main>
+      <div className="flex flex-1">
+        <SidebarColumn
+          items={NAV}
+          secundarios={NAV_SECUNDARIA}
+          tagline={TAGLINE}
+          logo={{ url: settings.company.logoUrl, alt: settings.company.name }}
+        />
 
-      <SiteFooter />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <SiteTopbar
+            companyName={settings.company.name}
+            logoUrl={settings.company.logoUrl}
+            logoSoloEnMobile
+            cartCount={cartCount}
+            isLoggedIn={Boolean(session)}
+            nav={NAV}
+            navSecundaria={NAV_SECUNDARIA}
+            tagline={TAGLINE}
+          />
+
+          <main id="contenido" className="flex-1">
+            {children}
+          </main>
+
+          <TrustBar />
+          <SiteFooter />
+        </div>
+      </div>
     </div>
   );
 }

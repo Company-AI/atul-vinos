@@ -109,6 +109,9 @@ export function demoListProducts(filters: CatalogFilters = {}) {
   if (filters.sinPacks) items = items.filter((p) => p.kind === "WINE");
   if (filters.destacados) items = items.filter((p) => p.featured);
   if (filters.novedades) items = items.filter((p) => p.isNew);
+  if (filters.ofertas) {
+    items = items.filter((p) => p.compareAtPrice != null && p.compareAtPrice > p.price);
+  }
   if (filters.precioMin != null) items = items.filter((p) => p.price >= filters.precioMin!);
   if (filters.precioMax != null) items = items.filter((p) => p.price <= filters.precioMax!);
 

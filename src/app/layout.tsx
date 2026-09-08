@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter, Parisienne } from "next/font/google";
 import "./globals.css";
 import { getSettings } from "@/domain/settings/service";
 import { Toaster } from "@/ui/toaster";
@@ -9,6 +9,14 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500"],
   variable: "--font-cormorant",
+  display: "swap",
+});
+
+/** Remates manuscritos de marca ("Buenos vinos, personas reales"). */
+const script = Parisienne({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-parisienne",
   display: "swap",
 });
 
@@ -64,7 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     */
     <html
       lang="es-AR"
-      className={`${cormorant.variable} ${inter.variable}`}
+      className={`${cormorant.variable} ${inter.variable} ${script.variable}`}
       suppressHydrationWarning
     >
       <body className="min-h-dvh antialiased">
