@@ -187,6 +187,29 @@ export const galleryBlock = z.object({
   tone: z.enum(["light", "linen", "dark"]).default("light"),
 });
 
+export const promoRailBlock = z.object({
+  eyebrow: z.string().default(""),
+  title: z.string().default(""),
+  /**
+   * Tarjetas de novedades, promos, destacados del mes o box. Se recorren en
+   * horizontal con snap en lugar de rotar solas: el visitante controla el
+   * ritmo y no hace falta JavaScript para que funcione.
+   */
+  items: z
+    .array(
+      z.object({
+        kicker: z.string().default(""),
+        title: z.string().default(""),
+        body: z.string().default(""),
+        imageUrl: z.string().default(""),
+        href: z.string().default("/vinos"),
+        cta: z.string().default(""),
+      }),
+    )
+    .default([]),
+  tone: z.enum(["light", "linen", "dark"]).default("linen"),
+});
+
 export const BLOCK_SCHEMAS = {
   video_hero: videoHeroBlock,
   editorial: editorialBlock,
@@ -201,6 +224,7 @@ export const BLOCK_SCHEMAS = {
   figures: figuresBlock,
   split_sticky: splitStickyBlock,
   gallery: galleryBlock,
+  promo_rail: promoRailBlock,
 } as const;
 
 export type BlockType = keyof typeof BLOCK_SCHEMAS;
@@ -219,6 +243,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   figures: "Cifras clave",
   split_sticky: "Foto fija con texto",
   gallery: "Mosaico de fotos",
+  promo_rail: "Tira de promos y destacados",
 };
 
 export type BlockData<T extends BlockType> = z.infer<(typeof BLOCK_SCHEMAS)[T]>;

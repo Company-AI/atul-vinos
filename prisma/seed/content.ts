@@ -18,31 +18,35 @@ export const CMS_SECTIONS = [
       eyebrow: "Vinos de todo el país",
       title: "No hacemos el vino.",
       titleAccent: "Elegimos cuál vale la pena.",
-      subtitle:
-        "Recorremos el país de punta a punta: la Quebrada en Jujuy, los valles de Salta, Mendoza, el Alto Valle y la Patagonia. Probamos todo antes de comprarlo, y si está en esta lista es porque lo pondríamos en nuestra propia mesa.",
-      ctaPrimary: { label: "Ver la selección", href: "/vinos" },
-      ctaSecondary: { label: "Conocé el Club", href: "/club" },
+      subtitle: "Probamos todo lo que vendemos. Vinos de todo el país, elegidos uno por uno.",
+      ctaPrimary: { label: "Ver los vinos", href: "/vinos" },
+      ctaSecondary: { label: "Ver los Box", href: "/box" },
+      /*
+        Sin video: el cliente entra a comprar, no a ver un documental. Foto
+        fija de botellas y altura media para que el catálogo entre en pantalla
+        sin tener que scrollear.
+      */
       media: {
-        imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
-        imageAlt: "Viñedos argentinos al pie de la cordillera",
-        videoDesktopUrl: "/media/video/hero-desktop.mp4",
-        videoMobileUrl: "/media/video/hero-mobile.mp4",
-        posterUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
+        imageUrl: "/media/scenes/bottle-glass-dark.jpg",
+        imageAlt: "Botellas de vino listas para servir",
+        videoDesktopUrl: "",
+        videoMobileUrl: "",
+        posterUrl: "/media/scenes/bottle-glass-dark.jpg",
       },
       overlay: "scrim-side",
       align: "left",
-      height: "full",
+      height: "medium",
       showLogo: false,
-      scale: "hero",
-      scrollCue: "Seguí bajando",
+      scale: "page",
+      scrollCue: "",
     },
   },
   {
-    key: "home.declaracion",
-    page: "home",
+    key: "quienes-somos.declaracion",
+    page: "quienes-somos",
     type: "statement",
     title: "Declaración",
-    sortOrder: 15,
+    sortOrder: 10,
     data: {
       eyebrow: "Nuestra posición",
       text: "Un catálogo corto no es una limitación.",
@@ -54,11 +58,11 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.cifras",
-    page: "home",
+    key: "quienes-somos.cifras",
+    page: "quienes-somos",
     type: "figures",
     title: "Cifras",
-    sortOrder: 25,
+    sortOrder: 30,
     data: {
       eyebrow: "En números",
       title: "Dónde está puesto el foco.",
@@ -90,8 +94,8 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.criterio",
-    page: "home",
+    key: "quienes-somos.criterio",
+    page: "quienes-somos",
     type: "editorial",
     title: "Nuestro criterio",
     sortOrder: 20,
@@ -113,11 +117,11 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.mendoza",
-    page: "home",
+    key: "quienes-somos.mendoza",
+    page: "quienes-somos",
     type: "editorial",
     title: "De dónde viene",
-    sortOrder: 30,
+    sortOrder: 40,
     data: {
       eyebrow: "El país",
       title: "Argentina se toma de punta a punta.",
@@ -137,11 +141,11 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.lines",
-    page: "home",
+    key: "quienes-somos.lines",
+    page: "quienes-somos",
     type: "showcase",
     title: "Niveles de selección",
-    sortOrder: 40,
+    sortOrder: 45,
     data: {
       eyebrow: "Cómo está ordenada la lista",
       title: "Cuatro niveles, según para qué la vayas a abrir.",
@@ -178,27 +182,65 @@ export const CMS_SECTIONS = [
     },
   },
   {
+    key: "home.destacados",
+    page: "home",
+    type: "promo_rail",
+    title: "Tira de destacados",
+    sortOrder: 20,
+    data: {
+      eyebrow: "Este mes",
+      title: "Lo que está pasando.",
+      tone: "linen",
+      items: [
+        {
+          kicker: "Envíos",
+          title: "Envío sin cargo en Río Cuarto",
+          body: "Entregamos en Río Cuarto, Las Higueras y Holmberg sin costo de envío. Al resto del país, tarifa por zona.",
+          imageUrl: "/media/scenes/barrels.jpg",
+          href: "/envios",
+          cta: "Ver zonas y plazos",
+        },
+        {
+          kicker: "Box",
+          title: "Cajas armadas por nosotros",
+          body: "Una idea por caja: recorrer una región, comparar una uva o resolver un regalo. Más barato que botella por botella.",
+          imageUrl: "/media/packs/pack-malbec.jpg",
+          href: "/box",
+          cta: "Ver los Box",
+        },
+        {
+          kicker: "Recién entrado",
+          title: "Novedades del mes",
+          body: "Las etiquetas que acaban de entrar al depósito, con la ficha de por qué las elegimos.",
+          imageUrl: "/media/wines/blanco.jpg",
+          href: "/vinos?orden=novedades",
+          cta: "Ver novedades",
+        },
+      ],
+    },
+  },
+  {
     key: "home.featured",
     page: "home",
     type: "featured_wines",
-    title: "Vinos destacados",
-    sortOrder: 50,
+    title: "Los vinos",
+    sortOrder: 30,
     data: {
-      eyebrow: "Lo que estamos recomendando",
-      title: "Si tuviéramos que elegir cuatro.",
-      body: "Cambia seguido: son las botellas que más estamos recomendando este mes en el mostrador.",
-      cta: { label: "Ver la lista completa", href: "/vinos" },
+      eyebrow: "La tienda",
+      title: "Nuestros vinos.",
+      body: "",
+      cta: { label: "Ver el catálogo completo", href: "/vinos" },
       source: "featured",
-      limit: 4,
+      limit: 8,
       tone: "light",
     },
   },
   {
-    key: "home.proceso",
-    page: "home",
+    key: "quienes-somos.proceso",
+    page: "quienes-somos",
     type: "split_sticky",
     title: "Cómo llega una botella a la lista",
-    sortOrder: 55,
+    sortOrder: 50,
     data: {
       eyebrow: "El proceso",
       title: "Cómo llega una botella a esta lista.",
@@ -233,11 +275,11 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.mosaico",
-    page: "home",
+    key: "quienes-somos.mosaico",
+    page: "quienes-somos",
     type: "gallery",
     title: "Mosaico del país",
-    sortOrder: 58,
+    sortOrder: 70,
     data: {
       eyebrow: "Los lugares",
       title: "De dónde viene cada botella.",
@@ -284,8 +326,8 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "home.bodegas",
-    page: "home",
+    key: "quienes-somos.bodegas",
+    page: "quienes-somos",
     type: "showcase",
     title: "Bodegas que representamos",
     sortOrder: 60,
@@ -319,11 +361,98 @@ export const CMS_SECTIONS = [
     },
   },
   {
+    key: "home.box",
+    page: "home",
+    type: "showcase",
+    title: "Box en la home",
+    sortOrder: 40,
+    data: {
+      eyebrow: "Box",
+      title: "Si preferís que elijamos nosotros.",
+      body: "Cada caja tiene una idea detrás y sale más barata que comprar las botellas por separado.",
+      cta: { label: "Ver todos los Box", href: "/box" },
+      tone: "light",
+      items: [
+        { title: "Toda Malbec", subtitle: "La misma uva, distintas zonas", imageUrl: "/media/packs/pack-malbec.jpg", href: "/box" },
+        { title: "Ruta Argentina", subtitle: "Un recorrido de norte a sur", imageUrl: "/media/packs/pack-uco.jpg", href: "/box" },
+        { title: "Para el asado", subtitle: "Lo que funciona en la parrilla", imageUrl: "/media/packs/pack-asado.jpg", href: "/box" },
+        { title: "Para regalar", subtitle: "Alta gama, listo para entregar", imageUrl: "/media/packs/pack-regalo.jpg", href: "/box" },
+      ],
+    },
+  },
+  {
+    /*
+      Reemplaza al texto largo que antes cargaba la home: una sola idea y un
+      link. El desarrollo vive en /quienes-somos.
+    */
+    key: "home.criterio-corto",
+    page: "home",
+    type: "rich_text",
+    title: "Criterio, en corto",
+    sortOrder: 50,
+    data: {
+      eyebrow: "Cómo elegimos",
+      title: "No vendemos nada que no probemos.",
+      body:
+        "Vamos a la bodega, probamos la añada que se va a vender y recién ahí compramos. Si baja respecto de la anterior, la sacamos de la lista. Por eso el catálogo es corto: podemos defender cada botella.",
+      tone: "linen",
+    },
+  },
+  {
+    key: "quienes-somos.hero",
+    page: "quienes-somos",
+    type: "video_hero",
+    title: "Hero de Quiénes somos",
+    sortOrder: 5,
+    data: {
+      eyebrow: "Quiénes somos",
+      title: "No hacemos el vino.",
+      titleAccent: "Elegimos cuál vale la pena.",
+      subtitle:
+        "Somos distribuidores. Lo que vendemos es criterio: probamos todo antes de comprarlo y te contamos por qué lo elegimos.",
+      ctaPrimary: { label: "Ver los vinos", href: "/vinos" },
+      ctaSecondary: { label: "", href: "" },
+      media: {
+        imageUrl: "/media/scenes/cellar.jpg",
+        imageAlt: "Sala de crianza con barricas",
+        videoDesktopUrl: "",
+        videoMobileUrl: "",
+        posterUrl: "/media/scenes/cellar.jpg",
+      },
+      overlay: "scrim-side",
+      align: "left",
+      height: "medium",
+      showLogo: false,
+      scale: "page",
+      scrollCue: "",
+    },
+  },
+  {
+    key: "box.intro",
+    page: "box",
+    type: "rich_text",
+    title: "Intro de Box",
+    sortOrder: 10,
+    data: {
+      eyebrow: "Tienda",
+      title: "Nuestros Box",
+      body:
+        "Cajas que armamos nosotros con una idea detrás: recorrer una región, comparar una misma uva en distintos suelos o resolver un regalo sin dudar. Cada una sale más barata que comprar las botellas por separado, y la disponibilidad depende del stock real de los vinos que la componen.",
+      tone: "light",
+    },
+  },
+  {
+    /*
+      El Club no se lanza todavía: sin stock profundo por etiqueta, prometer
+      una caja distinta cada mes se rompe al segundo mes. Queda inactivo, no
+      borrado, para volver a encenderlo cuando haya volumen.
+    */
     key: "home.club",
     page: "home",
     type: "club_teaser",
-    title: "El Club",
-    sortOrder: 70,
+    title: "El Club (inactivo hasta que haya stock)",
+    isActive: false,
+    sortOrder: 90,
     data: {
       eyebrow: "El Club",
       title: "Todos los meses elegimos por vos.",
@@ -435,7 +564,7 @@ export const CMS_SECTIONS = [
       title: "Veinte años tomando y preguntando.",
       subtitle:
         "Empezamos comprando para nosotros y terminamos distribuyendo. En el medio, muchas visitas a bodega y muchas botellas que no volvimos a comprar.",
-      ctaPrimary: { label: "Ver la selección", href: "/vinos" },
+      ctaPrimary: { label: "Ver los vinos", href: "/vinos" },
       ctaSecondary: { label: "", href: "" },
       media: {
         imageUrl: "/media/scenes/mendoza-farmland-snow.jpg",

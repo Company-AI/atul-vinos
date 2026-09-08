@@ -83,7 +83,7 @@ export function SiteHeader({
           Orden del header (spec §66): logo, navegación, buscar, cuenta, carrito.
           Mobile: grilla de 3 columnas con el logo centrado y el menú a la izquierda.
         */}
-        <div className="mx-auto grid h-14 max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-gutter lg:flex lg:h-[72px] lg:gap-8">
+        <div className="mx-auto grid h-16 max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-gutter lg:h-[84px] lg:gap-8">
           {/* Menú mobile */}
           <button
             type="button"
@@ -98,24 +98,8 @@ export function SiteHeader({
             <Menu className="size-5" />
           </button>
 
-          {/* Logo */}
-          <Link
-            href="/"
-            aria-label={`${companyName} — inicio`}
-            className="shrink-0 justify-self-center lg:justify-self-start"
-          >
-            <Image
-              src={transparent ? logoLightUrl : logoUrl}
-              alt={companyName}
-              width={180}
-              height={36}
-              priority
-              className="h-7 w-auto lg:h-9"
-            />
-          </Link>
-
-          {/* Navegación desktop */}
-          <nav aria-label="Principal" className="hidden flex-1 lg:block">
+          {/* Navegación: primera zona, a la izquierda */}
+          <nav aria-label="Principal" className="hidden lg:block">
             <ul className="flex items-center gap-7">
               {nav.map((item) => {
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -137,6 +121,22 @@ export function SiteHeader({
               })}
             </ul>
           </nav>
+
+          {/* Logo: zona central */}
+          <Link
+            href="/"
+            aria-label={`${companyName} — inicio`}
+            className="shrink-0 justify-self-center"
+          >
+            <Image
+              src={transparent ? logoLightUrl : logoUrl}
+              alt={companyName}
+              width={226}
+              height={64}
+              priority
+              className="h-8 w-auto lg:h-11"
+            />
+          </Link>
 
           {/* Acciones */}
           <div className="flex items-center justify-end gap-1 justify-self-end">

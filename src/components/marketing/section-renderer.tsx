@@ -12,6 +12,7 @@ import { StatementSection } from "./statement-section";
 import { FiguresSection } from "./figures-section";
 import { SplitStickySection } from "./split-sticky-section";
 import { GallerySection } from "./gallery-section";
+import { PromoRail } from "./promo-rail";
 
 /**
  * Traduce los bloques del CMS a componentes. Los tipos desconocidos se ignoran
@@ -67,6 +68,8 @@ export function SectionRenderer({
             return <SplitStickySection key={section.id} data={section.data as BlockData<"split_sticky">} id={id} />;
           case "gallery":
             return <GallerySection key={section.id} data={section.data as BlockData<"gallery">} id={id} />;
+          case "promo_rail":
+            return <PromoRail key={section.id} data={section.data as BlockData<"promo_rail">} id={id} />;
           default:
             return null;
         }

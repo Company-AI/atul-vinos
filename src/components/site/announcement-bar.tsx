@@ -30,16 +30,24 @@ export function AnnouncementBar({ items }: { items: Announcement[] }) {
   const current = items[index];
 
   return (
-    <div className="bg-carbon-950 text-bone" role="region" aria-label="Anuncios">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-center gap-2 px-gutter py-2 text-center">
-        <p aria-live="polite" className="text-[12px] tracking-wide text-linen-200">
+    /*
+      El anuncio de envíos y promos es información comercial, no un pie de
+      página: va sobre el acento de la marca y con cuerpo suficiente para
+      leerse de un vistazo. Antes iba a 12px sobre casi negro y se perdía.
+    */
+    <div className="bg-wine-700 text-bone-pure" role="region" aria-label="Anuncios">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-center gap-2.5 px-gutter py-3 text-center">
+        <p
+          aria-live="polite"
+          className="text-[13px] font-medium tracking-[0.02em] sm:text-[14px]"
+        >
           {current.message}
           {current.linkUrl && current.linkLabel && (
             <>
               {" "}
               <Link
                 href={current.linkUrl}
-                className="underline underline-offset-2 hover:text-bone-pure"
+                className="underline decoration-bone-pure/50 underline-offset-[3px] transition-colors hover:decoration-bone-pure"
               >
                 {current.linkLabel}
               </Link>

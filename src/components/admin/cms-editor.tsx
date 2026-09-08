@@ -111,6 +111,11 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "mediaSide", label: "Lado de la foto", kind: "select", options: ["left", "right"] },
     { key: "tone", label: "Fondo", kind: "select", options: ["light", "linen", "dark"] },
   ],
+  promo_rail: [
+    { key: "eyebrow", label: "Volanta", kind: "text" },
+    { key: "title", label: "Título", kind: "textarea" },
+    { key: "tone", label: "Fondo", kind: "select", options: ["linen", "light", "dark"] },
+  ],
   gallery: [
     { key: "eyebrow", label: "Volanta", kind: "text" },
     { key: "title", label: "Título", kind: "textarea" },

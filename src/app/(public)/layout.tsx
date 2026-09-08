@@ -6,11 +6,15 @@ import { SiteHeader, type NavItem } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { RevealNoFlashScript, RevealObserver } from "@/ui/reveal-observer";
 
+/*
+  El Club sale del menú para el lanzamiento: sin stock profundo por etiqueta,
+  prometer una caja distinta cada mes se rompe al segundo mes. El motor de
+  suscripciones queda intacto y volver a mostrarlo es agregar el ítem acá.
+*/
 const NAV: NavItem[] = [
   { label: "Vinos", href: "/vinos" },
-  { label: "Club", href: "/club" },
-  { label: "Nuestra historia", href: "/historia" },
-  { label: "Historias", href: "/historias" },
+  { label: "Box", href: "/box" },
+  { label: "Quiénes somos", href: "/quienes-somos" },
   { label: "Contacto", href: "/contacto" },
 ];
 

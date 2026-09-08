@@ -44,15 +44,26 @@ const nextConfig: NextConfig = {
       { source: "/tienda", destination: "/vinos", permanent: true },
       { source: "/suscripcion", destination: "/club", permanent: true },
 
-      /*
-        Las direcciones de diseño se numeraron /v2 /v3 /v4 /v6 /v7: nunca hubo
-        una v5. En vez de renumerar y romper los links que ya circulan, /v5
-        cae en la variante siguiente para que nadie se coma un 404.
+      // "Packs" pasó a llamarse "Box" en el menú: los links viejos siguen vivos.
+      { source: "/packs", destination: "/box", permanent: true },
 
-        Temporal a propósito: cuando se elija una dirección, estas rutas se van
-        y un 308 quedaría cacheado en el navegador apuntando a una URL muerta.
+      /*
+        Las direcciones de diseño /v2 a /v8 se borraron al elegir una: los
+        links que circularon caen en la home. Temporal, no permanente, para no
+        dejar un 308 cacheado si alguna vuelve.
       */
-      { source: "/v5", destination: "/v6", permanent: false },
+      { source: "/v:num(\\d+)", destination: "/", permanent: false },
+
+      // "Nuestra historia" se unificó en "Quiénes somos".
+      { source: "/historia", destination: "/quienes-somos", permanent: true },
+
+      /*
+        El Club no se lanza todavía. La ruta cae en la home en lugar de dar
+        404: cuando haya stock para sostenerlo, se quita este redirect y el
+        motor de suscripciones ya está entero detrás.
+      */
+      { source: "/club", destination: "/", permanent: false },
+      { source: "/club/:path*", destination: "/", permanent: false },
       { source: "/v5/:path*", destination: "/v6/:path*", permanent: false },
     ];
   },
