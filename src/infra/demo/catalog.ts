@@ -53,7 +53,7 @@ function packACard(p: (typeof PACKS)[number], i: number): ProductCard {
     kind: "PACK" as ProductKind,
     price: p.price,
     compareAtPrice: p.compareAtPrice ?? null,
-    imageUrl: `/media/packs/${p.image}.jpg`,
+    imageUrl: `/media/packs/${p.image}.webp`,
     imageAlt: p.name,
     wineType: null,
     vintage: null,

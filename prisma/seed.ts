@@ -423,7 +423,7 @@ async function main() {
         categoryId: categories.get(p.category)!,
         images: {
           create: [{
-            url: `/media/packs/${p.image}.jpg`, alt: p.name,
+            url: `/media/packs/${p.image}.webp`, alt: p.name,
             isPrimary: true, sortOrder: 0, width: 600, height: 800,
           }],
         },
@@ -700,7 +700,7 @@ async function main() {
   ]);
   const imageBySlug = new Map<string, string>([
     ...WINES.map((w) => [w.slug, `/media/wines/${w.image}.png`] as [string, string]),
-    ...PACKS.map((p) => [p.slug, `/media/packs/${p.image}.jpg`] as [string, string]),
+    ...PACKS.map((p) => [p.slug, `/media/packs/${p.image}.webp`] as [string, string]),
   ]);
 
   let storeOrders = 0;
