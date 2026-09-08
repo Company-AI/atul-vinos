@@ -48,11 +48,10 @@ const nextConfig: NextConfig = {
       { source: "/packs", destination: "/box", permanent: true },
 
       /*
-        Las direcciones de diseño /v2 a /v8 se borraron al elegir una: los
-        links que circularon caen en la home. Temporal, no permanente, para no
-        dejar un 308 cacheado si alguna vuelve.
+        /v2 vuelve a ser una ruta real: es la primera maqueta, que conviven con
+        la de "/" para comparar. Las viejas /v3 a /v8 siguen cayendo en la home.
       */
-      { source: "/v:num(\\d+)", destination: "/", permanent: false },
+      { source: "/v:num(3|4|5|6|7|8)", destination: "/", permanent: false },
 
       // "Nuestra historia" se unificó en "Quiénes somos".
       { source: "/historia", destination: "/quienes-somos", permanent: true },

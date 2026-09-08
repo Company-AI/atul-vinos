@@ -9,12 +9,31 @@ import { CreditCard, Tag, Truck } from "lucide-react";
  * lo necesitan los beneficios.
  */
 const AVISOS = [
-  { Icon: Truck, texto: "Envío gratis en Río Cuarto" },
-  { Icon: Tag, texto: "10% off en tu segunda compra" },
-  { Icon: CreditCard, texto: "Hasta 6 cuotas sin interés" },
+  {
+    Icon: Truck,
+    texto: "Envío gratis en Río Cuarto",
+    detalle: "Recibí tus vinos en la puerta de tu casa.",
+  },
+  {
+    Icon: Tag,
+    texto: "10% off en tu segunda compra",
+    detalle: "Seguimos brindando juntos.",
+  },
+  {
+    Icon: CreditCard,
+    texto: "Hasta 6 cuotas sin interés",
+    detalle: "Con todas las tarjetas.",
+  },
 ] as const;
 
-export function PromoBar({ remate }: { remate?: string }) {
+export function PromoBar({
+  remate,
+  conDetalle = false,
+}: {
+  remate?: string;
+  /** Muestra la segunda línea de cada aviso, como en la primera maqueta. */
+  conDetalle?: boolean;
+}) {
   return (
     <div className="bg-wine-700 text-bone-pure" role="region" aria-label="Beneficios">
       <div className="mx-auto flex max-w-[1600px] items-center overflow-x-auto px-4 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden">
@@ -27,10 +46,15 @@ export function PromoBar({ remate }: { remate?: string }) {
                 i > 0 ? "border-l border-bone-pure/15" : "",
               ].join(" ")}
             >
-              <Icon className="size-[17px] shrink-0 opacity-90" strokeWidth={1.5} aria-hidden />
-              <p className="text-[11.5px] font-semibold uppercase tracking-[0.09em] sm:text-[12px]">
-                {texto}
-              </p>
+              <Icon className="size-[18px] shrink-0 opacity-90" strokeWidth={1.5} aria-hidden />
+              <div className="leading-tight">
+                <p className="text-[11.5px] font-semibold uppercase tracking-[0.09em] sm:text-[12px]">
+                  {texto}
+                </p>
+                {conDetalle && (
+                  <p className="mt-0.5 text-[11px] text-bone-pure/70">{AVISOS[i].detalle}</p>
+                )}
+              </div>
             </div>
           ))}
         </div>
