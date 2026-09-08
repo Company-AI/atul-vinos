@@ -33,6 +33,12 @@ export const videoHeroBlock = z.object({
   showLogo: z.boolean().default(true),
   /** display-2xl para el hero de portada; display-xl para heroes interiores. */
   scale: z.enum(["hero", "page"]).default("page"),
+  /**
+   * "overlay" pone el texto sobre la foto; "split" lo pone sobre fondo sólido
+   * con la foto al lado. El partido garantiza contraste sin depender de qué
+   * tan clara sea la imagen, que es el problema del overlay.
+   */
+  layout: z.enum(["overlay", "split"]).default("overlay"),
   scrollCue: z.string().default(""),
 });
 

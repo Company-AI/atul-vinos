@@ -87,6 +87,84 @@ export function VideoHero({
     medium: "min-h-[56svh] lg:min-h-[64svh]",
   } as const;
 
+  /*
+    Modo partido: el texto va sobre fondo sólido y la foto al costado. El
+    overlay depende de que la imagen sea lo bastante oscura donde cae el
+    titular, y con fotos claras el texto se pierde. Acá el contraste está
+    garantizado por construcción.
+  */
+  if (data.layout === "split") {
+    return (
+      <section ref={containerRef} className="border-b border-linen-200 bg-bone">
+        <div className="mx-auto grid max-w-[1440px] items-stretch lg:grid-cols-2">
+          <div className="flex flex-col justify-center px-gutter py-14 lg:py-24">
+            {data.eyebrow && (
+              <p className="eyebrow text-stone-500 opacity-0 animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_120ms_forwards]">
+                {data.eyebrow}
+              </p>
+            )}
+
+            <h1
+              className={cn(
+                "mt-5 max-w-[20ch] font-display font-light text-carbon-900 opacity-0",
+                "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_240ms_forwards]",
+                data.scale === "hero" ? "text-display-2xl" : "text-display-xl",
+              )}
+            >
+              {data.title}
+              {data.titleAccent && (
+                <>
+                  <br />
+                  <span className="accent-italic text-wine-700">{data.titleAccent}</span>
+                </>
+              )}
+            </h1>
+
+            {data.subtitle && (
+              <p className="mt-6 max-w-[46ch] text-lead text-stone-600 opacity-0 animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_380ms_forwards]">
+                {data.subtitle}
+              </p>
+            )}
+
+            {(data.ctaPrimary.label || data.ctaSecondary.label) && (
+              <div className="mt-9 flex flex-col items-start gap-3 opacity-0 animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_500ms_forwards] sm:flex-row sm:items-center">
+                {data.ctaPrimary.label && (
+                  <Link
+                    href={data.ctaPrimary.href}
+                    className={buttonVariants({ variant: "primary", size: "lg", uppercase: true })}
+                  >
+                    {data.ctaPrimary.label}
+                  </Link>
+                )}
+                {data.ctaSecondary.label && (
+                  <Link
+                    href={data.ctaSecondary.href}
+                    className={buttonVariants({ variant: "outline", size: "lg", uppercase: true })}
+                  >
+                    {data.ctaSecondary.label}
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="relative min-h-[42svh] lg:min-h-[64svh]">
+            {posterUrl && (
+              <Image
+                src={posterUrl}
+                alt={media.imageAlt || ""}
+                fill
+                priority={priority}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       data-hero
@@ -213,7 +291,7 @@ export function VideoHero({
         {(data.ctaPrimary.label || data.ctaSecondary.label) && (
           <div
             className={cn(
-              "mt-10 flex flex-col gap-3 opacity-0 sm:flex-row sm:items-center",
+              "mt-10 flex flex-col items-start gap-3 opacity-0 sm:flex-row sm:items-center",
               "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_600ms_forwards]",
               data.align === "center" && "justify-center",
             )}

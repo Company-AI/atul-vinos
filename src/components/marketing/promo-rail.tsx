@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { BlockData } from "@/domain/cms/blocks";
@@ -33,7 +32,7 @@ export function PromoRail({ data, id }: { data: BlockData<"promo_rail">; id?: st
         </Container>
       )}
 
-      <div className="rail-snap gap-4 px-gutter pb-3 sm:gap-5">
+      <div className="rail-snap rail-aligned gap-4 pb-3 pr-gutter sm:gap-5">
         {items.map((item, i) => (
           <article
             key={item.title}
@@ -50,19 +49,15 @@ export function PromoRail({ data, id }: { data: BlockData<"promo_rail">; id?: st
                   : "border-linen-200 bg-bone-pure hover:border-linen-300",
               )}
             >
-              {item.imageUrl && (
-                <div className="relative aspect-[16/9] w-full overflow-hidden bg-linen-100">
-                  <Image
-                    src={item.imageUrl}
-                    alt=""
-                    fill
-                    sizes="(max-width: 640px) 78vw, (max-width: 1024px) 44vw, 31vw"
-                    className="object-cover transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.04]"
-                  />
-                </div>
-              )}
+              <span
+                aria-hidden
+                className={cn(
+                  "h-[3px] w-full shrink-0",
+                  dark ? "bg-clay-400" : "bg-wine-700",
+                )}
+              />
 
-              <div className="flex flex-1 flex-col p-5">
+              <div className="flex flex-1 flex-col p-6">
                 {item.kicker && (
                   <p className={cn("eyebrow", dark ? "text-clay-400" : "text-wine-700")}>
                     {item.kicker}

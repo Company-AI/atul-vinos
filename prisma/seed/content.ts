@@ -22,22 +22,23 @@ export const CMS_SECTIONS = [
       ctaPrimary: { label: "Ver los vinos", href: "/vinos" },
       ctaSecondary: { label: "Ver los Box", href: "/box" },
       /*
-        Sin video: el cliente entra a comprar, no a ver un documental. Foto
-        fija de botellas y altura media para que el catálogo entre en pantalla
-        sin tener que scrollear.
+        Sin video y en modo partido: el texto va sobre fondo sólido y la foto
+        al costado. Con el texto encima de la foto el titular caía sobre la
+        zona clara de la imagen y se perdía.
       */
       media: {
-        imageUrl: "/media/scenes/bottle-glass-dark.jpg",
-        imageAlt: "Botellas de vino listas para servir",
+        imageUrl: "/media/scenes/barrels.jpg",
+        imageAlt: "Barricas de roble en la sala de crianza",
         videoDesktopUrl: "",
         videoMobileUrl: "",
-        posterUrl: "/media/scenes/bottle-glass-dark.jpg",
+        posterUrl: "/media/scenes/barrels.jpg",
       },
-      overlay: "scrim-side",
+      overlay: "none",
       align: "left",
       height: "medium",
       showLogo: false,
       scale: "page",
+      layout: "split",
       scrollCue: "",
     },
   },
@@ -196,7 +197,6 @@ export const CMS_SECTIONS = [
           kicker: "Envíos",
           title: "Envío sin cargo en Río Cuarto",
           body: "Entregamos en Río Cuarto, Las Higueras y Holmberg sin costo de envío. Al resto del país, tarifa por zona.",
-          imageUrl: "/media/scenes/barrels.jpg",
           href: "/envios",
           cta: "Ver zonas y plazos",
         },
@@ -204,7 +204,6 @@ export const CMS_SECTIONS = [
           kicker: "Box",
           title: "Cajas armadas por nosotros",
           body: "Una idea por caja: recorrer una región, comparar una uva o resolver un regalo. Más barato que botella por botella.",
-          imageUrl: "/media/packs/pack-malbec.jpg",
           href: "/box",
           cta: "Ver los Box",
         },
@@ -212,7 +211,6 @@ export const CMS_SECTIONS = [
           kicker: "Recién entrado",
           title: "Novedades del mes",
           body: "Las etiquetas que acaban de entrar al depósito, con la ficha de por qué las elegimos.",
-          imageUrl: "/media/wines/blanco.jpg",
           href: "/vinos?orden=novedades",
           cta: "Ver novedades",
         },
@@ -739,18 +737,10 @@ export const POSTS = [
 
 export const BANNERS = [
   {
-    message: "Envío gratis en compras desde $100.000",
+    message: "Envío sin cargo en Río Cuarto, Las Higueras y Holmberg",
     position: "top",
     isActive: true,
     sortOrder: 10,
-  },
-  {
-    message: "Socios del Club: 10% OFF permanente en toda la tienda",
-    linkUrl: "/club",
-    linkLabel: "Conocer el Club",
-    position: "top",
-    isActive: true,
-    sortOrder: 20,
   },
   {
     message: "Entró partida nueva de Valle de Uco. Stock limitado.",

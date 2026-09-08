@@ -52,7 +52,7 @@ export default async function PublicLayout({ children }: { children: React.React
       */}
       <main
         id="contenido"
-        className="flex-1 pt-[calc(3.5rem+2rem)] has-[[data-hero]]:pt-0 lg:pt-[calc(72px+2rem)]"
+        className="flex-1 pt-[calc(4rem+1rem)] has-[[data-hero]]:pt-0 lg:pt-[calc(84px+1rem)]"
       >
         {children}
       </main>

@@ -288,8 +288,36 @@
   scrollbar-width: none;
   overscroll-behavior-x: contain;
 
+  /*
+    scroll-snap-align: start alinea contra el borde del contenedor y no
+    contra su padding: sin esto la primera tarjeta se pega al borde de la
+    pantalla y el riel se ve cortado. scroll-padding corrige la posición de
+    snap para que respete el gutter.
+  */
+  scroll-padding-inline: var(--spacing-gutter);
+
   &::-webkit-scrollbar { display: none; }
   & > * { scroll-snap-align: start; flex: none; }
+}
+
+/*
+  Riel a sangre pero alineado con el Container.
+
+  El Container está centrado con un máximo de 1440px: pasado ese ancho su
+  borde izquierdo se corre hacia adentro. Un riel a todo el ancho con sólo el
+  gutter queda desalineado del título que lo encabeza —el título adentro del
+  Container, las tarjetas afuera— y se ve descolgado. Este padding replica el
+  borde del Container y deja que el riel siga sangrando hacia la derecha.
+*/
+@utility rail-aligned {
+  padding-inline-start: max(
+    var(--spacing-gutter),
+    calc((100vw - 1440px) / 2 + var(--spacing-gutter))
+  );
+  scroll-padding-inline-start: max(
+    var(--spacing-gutter),
+    calc((100vw - 1440px) / 2 + var(--spacing-gutter))
+  );
 }
 
 /* Degradado lateral para heroes con texto alineado a la izquierda.

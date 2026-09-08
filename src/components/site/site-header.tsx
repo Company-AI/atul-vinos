@@ -13,7 +13,12 @@ import { AnnouncementBar, type Announcement } from "./announcement-bar";
 export type NavItem = { label: string; href: string };
 
 /** Rutas que arrancan con hero a pantalla completa: el header nace transparente. */
-const OVERLAY_ROUTES = ["/", "/club", "/historia", "/v8"];
+/*
+  Rutas cuyo hero es oscuro y a sangre: ahí el header nace transparente. La
+  home salió de la lista al pasar a hero partido, que arriba es fondo claro:
+  con el header transparente usaba el logotipo crema y quedaba invisible.
+*/
+const OVERLAY_ROUTES = ["/quienes-somos"];
 
 export function SiteHeader({
   nav,
@@ -131,10 +136,10 @@ export function SiteHeader({
             <Image
               src={transparent ? logoLightUrl : logoUrl}
               alt={companyName}
-              width={226}
-              height={64}
+              width={683}
+              height={227}
               priority
-              className="h-8 w-auto lg:h-11"
+              className="h-11 w-auto lg:h-14"
             />
           </Link>
 
@@ -187,7 +192,7 @@ export function SiteHeader({
       {menuOpen && (
         <div className="on-dark fixed inset-0 z-[60] flex flex-col bg-carbon-900 lg:hidden">
           <div className="flex h-14 items-center justify-between px-gutter">
-            <Image src={logoLightUrl} alt={companyName} width={160} height={32} className="h-7 w-auto" />
+            <Image src={logoLightUrl} alt={companyName} width={683} height={227} className="h-8 w-auto" />
             <button
               type="button"
               aria-label="Cerrar menú"

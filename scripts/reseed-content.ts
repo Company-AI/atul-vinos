@@ -9,7 +9,7 @@
  *   npx tsx scripts/reseed-content.ts
  */
 import { PrismaClient } from "@prisma/client";
-import { CMS_SECTIONS } from "../prisma/seed/content";
+import { BANNERS, CMS_SECTIONS } from "../prisma/seed/content";
 
 const prisma = new PrismaClient();
 
@@ -47,7 +47,26 @@ async function main() {
     });
   }
 
+  /*
+    Los banners viven en otra tabla y antes quedaban afuera del refresco: por
+    eso el aviso del Club seguía apareciendo después de sacarlo del seed.
+  */
+  await prisma.banner.deleteMany({});
+  for (const b of BANNERS) {
+    await prisma.banner.create({
+      data: {
+        message: b.message,
+        linkUrl: (b as { linkUrl?: string }).linkUrl ?? null,
+        linkLabel: (b as { linkLabel?: string }).linkLabel ?? null,
+        position: b.position,
+        isActive: b.isActive ?? true,
+        sortOrder: b.sortOrder,
+      },
+    });
+  }
+
   console.log(`Secciones actualizadas: ${CMS_SECTIONS.length}`);
+  console.log(`Banners actualizados:   ${BANNERS.length}`);
   if (removed.count > 0) console.log(`Secciones eliminadas: ${removed.count}`);
 }
 
