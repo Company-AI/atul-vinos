@@ -7,6 +7,7 @@ import { getFavoriteIds } from "@/app/actions/favorites";
 import { SectionRenderer } from "@/components/marketing/section-renderer";
 import { SectionBanners, type SectionBanner } from "@/components/marketing/section-banners";
 import { FilterChips, type FilterChip } from "@/components/shop/filter-chips";
+import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias";
 import { WineCardRow } from "@/components/shop/wine-card-row";
 
 export const revalidate = 300;
@@ -17,14 +18,8 @@ export const revalidate = 300;
   sección propia de cajas al pie.
 */
 const FILTROS: FilterChip[] = [
-  { label: "Todos", href: "/vinos" },
-  { label: "Tintos", href: "/vinos?tipo=TINTO" },
-  { label: "Malbec", href: "/vinos?varietal=malbec" },
-  { label: "Blancos", href: "/vinos?tipo=BLANCO" },
-  { label: "Rosados", href: "/vinos?tipo=ROSADO" },
-  { label: "Cabernet", href: "/vinos?varietal=cabernet-franc" },
-  { label: "Chardonnay", href: "/vinos?varietal=chardonnay" },
-  { label: "Box", href: "/box" },
+  TODOS_LOS_VINOS,
+  ...CATEGORIAS_TIENDA,
   { label: "Ofertas", href: "/ofertas" },
 ];
 

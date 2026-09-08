@@ -9,6 +9,7 @@ import { getFavoriteIds } from "@/app/actions/favorites";
 import { SectionRenderer } from "@/components/marketing/section-renderer";
 import { SectionBanners, type SectionBanner } from "@/components/marketing/section-banners";
 import { CategoryCircles, type CategoryCircle } from "@/components/shop/category-circles";
+import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias";
 import { WineCardRow } from "@/components/shop/wine-card-row";
 
 export const revalidate = 300;
@@ -23,36 +24,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /*
-  Las categorías salen de packshots reales de las bodegas, todos con el mismo
-  tratamiento sobre crema. Se listan sólo las que tienen productos: no hay
-  espumantes en catálogo, y mandar a alguien a un filtro vacío es peor que no
-  ofrecer la categoría.
-
-  Categorías y tiras viven acá y no en el CMS por ahora: son estructura de
-  navegación y el diseño todavía se está definiendo. Cuando se estabilice
-  conviene moverlas a bloques editables, como el resto del contenido.
-
-  Las imágenes (300×300 para los círculos, 800×350 para las tiras) están
-  pendientes: los componentes funcionan sin ellas.
+  Las categorías salen de la lista compartida por las tres maquetas (ver
+  components/shop/categorias.ts) y se muestran como círculos con el packshot
+  real de cada tipo. "Todos" se agrega adelante y queda activo.
 */
-const CATEGORIAS: CategoryCircle[] = [
-  { label: "Todos", href: "/vinos" },
-  { label: "Tintos", href: "/vinos?tipo=TINTO", imageUrl: "/media/categories/tintos.webp" },
-  { label: "Malbec", href: "/vinos?varietal=malbec", imageUrl: "/media/categories/malbec.webp" },
-  { label: "Blancos", href: "/vinos?tipo=BLANCO", imageUrl: "/media/categories/blancos.webp" },
-  { label: "Rosados", href: "/vinos?tipo=ROSADO", imageUrl: "/media/categories/rosados.webp" },
-  {
-    label: "Cabernet",
-    href: "/vinos?varietal=cabernet-franc",
-    imageUrl: "/media/categories/cabernet.webp",
-  },
-  {
-    label: "Chardonnay",
-    href: "/vinos?varietal=chardonnay",
-    imageUrl: "/media/categories/chardonnay.webp",
-  },
-  { label: "Box", href: "/box", imageUrl: "/media/categories/box.webp" },
-];
+const CATEGORIAS: CategoryCircle[] = [TODOS_LOS_VINOS, ...CATEGORIAS_TIENDA];
 
 const TIRAS: SectionBanner[] = [
   {

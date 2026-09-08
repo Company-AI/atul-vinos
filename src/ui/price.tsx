@@ -35,7 +35,12 @@ export function Price({
           >
             {formatARS(compareAt!)}
           </span>
-          <span className="rounded-xs bg-accent-700 px-1.5 py-0.5 text-[10px] font-medium text-bone-pure">
+          {/*
+            Granate y no azul: el azul es el acento de marca y un "-12%" en
+            azul se lee como decoración. La regla está escrita en los tokens
+            (globals.css): el granate queda reservado a ofertas y descuentos.
+          */}
+          <span className="rounded-xs bg-wine-600 px-1.5 py-0.5 text-[10px] font-medium text-bone-pure">
             −{off}%
           </span>
         </>

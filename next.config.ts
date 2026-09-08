@@ -48,10 +48,10 @@ const nextConfig: NextConfig = {
       { source: "/packs", destination: "/box", permanent: true },
 
       /*
-        /v2 vuelve a ser una ruta real: es la primera maqueta, que conviven con
-        la de "/" para comparar. Las viejas /v3 a /v8 siguen cayendo en la home.
+        /v2 y /v3 son rutas reales: son las maquetas que conviven con la de "/"
+        para comparar. Las viejas /v4 a /v8 siguen cayendo en la home.
       */
-      { source: "/v:num(3|4|5|6|7|8)", destination: "/", permanent: false },
+      { source: "/v:num(4|5|6|7|8)", destination: "/", permanent: false },
 
       // "Nuestra historia" se unificó en "Quiénes somos".
       { source: "/historia", destination: "/quienes-somos", permanent: true },
