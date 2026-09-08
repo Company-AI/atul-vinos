@@ -38,6 +38,7 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "height", label: "Altura", kind: "select", options: ["full", "tall", "medium"] },
     { key: "scale", label: "Escala del título", kind: "select", options: ["page", "hero"] },
     { key: "layout", label: "Composición", kind: "select", options: ["overlay", "split"], hint: "«Partido» pone el texto sobre fondo sólido con la foto al lado." },
+    { key: "textTone", label: "Color del texto", kind: "select", options: ["light", "dark"], hint: "Oscuro para fotos claras, como la pared beige del hero." },
     { key: "scrollCue", label: "Indicador de scroll", kind: "text", hint: "Texto corto al pie. Vacío lo oculta." },
   ],
   editorial: [

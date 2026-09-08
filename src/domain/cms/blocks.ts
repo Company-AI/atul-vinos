@@ -39,6 +39,12 @@ export const videoHeroBlock = z.object({
    * tan clara sea la imagen, que es el problema del overlay.
    */
   layout: z.enum(["overlay", "split"]).default("overlay"),
+  /**
+   * Color del texto en modo overlay. La foto del hero es una pared beige
+   * clara, así que ahí el titular va oscuro; el overlay clásico asume texto
+   * claro sobre foto oscura.
+   */
+  textTone: z.enum(["light", "dark"]).default("light"),
   scrollCue: z.string().default(""),
 });
 

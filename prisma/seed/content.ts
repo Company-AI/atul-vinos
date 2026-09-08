@@ -15,7 +15,7 @@ export const CMS_SECTIONS = [
     title: "Hero de la home",
     sortOrder: 10,
     data: {
-      eyebrow: "Vinos de todo el país",
+      eyebrow: "Atul · Vinos seleccionados",
       title: "No hacemos el vino.",
       titleAccent: "Elegimos cuál vale la pena.",
       subtitle: "Probamos todo lo que vendemos. Vinos de todo el país, elegidos uno por uno.",
@@ -26,19 +26,24 @@ export const CMS_SECTIONS = [
         al costado. Con el texto encima de la foto el titular caía sobre la
         zona clara de la imagen y se perdía.
       */
+      /*
+        La foto tiene la pared beige libre a la izquierda: el titular va
+        encima, en oscuro, con un velo claro que sólo levanta el contraste.
+      */
       media: {
-        imageUrl: "/media/scenes/barrels.jpg",
-        imageAlt: "Barricas de roble en la sala de crianza",
+        imageUrl: "/media/hero/atul-hero.webp",
+        imageAlt: "Botella de vino, copa servida y corcho sobre una mesa de piedra",
         videoDesktopUrl: "",
         videoMobileUrl: "",
-        posterUrl: "/media/scenes/barrels.jpg",
+        posterUrl: "/media/hero/atul-hero.webp",
       },
-      overlay: "none",
+      overlay: "scrim-side",
       align: "left",
       height: "medium",
       showLogo: false,
       scale: "page",
-      layout: "split",
+      layout: "overlay",
+      textTone: "dark",
       scrollCue: "",
     },
   },

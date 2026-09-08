@@ -80,6 +80,12 @@ export function VideoHero({
   }, [hasVideoSource, media.videoMobileUrl]);
 
   const showVideo = mountVideo && !videoFailed;
+  /*
+    La foto del hero es una pared beige clara: ahí el titular va oscuro y el
+    velo tiene que aclarar, no oscurecer. El overlay clásico asume lo
+    contrario, así que el tono decide colores y velo.
+  */
+  const textoOscuro = data.textTone === "dark";
 
   const heights = {
     full: "min-h-[88svh] lg:min-h-[100svh]",
@@ -218,7 +224,7 @@ export function VideoHero({
       )}
 
       {/* Scrim para garantizar contraste del texto */}
-      {data.overlay !== "none" && (
+      {data.overlay !== "none" && !textoOscuro && (
         <div
           aria-hidden
           className={cn(
@@ -227,6 +233,17 @@ export function VideoHero({
             data.overlay === "scrim-side" && "scrim-side",
             data.overlay === "scrim-full" && "scrim-full",
           )}
+        />
+      )}
+
+      {data.overlay !== "none" && textoOscuro && (
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10"
+          style={{
+            background:
+              "linear-gradient(to right, rgb(247 243 236 / 0.72) 0%, rgb(247 243 236 / 0.34) 42%, rgb(247 243 236 / 0) 68%)",
+          }}
         />
       )}
 
@@ -255,14 +272,15 @@ export function VideoHero({
         )}
 
         {data.eyebrow && (
-          <p className="eyebrow mb-5 text-linen-300 opacity-0 animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]">
+          <p className={cn("eyebrow mb-5 opacity-0", textoOscuro ? "text-stone-600" : "text-linen-300") + " animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]"}>
             {data.eyebrow}
           </p>
         )}
 
         <h1
           className={cn(
-            "font-display font-light text-bone opacity-0",
+            "font-display opacity-0",
+            textoOscuro ? "font-medium uppercase text-carbon-900" : "font-light text-bone",
             "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_320ms_forwards]",
             data.scale === "hero"
               ? "max-w-[26ch] text-display-2xl"
@@ -274,7 +292,9 @@ export function VideoHero({
           {data.titleAccent && (
             <>
               <br />
-              <span className="accent-italic text-linen-200">{data.titleAccent}</span>
+              <span className={cn("accent-italic", textoOscuro ? "font-light normal-case text-carbon-800" : "text-linen-200")}>
+                {data.titleAccent}
+              </span>
             </>
           )}
         </h1>
@@ -282,7 +302,8 @@ export function VideoHero({
         {data.subtitle && (
           <p
             className={cn(
-              "mt-7 max-w-[52ch] text-lead text-linen-200 opacity-0",
+              "mt-7 max-w-[52ch] text-lead opacity-0",
+              textoOscuro ? "text-stone-600" : "text-linen-200",
               "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_460ms_forwards]",
               data.align === "center" && "mx-auto",
             )}
@@ -310,7 +331,7 @@ export function VideoHero({
             {data.ctaSecondary.label && (
               <Link
                 href={data.ctaSecondary.href}
-                className={buttonVariants({ variant: "ghostLight", size: "lg", uppercase: true })}
+                className={buttonVariants({ variant: textoOscuro ? "outline" : "ghostLight", size: "lg", uppercase: true })}
               >
                 {data.ctaSecondary.label}
               </Link>

@@ -83,7 +83,15 @@ function SidebarContenido({ items, secundarios, tagline, logo }: Props) {
         (#D8CEC5 al 35%): da identidad sin convertir la tienda en un sitio de
         bodega, que es justo lo que el cliente pidió sacar.
       */}
-      <div className="mt-auto px-6 pb-8 pt-16">
+      <div className="relative mt-auto px-6 pb-8 pt-16">
+        <Image
+          src="/media/brand/finca.webp"
+          alt=""
+          aria-hidden
+          width={640}
+          height={853}
+          className="pointer-events-none absolute inset-x-0 bottom-24 -z-10 w-full opacity-[0.38] mix-blend-multiply"
+        />
         <div className="mb-4 h-px w-8 bg-linen-300" />
         <p className="text-[12px] uppercase leading-[1.75] tracking-[0.18em] text-stone-500">
           {tagline.map((linea) => (

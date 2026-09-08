@@ -22,6 +22,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /*
+  Faltan las fotos de seis categorías (300×300): Rosados, Espumantes, Malbec,
+  Cabernet, Chardonnay y Box. Los círculos sin foto muestran el fallback
+  tintado, que es preferible a mezclar imágenes de estilos distintos.
+
   Categorías y tiras viven acá y no en el CMS por ahora: son estructura de
   navegación y el diseño todavía se está definiendo. Cuando se estabilice
   conviene moverlas a bloques editables, como el resto del contenido.
@@ -31,8 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
 */
 const CATEGORIAS: CategoryCircle[] = [
   { label: "Todos", href: "/vinos" },
-  { label: "Tintos", href: "/vinos?tipo=TINTO" },
-  { label: "Blancos", href: "/vinos?tipo=BLANCO" },
+  { label: "Tintos", href: "/vinos?tipo=TINTO", imageUrl: "/media/categories/tintos.webp" },
+  { label: "Blancos", href: "/vinos?tipo=BLANCO", imageUrl: "/media/categories/blancos.webp" },
   { label: "Rosados", href: "/vinos?tipo=ROSADO" },
   { label: "Espumantes", href: "/vinos?tipo=ESPUMANTE" },
   { label: "Malbec", href: "/vinos?varietal=malbec" },
@@ -48,21 +52,21 @@ const TIRAS: SectionBanner[] = [
     bajada: "Experiencias en botella",
     cta: "Ver box",
     href: "/box",
-    imageUrl: "/media/packs/pack-regalo.jpg",
+    imageUrl: "/media/banners/box.webp",
   },
   {
     titulo: "Novedades",
     bajada: "Lo nuevo en nuestra cava",
     cta: "Ver novedades",
     href: "/novedades",
-    imageUrl: "/media/scenes/cellar.jpg",
+    imageUrl: "/media/banners/novedades.webp",
   },
   {
     titulo: "Ofertas",
     bajada: "Grandes vinos, mejores momentos",
     cta: "Ver ofertas",
     href: "/ofertas",
-    imageUrl: "/media/scenes/pouring-dark.jpg",
+    imageUrl: "/media/banners/ofertas.webp",
   },
 ];
 
