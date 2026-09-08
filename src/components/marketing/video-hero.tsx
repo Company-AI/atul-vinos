@@ -195,7 +195,9 @@ export function VideoHero({
           priority={priority}
           sizes="100vw"
           className={cn(
-            "-z-10 object-cover transition-opacity duration-[1100ms]",
+            // En mobile el recorte vertical de una foto panoramica cae sobre el fondo
+            // y deja al producto afuera: se corre el encuadre hacia el vino.
+            "-z-10 object-cover object-[74%_center] transition-opacity duration-[1100ms] md:object-center",
             showVideo ? "opacity-0" : "opacity-100 img-breathe",
           )}
         />
@@ -237,14 +239,30 @@ export function VideoHero({
       )}
 
       {data.overlay !== "none" && textoOscuro && (
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10"
-          style={{
-            background:
-              "linear-gradient(to right, rgb(247 243 236 / 0.72) 0%, rgb(247 243 236 / 0.34) 42%, rgb(247 243 236 / 0) 68%)",
-          }}
-        />
+        <>
+          {/*
+            Dos velos distintos porque el encuadre cambia: en desktop el texto cae
+            sobre pared y basta con el degradado corto; en mobile el recorte acerca
+            la botella al texto, asi que el velo llega mas a la derecha. Se corta
+            en 76% para no lavar la etiqueta.
+          */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 sm:hidden"
+            style={{
+              background:
+                "linear-gradient(to right, rgb(247 243 236 / 0.80) 0%, rgb(247 243 236 / 0.50) 45%, rgb(247 243 236 / 0.34) 68%, rgb(247 243 236 / 0) 76%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 hidden sm:block"
+            style={{
+              background:
+                "linear-gradient(to right, rgb(247 243 236 / 0.72) 0%, rgb(247 243 236 / 0.34) 42%, rgb(247 243 236 / 0) 68%)",
+            }}
+          />
+        </>
       )}
 
       {/*
@@ -272,7 +290,7 @@ export function VideoHero({
         )}
 
         {data.eyebrow && (
-          <p className={cn("eyebrow mb-5 opacity-0", textoOscuro ? "text-stone-600" : "text-linen-300") + " animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]"}>
+          <p className={cn("eyebrow mb-5 opacity-0", textoOscuro ? "text-carbon-800 sm:text-stone-600" : "text-linen-300") + " animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]"}>
             {data.eyebrow}
           </p>
         )}
@@ -282,9 +300,11 @@ export function VideoHero({
             "font-display opacity-0",
             textoOscuro ? "font-medium uppercase text-carbon-900" : "font-light text-bone",
             "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_320ms_forwards]",
+            // En mobile el producto ocupa el borde derecho: el texto se corta antes
+            // para no quedar sobre el vidrio oscuro de la botella.
             data.scale === "hero"
-              ? "max-w-[26ch] text-display-2xl"
-              : "max-w-[19ch] text-display-xl",
+              ? "max-w-[74%] text-display-2xl sm:max-w-[26ch]"
+              : "max-w-[74%] text-display-xl sm:max-w-[19ch]",
             data.align === "center" && "mx-auto",
           )}
         >
@@ -302,8 +322,8 @@ export function VideoHero({
         {data.subtitle && (
           <p
             className={cn(
-              "mt-7 max-w-[52ch] text-lead opacity-0",
-              textoOscuro ? "text-stone-600" : "text-linen-200",
+              "mt-7 max-w-[74%] text-lead opacity-0 sm:max-w-[52ch]",
+              textoOscuro ? "text-carbon-800 sm:text-stone-600" : "text-linen-200",
               "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_460ms_forwards]",
               data.align === "center" && "mx-auto",
             )}
