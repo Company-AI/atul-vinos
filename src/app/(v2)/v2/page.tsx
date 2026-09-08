@@ -19,12 +19,12 @@ export const revalidate = 300;
 const FILTROS: FilterChip[] = [
   { label: "Todos", href: "/vinos" },
   { label: "Tintos", href: "/vinos?tipo=TINTO" },
-  { label: "Blancos", href: "/vinos?tipo=BLANCO" },
   { label: "Malbec", href: "/vinos?varietal=malbec" },
-  { label: "Cabernet", href: "/vinos?varietal=cabernet-sauvignon" },
+  { label: "Blancos", href: "/vinos?tipo=BLANCO" },
+  { label: "Rosados", href: "/vinos?tipo=ROSADO" },
+  { label: "Cabernet", href: "/vinos?varietal=cabernet-franc" },
   { label: "Chardonnay", href: "/vinos?varietal=chardonnay" },
-  { label: "Bodegas", href: "/quienes-somos" },
-  { label: "Orgánicos", href: "/vinos" },
+  { label: "Box", href: "/box" },
   { label: "Ofertas", href: "/ofertas" },
 ];
 
@@ -56,7 +56,7 @@ export default async function MaquetaUnoPage() {
   const [sections, settings, vinos, cajas, favoriteIds] = await Promise.all([
     getPageSections("home"),
     getSettings(),
-    getShowcaseProducts("featured", 4),
+    getShowcaseProducts("featured", 6),
     listProducts({ soloPacks: true, perPage: 3, orden: "destacados" }),
     getFavoriteIds(),
   ]);
@@ -73,7 +73,7 @@ export default async function MaquetaUnoPage() {
 
       <FilterChips items={FILTROS} activo="Todos" />
 
-      <section className="mx-auto max-w-[1600px] px-gutter pt-9">
+      <section className="mx-auto max-w-[1600px] px-gutter pt-14">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="font-display text-display-sm font-medium text-carbon-900">
             Nuestros vinos
@@ -87,7 +87,7 @@ export default async function MaquetaUnoPage() {
           </Link>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {vinos.map((product, i) => (
             <WineCardRow
               key={product.id}
@@ -133,7 +133,7 @@ export default async function MaquetaUnoPage() {
         </section>
       )}
 
-      <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-gutter py-12">
+      <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-gutter py-20">
         <span aria-hidden className="h-px flex-1 bg-linen-300" />
         <p className="text-center text-[13px] uppercase tracking-[0.16em] text-stone-500">
           «Más que vinos, encuentros»
