@@ -116,8 +116,16 @@ export function SidebarColumn(props: Props) {
   );
 }
 
-/** Disparador y cajón para pantallas chicas. */
-export function SidebarMobile(props: Props) {
+/**
+ * Disparador y cajón del menú.
+ *
+ * Por defecto sólo aparece en pantallas chicas, porque en escritorio la
+ * columna fija ya muestra el menú. Con `siempreVisible` se usa en todas las
+ * medidas: el menú se repliega detrás de las tres rayitas y el contenido se
+ * queda con todo el ancho. Es un cajón, no un desplegable, así entra la
+ * navegación completa —principal, secundaria y firma— sin apretarla.
+ */
+export function SidebarMenu({ siempreVisible = false, ...props }: Props & { siempreVisible?: boolean }) {
   const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
 
@@ -146,13 +154,13 @@ export function SidebarMobile(props: Props) {
         aria-label="Abrir menú"
         aria-expanded={abierto}
         onClick={() => setAbierto(true)}
-        className="-ml-1.5 rounded-sm p-2 text-carbon-900 lg:hidden"
+        className={cn("-ml-1.5 rounded-sm p-2 text-carbon-900", !siempreVisible && "lg:hidden")}
       >
         <Menu className="size-6" aria-hidden />
       </button>
 
       {abierto && (
-        <div className="fixed inset-0 z-[70] flex lg:hidden">
+        <div className={cn("fixed inset-0 z-[70] flex", !siempreVisible && "lg:hidden")}>
           <div
             className="flex w-[280px] max-w-[80vw] flex-col overflow-y-auto bg-bone pt-5 shadow-overlay"
             role="dialog"

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, ShoppingCart, User } from "lucide-react";
 import { useState } from "react";
 import { CartDrawer } from "@/components/shop/cart-drawer";
-import { SidebarMobile, type SidebarItem } from "./site-sidebar";
+import { SidebarMenu, type SidebarItem } from "./site-sidebar";
 
 /**
  * Barra superior de la tienda: logo al centro, buscador y carrito a la
@@ -24,6 +24,7 @@ export function SiteTopbar({
   navSecundaria,
   tagline,
   logoSoloEnMobile = false,
+  menuSiempreVisible = false,
 }: {
   companyName: string;
   logoUrl: string;
@@ -34,6 +35,8 @@ export function SiteTopbar({
   tagline: string[];
   /** El sidebar ya muestra el logo en desktop: acá sólo hace falta en mobile. */
   logoSoloEnMobile?: boolean;
+  /** Sin columna lateral: las tres rayitas abren el menú en cualquier medida. */
+  menuSiempreVisible?: boolean;
 }) {
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -42,7 +45,12 @@ export function SiteTopbar({
       <header className="sticky top-0 z-[50] border-b border-linen-200 bg-bone/95 backdrop-blur-md">
         <div className="mx-auto grid h-[72px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6">
           <div className="flex items-center justify-start">
-            <SidebarMobile items={nav} secundarios={navSecundaria} tagline={tagline} />
+            <SidebarMenu
+              items={nav}
+              secundarios={navSecundaria}
+              tagline={tagline}
+              siempreVisible={menuSiempreVisible}
+            />
           </div>
 
           <Link

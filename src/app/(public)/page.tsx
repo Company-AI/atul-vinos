@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getShowcaseProducts } from "@/domain/catalog/service";
+import { getShowcaseProducts, listProducts } from "@/domain/catalog/service";
 import { getPageSections } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
 import { getFavoriteIds } from "@/app/actions/favorites";
@@ -55,10 +55,20 @@ const TIRAS: SectionBanner[] = [
 ];
 
 export default async function HomePage() {
-  const [sections, settings, productos, favoriteIds] = await Promise.all([
+  const [sections, settings, seleccion, catalogo, favoriteIds] = await Promise.all([
     getPageSections("home"),
     getSettings(),
-    getShowcaseProducts("featured", 8),
+    // Tres botellas: es una selección, no una grilla. Si son ocho deja de
+    // leerse como recomendación y pasa a ser catálogo, que ahora vive abajo.
+    getShowcaseProducts("featured", 3),
+    /*
+      El catálogo NO ordena por destacados: la tira de arriba también lo hace,
+      así que abría con las mismas dos botellas a 400px de distancia y se leía
+      como un error de render. Por precio ascendente entra por otro lado y
+      además es el orden que más se usa en una tienda. Cambiarlo es cambiar
+      este string.
+    */
+    listProducts({ sinPacks: true, orden: "precio-menor", perPage: 24 }),
     getFavoriteIds(),
   ]);
 
@@ -75,11 +85,21 @@ export default async function HomePage() {
 
       <CategoryCircles items={CATEGORIAS} activo="Todos" />
 
+      {/*
+        Arriba va una recomendación corta, no el catálogo: tres botellas que
+        alguien eligió esta semana. El catálogo completo está más abajo, después
+        de las tiras.
+      */}
       <section className="mx-auto max-w-[1600px] px-gutter pt-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="font-display text-display-sm font-medium text-carbon-900">
-            Nuestros vinos
-          </h2>
+          <div>
+            <h2 className="font-display text-display-sm font-medium text-carbon-900">
+              Los seleccionados de la semana
+            </h2>
+            <p className="mt-1.5 text-[14px] text-stone-600">
+              Tres que estamos tomando nosotros.
+            </p>
+          </div>
           <Link
             href="/vinos"
             className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
@@ -89,8 +109,8 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {productos.map((product, i) => (
+        <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {seleccion.map((product, i) => (
             <WineCardRow
               key={product.id}
               product={product}
@@ -102,6 +122,53 @@ export default async function HomePage() {
       </section>
 
       <SectionBanners items={TIRAS} />
+
+      {/*
+        Catálogo general, a dos columnas.
+
+        La medida es más angosta que el resto de la home a propósito: la ficha
+        horizontal reserva el 38% del ancho para la botella, así que a dos
+        columnas sobre 1600px la foto quedaba enorme y el texto perdido al
+        costado. Con ~1180px cada columna ronda los 570px, que es donde la
+        ficha fue pensada.
+      */}
+      {catalogo.items.length > 0 && (
+        <section className="mx-auto max-w-[1180px] px-gutter pt-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-display-sm font-medium text-carbon-900">
+                Nuestros vinos
+              </h2>
+              <p className="mt-1.5 text-[14px] text-stone-600">
+                {/*
+                  Sin promesa geográfica acá: hoy las 22 etiquetas son de
+                  Mendoza (Valle de Uco, Luján de Cuyo, Gualtallary, Maipú y
+                  La Consulta). Cuando entren vinos del norte y la Patagonia,
+                  esta línea puede decirlo.
+                */}
+                {catalogo.total} etiquetas, probadas una por una antes de entrar.
+              </p>
+            </div>
+            <Link
+              href="/vinos"
+              className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
+            >
+              Ver el catálogo con filtros
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
+          </div>
+
+          <div className="mt-9 grid gap-5 sm:grid-cols-2">
+            {catalogo.items.map((product) => (
+              <WineCardRow
+                key={product.id}
+                product={product}
+                isFavorite={favoriteIds.has(product.id)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/*
         Una sola imagen y tres líneas: la historia completa vive en

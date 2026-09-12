@@ -4,7 +4,7 @@ import { getCartCount } from "@/domain/cart/service";
 import { getSession } from "@/infra/auth/session";
 import { PromoBar } from "@/components/site/promo-bar";
 import { SiteTopbar } from "@/components/site/site-topbar";
-import { SidebarColumn, type SidebarItem } from "@/components/site/site-sidebar";
+import type { SidebarItem } from "@/components/site/site-sidebar";
 import { TrustBar } from "@/components/site/trust-bar";
 import { SiteFooter } from "@/components/site/site-footer";
 import { RevealNoFlashScript, RevealObserver } from "@/ui/reveal-observer";
@@ -47,33 +47,31 @@ export default async function PublicLayout({ children }: { children: React.React
 
       <PromoBar remate="Buenos vinos, personas reales." />
 
-      <div className="flex flex-1">
-        <SidebarColumn
-          items={NAV}
-          secundarios={NAV_SECUNDARIA}
+      {/*
+        Sin columna lateral fija: el menú se repliega detrás de las tres
+        rayitas, arriba a la izquierda, y se despliega como cajón. Lo pidió el
+        cliente y además le devuelve a la tienda los 212px que ocupaba la
+        columna, que es ancho de góndola. La columna sigue existiendo en el
+        componente y la usa "/v2", que se mantiene como alternativa.
+      */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <SiteTopbar
+          companyName={settings.company.name}
+          logoUrl={settings.company.logoUrl}
+          menuSiempreVisible
+          cartCount={cartCount}
+          isLoggedIn={Boolean(session)}
+          nav={NAV}
+          navSecundaria={NAV_SECUNDARIA}
           tagline={TAGLINE}
-          logo={{ url: settings.company.logoUrl, alt: settings.company.name }}
         />
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <SiteTopbar
-            companyName={settings.company.name}
-            logoUrl={settings.company.logoUrl}
-            logoSoloEnMobile
-            cartCount={cartCount}
-            isLoggedIn={Boolean(session)}
-            nav={NAV}
-            navSecundaria={NAV_SECUNDARIA}
-            tagline={TAGLINE}
-          />
+        <main id="contenido" className="flex-1">
+          {children}
+        </main>
 
-          <main id="contenido" className="flex-1">
-            {children}
-          </main>
-
-          <TrustBar />
-          <SiteFooter />
-        </div>
+        <TrustBar />
+        <SiteFooter />
       </div>
     </div>
   );
