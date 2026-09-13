@@ -1,26 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { CartDrawer } from "@/components/shop/cart-drawer";
+import { CarritoV4 } from "./carrito";
+import type { ZonaEnvio } from "./zonas";
 import { MarcaAtul } from "./marca";
 
 /**
  * Cabecera del prototipo: franja de envío, marca a la izquierda, navegación
  * centrada y acciones a la derecha, con el panel de búsqueda desplegable.
  *
- * El botón del carrito abre el cajón real del proyecto en vez del cajón del
- * prototipo: el del prototipo guarda el carrito en el navegador y acá el
- * carrito vive en el servidor, con stock y cupones de verdad. Es la única
- * pieza donde la función pesa más que el calco.
+ * El botón abre el cajón con el diseño del prototipo (CarritoV4), alimentado
+ * por el carrito real del servidor.
  */
 export function CabeceraV4({
   avisoEnvio,
   cartCount,
   isLoggedIn,
+  zonas,
 }: {
   avisoEnvio: string;
   cartCount: number;
   isLoggedIn: boolean;
+  zonas: ZonaEnvio[];
 }) {
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
@@ -93,7 +94,11 @@ export function CabeceraV4({
         </form>
       </header>
 
-      <CartDrawer open={carritoAbierto} onOpenChange={setCarritoAbierto} />
+      <CarritoV4
+        abierto={carritoAbierto}
+        onCerrar={() => setCarritoAbierto(false)}
+        zonas={zonas}
+      />
     </>
   );
 }

@@ -1,18 +1,27 @@
+import Image from "next/image";
+
 /**
- * Logotipo tal como lo resuelve el prototipo: dibujado con CSS, con la "U"
- * convertida en copa por un borde inferior redondeado.
+ * Logotipo real de Atul.
  *
- * El proyecto tiene los PNG reales del logo en /media/brand/, pero el pedido
- * fue clonar la UI como está en el prototipo, y ahí el logotipo es tipográfico.
- * Cambiarlo por la imagen real es reemplazar este componente por un <Image>.
+ * El prototipo lo dibujaba con CSS —la palabra en Cormorant espaciada y la
+ * "U" convertida en copa con un borde redondeado— porque no tenía el archivo.
+ * Acá va el PNG real.
+ *
+ * Se mantiene la altura del logotipo dibujado (45px: 29 de la palabra, 7 de
+ * separación y 9 del "VINOS") para no mover el ritmo de la cabecera de 76px
+ * ni el alto del pie.
+ *
+ * Sobre crema va la versión azul; sobre el azul del pie, la crema.
  */
-export function MarcaAtul() {
+export function MarcaAtul({ tono = "azul" }: { tono?: "azul" | "crema" }) {
   return (
-    <>
-      <span className="brand-word">
-        AT<span className="brand-cup">U</span>L
-      </span>
-      <span className="brand-sub">VINOS</span>
-    </>
+    <Image
+      src={tono === "crema" ? "/brand/logotipo-crema.png" : "/brand/logotipo-azul.png"}
+      alt="Atul Vinos"
+      width={683}
+      height={227}
+      priority
+      style={{ height: 45, width: "auto" }}
+    />
   );
 }

@@ -4,6 +4,7 @@ import { getCartCount } from "@/domain/cart/service";
 import { getSession } from "@/infra/auth/session";
 import { CabeceraV4 } from "./_componentes/cabecera";
 import { MarcaAtul } from "./_componentes/marca";
+import { listarZonasEnvio } from "./_componentes/zonas";
 import "./v4.css";
 
 export const metadata: Metadata = {
@@ -27,10 +28,11 @@ export default async function MaquetaCuatroLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [settings, cartCount, session] = await Promise.all([
+  const [settings, cartCount, session, zonas] = await Promise.all([
     getSettings(),
     getCartCount(),
     getSession(),
+    listarZonasEnvio(),
   ]);
 
   const { company } = settings;
@@ -41,6 +43,7 @@ export default async function MaquetaCuatroLayout({
         avisoEnvio="Envío gratis en Río Cuarto, Las Higueras y Holmberg."
         cartCount={cartCount}
         isLoggedIn={Boolean(session)}
+        zonas={zonas}
       />
 
       <main id="top">{children}</main>
@@ -48,7 +51,7 @@ export default async function MaquetaCuatroLayout({
       <footer>
         <div className="footer-main section-shell">
           <div className="brand footer-brand">
-            <MarcaAtul />
+            <MarcaAtul tono="crema" />
           </div>
 
           <div>
