@@ -7,7 +7,10 @@ import { AgeGate } from "@/components/site/age-gate";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  // 600 y 700 los usa la maqueta 4, que viene del prototipo. Sin ellos el
+  // navegador los falsea con negrita sintética: se ve más pesado y cambia la
+  // métrica, así que los títulos no coincidían con el original.
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-cormorant",
   display: "swap",
 });
