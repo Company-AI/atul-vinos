@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { House, Mail, Menu, Package, Sparkles, Tag, Users, Wine, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -124,6 +125,14 @@ export function SidebarColumn(props: Props) {
  * medidas: el menú se repliega detrás de las tres rayitas y el contenido se
  * queda con todo el ancho. Es un cajón, no un desplegable, así entra la
  * navegación completa —principal, secundaria y firma— sin apretarla.
+ *
+ * El cajón se monta en <body> con un portal y no donde vive el botón.
+ * El disparador está adentro del <header>, y el header lleva
+ * `backdrop-blur`: backdrop-filter crea bloque contenedor para los
+ * position:fixed que cuelgan de él, así que un `fixed inset-0` adentro del
+ * header no se resolvía contra la pantalla sino contra el header. El cajón
+ * quedaba de 280x72 pegado abajo de la franja de avisos, con los enlaces
+ * desbordando fuera de su caja.
  */
 export function SidebarMenu({ siempreVisible = false, ...props }: Props & { siempreVisible?: boolean }) {
   const pathname = usePathname();
@@ -159,34 +168,36 @@ export function SidebarMenu({ siempreVisible = false, ...props }: Props & { siem
         <Menu className="size-6" aria-hidden />
       </button>
 
-      {abierto && (
-        <div className={cn("fixed inset-0 z-[70] flex", !siempreVisible && "lg:hidden")}>
-          <div
-            className="flex w-[280px] max-w-[80vw] flex-col overflow-y-auto bg-bone pt-5 shadow-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menú"
-          >
-            <div className="flex justify-end px-4">
-              <button
-                type="button"
-                aria-label="Cerrar menú"
-                onClick={() => setAbierto(false)}
-                className="rounded-sm p-2 text-carbon-900"
-              >
-                <X className="size-5" aria-hidden />
-              </button>
+      {abierto &&
+        createPortal(
+          <div className={cn("fixed inset-0 z-[70] flex", !siempreVisible && "lg:hidden")}>
+            <div
+              className="flex w-[280px] max-w-[80vw] flex-col overflow-y-auto bg-bone pt-5 shadow-overlay"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menú"
+            >
+              <div className="flex justify-end px-4">
+                <button
+                  type="button"
+                  aria-label="Cerrar menú"
+                  onClick={() => setAbierto(false)}
+                  className="rounded-sm p-2 text-carbon-900"
+                >
+                  <X className="size-5" aria-hidden />
+                </button>
+              </div>
+              <SidebarContenido {...props} />
             </div>
-            <SidebarContenido {...props} />
-          </div>
-          <button
-            type="button"
-            aria-label="Cerrar menú"
-            onClick={() => setAbierto(false)}
-            className="flex-1 bg-carbon-950/45"
-          />
-        </div>
-      )}
+            <button
+              type="button"
+              aria-label="Cerrar menú"
+              onClick={() => setAbierto(false)}
+              className="flex-1 bg-carbon-950/45"
+            />
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

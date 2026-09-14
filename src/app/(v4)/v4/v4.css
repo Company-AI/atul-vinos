@@ -214,3 +214,23 @@
 .v4 .nav-actions .icon-button:nth-child(2){display:none}
 .v4 .product-detail-copy{padding:34px 24px}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AGREGADO — no viene del prototipo.
+
+   El prototipo esconde el menú por debajo de 980px y no pone nada en su
+   lugar: en mobile se queda sin navegación. Esto agrega la hamburguesa y su
+   cajón, con el mismo lenguaje visual del resto (crema, reglas de un pixel,
+   el mismo desplazamiento del cajón del carrito, pero desde la izquierda).
+
+   Si se regenera v4.css desde el prototipo, este bloque se vuelve a agregar.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.v4 .nav-menu-toggle{display:none}
+@media(max-width:980px){.v4 .nav-menu-toggle{display:grid;place-items:center}}
+.v4 .nav-drawer{position:fixed;left:0;top:0;width:min(300px,82%);height:100%;background:var(--surface);z-index:70;transform:translateX(-102%);transition:.25s ease;box-shadow:16px 0 40px rgba(0,0,0,.12);display:flex;flex-direction:column;overflow-y:auto}
+.v4 .nav-drawer.open{transform:none}
+.v4 .nav-drawer-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.v4 .nav-drawer-head .eyebrow{margin:0}
+.v4 .nav-drawer nav{display:flex;flex-direction:column;padding:6px 24px 24px}
+.v4 .nav-drawer nav a{padding:15px 0;border-bottom:1px solid var(--line);font-size:15px}
+.v4 .nav-drawer nav a:last-child{border-bottom:0}

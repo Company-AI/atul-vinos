@@ -12,6 +12,14 @@ import { MarcaAtul } from "./marca";
  * El botón abre el cajón con el diseño del prototipo (CarritoV4), alimentado
  * por el carrito real del servidor.
  */
+const ENLACES = [
+  { href: "#catalogo", label: "Vinos" },
+  { href: "#cajas", label: "Cajas" },
+  { href: "#ofertas", label: "Ofertas" },
+  { href: "#novedades", label: "Novedades" },
+  { href: "#quienes", label: "Quiénes somos" },
+];
+
 export function CabeceraV4({
   avisoEnvio,
   cartCount,
@@ -25,6 +33,7 @@ export function CabeceraV4({
 }) {
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
     <>
@@ -37,14 +46,23 @@ export function CabeceraV4({
           </a>
 
           <nav className="main-nav" aria-label="Principal">
-            <a href="#catalogo">Vinos</a>
-            <a href="#cajas">Cajas</a>
-            <a href="#ofertas">Ofertas</a>
-            <a href="#novedades">Novedades</a>
-            <a href="#quienes">Quiénes somos</a>
+            {ENLACES.map((e) => (
+              <a key={e.href} href={e.href}>
+                {e.label}
+              </a>
+            ))}
           </nav>
 
           <div className="nav-actions">
+            <button
+              type="button"
+              className="icon-button nav-menu-toggle"
+              aria-label="Abrir menú"
+              aria-expanded={menuAbierto}
+              onClick={() => setMenuAbierto(true)}
+            >
+              ☰
+            </button>
             <button
               type="button"
               className="icon-button"
@@ -93,6 +111,43 @@ export function CabeceraV4({
           />
         </form>
       </header>
+
+      {/*
+        Fuera del <header> a propósito. El header lleva backdrop-filter, que
+        crea bloque contenedor para los position:fixed que cuelgan de él: un
+        cajón adentro se dimensionaría contra el header en vez de la pantalla.
+        Es el mismo bug que tenía el menú de "/".
+      */}
+      <aside
+        className={menuAbierto ? "nav-drawer open" : "nav-drawer"}
+        aria-hidden={!menuAbierto}
+        inert={!menuAbierto}
+        aria-label="Menú"
+      >
+        <div className="nav-drawer-head">
+          <span className="eyebrow">MENÚ</span>
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setMenuAbierto(false)}
+            aria-label="Cerrar menú"
+          >
+            ×
+          </button>
+        </div>
+        <nav aria-label="Principal (mobile)">
+          {ENLACES.map((e) => (
+            <a key={e.href} href={e.href} onClick={() => setMenuAbierto(false)}>
+              {e.label}
+            </a>
+          ))}
+        </nav>
+      </aside>
+      <div
+        className={menuAbierto ? "drawer-backdrop open" : "drawer-backdrop"}
+        onClick={() => setMenuAbierto(false)}
+        aria-hidden
+      />
 
       <CarritoV4
         abierto={carritoAbierto}
