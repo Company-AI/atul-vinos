@@ -12,6 +12,7 @@ import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias
 import { WineCardRow } from "@/components/shop/wine-card-row";
 import { VarietalBlock } from "@/components/shop/varietal-block";
 import { LogoStrip, type LogoBodega } from "@/components/shop/logo-strip";
+import { buttonVariants } from "@/ui/button";
 
 export const revalidate = 300;
 
@@ -33,13 +34,17 @@ const CATEGORIAS: CategoryCircle[] = [TODOS_LOS_VINOS, ...CATEGORIAS_TIENDA];
 
 /*
   Bodegas que trabajamos, para la tira que corta entre los dos bloques de
-  varietal. Los logos son los oficiales de cada bodega, bajados de sus sitios.
+  varietal. Los logos son los oficiales, bajados del sitio de cada bodega.
 
-  Están las 7 que pude conseguir del listado de stock. Faltan 17 y se agregan
-  acá a medida que aparezcan: Antigal está, faltan CrowdFarming, Vista Grande,
-  Humanao, Los Dragones, Malma, Terra Camiare, Domaine Bousquet, Familia
-  Rubino, Finca Iral, Penedo Borges, Scotti Wines, Stella Crinita, El Mirlo,
-  Riccitelli, Rocamadre, Urqo y Yanay.
+  Van 15 de las 24 del listado de stock. Las que faltan no tienen sitio
+  propio —se venden por Instagram o por vinotecas— y hay que pedirle el
+  archivo a cada una: Vista Grande, Scotti Wines, Stella Crinita, Los
+  Dragones, El Mirlo, Rocamadre, Urqo y Yanay. "CrowdFarming (autor)" no es
+  una bodega, es la vía por la que entra, así que no lleva logo.
+
+  Varios venían en blanco sobre transparente, pensados para fondo oscuro, y
+  se invirtieron para que se lean sobre crema: Otronia, El Porvenir, Familia
+  Rubino y Humanao.
 */
 const BODEGAS: LogoBodega[] = [
   { nombre: "Miguel Minni", archivo: "/media/bodegas/miguel-minni.png" },
@@ -47,7 +52,15 @@ const BODEGAS: LogoBodega[] = [
   { nombre: "El Porvenir de Cafayate", archivo: "/media/bodegas/el-porvenir.png" },
   { nombre: "Bodega Renacer", archivo: "/media/bodegas/renacer.png" },
   { nombre: "Chañarmuyo", archivo: "/media/bodegas/chanarmuyo.png" },
+  { nombre: "Humanao", archivo: "/media/bodegas/humanao.png" },
   { nombre: "La Mala María", archivo: "/media/bodegas/la-mala-maria.png" },
+  { nombre: "Malma", archivo: "/media/bodegas/malma.png" },
+  { nombre: "Terra Camiare", archivo: "/media/bodegas/terra-camiare.png" },
+  { nombre: "Domaine Bousquet", archivo: "/media/bodegas/domaine-bousquet.png" },
+  { nombre: "Familia Rubino", archivo: "/media/bodegas/familia-rubino.png" },
+  { nombre: "Finca Iral", archivo: "/media/bodegas/finca-iral.png" },
+  { nombre: "Penedo Borges", archivo: "/media/bodegas/penedo-borges.png" },
+  { nombre: "Matías Riccitelli", archivo: "/media/bodegas/riccitelli.png" },
   { nombre: "Otronia", archivo: "/media/bodegas/otronia.png" },
 ];
 
@@ -72,7 +85,7 @@ export default async function HomePage() {
       además es el orden que más se usa en una tienda. Cambiarlo es cambiar
       este string.
     */
-    listProducts({ sinPacks: true, orden: "precio-menor", perPage: 24 }),
+    listProducts({ sinPacks: true, orden: "precio-menor", perPage: 9 }),
     getFavoriteIds(),
   ]);
 
@@ -197,6 +210,23 @@ export default async function HomePage() {
               />
             ))}
           </div>
+
+          {/*
+            La home muestra tres filas y corta. Antes listaba el catálogo
+            entero y la página se iba a más del doble de largo; el resto vive
+            en /vinos, que además tiene los filtros.
+          */}
+          {catalogo.total > catalogo.items.length && (
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/vinos"
+                className={buttonVariants({ variant: "outline", size: "lg", uppercase: true })}
+              >
+                Ver todos los vinos
+                <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            </div>
+          )}
         </section>
       )}
 
