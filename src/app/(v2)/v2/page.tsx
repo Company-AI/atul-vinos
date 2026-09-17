@@ -111,39 +111,39 @@ export default function MaquetaDosPage() {
     <>
       {/* ─── Hero ─────────────────────────────────────────────────────────── */}
       <section className="hero">
-        <div className="hero-grid">
-          <div className="hero-texto">
-            <h1>
-              Vinos que probamos
-              <br />
-              antes de recomendar.
-            </h1>
-            <p>Una selección corta de etiquetas que conocemos y volveríamos a elegir.</p>
-            <div className="hero-botones">
-              <Link className="boton" href="/vinos">
-                Ver vinos
-              </Link>
-              <Link className="boton linea" href="/quienes-somos">
-                Conocer Atul
-              </Link>
-            </div>
-          </div>
+        <div className="hero-foto">
+          <Image
+            src="/media/v2/hero.webp"
+            alt="Norton Reserva Malbec, Rutini Antología y Trumpeter Malbec sobre una mesa de piedra"
+            fill
+            priority
+            sizes="100vw"
+          />
+        </div>
+        <div className="hero-velo" aria-hidden />
 
-          <div className="hero-foto">
-            <Image
-              src="/media/v2/hero.webp"
-              alt="Norton Reserva Malbec, Rutini Antología y Trumpeter Malbec sobre una mesa de piedra"
-              fill
-              priority
-              sizes="(max-width: 860px) 100vw, 55vw"
-            />
-            <p className="hero-firma">
-              Buenas botellas,
-              <br />
-              mejores momentos
-            </p>
+        <div className="caja hero-texto">
+          <h1>
+            Vinos que probamos
+            <br />
+            antes de recomendar.
+          </h1>
+          <p>Una selección corta de etiquetas que conocemos y volveríamos a elegir.</p>
+          <div className="hero-botones">
+            <Link className="boton" href="/vinos">
+              Ver vinos
+            </Link>
+            <Link className="boton linea" href="/quienes-somos">
+              Conocer Atul
+            </Link>
           </div>
         </div>
+
+        <p className="hero-firma">
+          Buenas botellas,
+          <br />
+          mejores momentos
+        </p>
       </section>
 
       {/* ─── Servicios ────────────────────────────────────────────────────── */}

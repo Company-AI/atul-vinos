@@ -62,61 +62,69 @@
 }
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
-.v2 .hero { background: var(--crema); }
-.v2 .hero-grid {
-  display: grid; grid-template-columns: minmax(0, 1fr) 1.18fr; align-items: center;
-  min-height: 477px;
-  /* Replica el borde izquierdo de .caja para que el texto quede alineado con
-     el resto de la página, y deja que la foto siga hasta el borde derecho. */
-  padding-left: max(24px, calc((100vw - 1240px) / 2));
+/*
+  La foto va a todo el ancho y el texto encima. El velo es un degradado de
+  crema que se apaga hacia la derecha: sin él el azul del titular caía sobre
+  la pared en sombra y perdía contraste.
+*/
+.v2 .hero { position: relative; min-height: 560px; display: grid; align-items: center; overflow: hidden; }
+.v2 .hero-foto { position: absolute; inset: 0; }
+.v2 .hero-foto img { width: 100%; height: 100%; object-fit: cover; object-position: center right; display: block; }
+.v2 .hero-velo {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right,
+    rgb(247 243 236 / 0.94) 0%,
+    rgb(247 243 236 / 0.86) 26%,
+    rgb(247 243 236 / 0.42) 48%,
+    rgb(247 243 236 / 0) 64%);
 }
-.v2 .hero-texto { padding: 48px 40px 48px 0; }
+.v2 .hero-texto { position: relative; padding: 76px 0; }
 .v2 .hero h1 {
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
-  font-size: 44px; line-height: 1.12; letter-spacing: -0.01em;
+  font-size: 62px; line-height: 1.08; letter-spacing: -0.015em;
   color: var(--azul); font-weight: 600;
 }
 .v2 .hero p {
-  margin-top: 18px; max-width: 34ch;
-  font-size: 14px; line-height: 1.65; color: #4b5162;
+  margin-top: 22px; max-width: 32ch;
+  font-size: 17px; line-height: 1.6; color: #3f4554;
 }
-.v2 .hero-botones { margin-top: 26px; display: flex; gap: 10px; }
+.v2 .hero-botones { margin-top: 34px; display: flex; gap: 12px; }
 .v2 .boton {
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  height: 38px; padding: 0 20px; border-radius: 4px;
-  font-size: 12.5px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 46px; padding: 0 26px; border-radius: 4px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
   border: 1px solid var(--azul); background: var(--azul); color: #fff;
 }
 .v2 .boton:hover { background: var(--azul-claro); border-color: var(--azul-claro); }
 .v2 .boton.linea { background: transparent; color: var(--azul); }
 .v2 .boton.linea:hover { background: rgb(30 45 84 / 0.06); }
 .v2 .boton.ancho { width: 100%; }
-.v2 .hero-foto { position: relative; align-self: stretch; min-height: 477px; }
-.v2 .hero-foto img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 .v2 .hero .hero-firma {
-  position: absolute; right: 26px; top: 46px; width: 150px; margin: 0; max-width: none;
+  position: absolute; right: 46px; top: 60px; width: 200px; margin: 0; max-width: none;
   font-family: var(--font-parisienne), cursive;
-  font-size: 19px; line-height: 1.45; color: var(--azul); text-align: left;
+  font-size: 26px; line-height: 1.45; color: var(--azul); text-align: left;
 }
 
 /* ─── Franja de servicios ────────────────────────────────────────────────── */
-.v2 .franja { background: var(--crema-2); border-bottom: 1px solid var(--linea); }
+/* En azul: la página tenía demasiado blanco seguido y esta franja es la que
+   corta el hero del catálogo. */
+.v2 .franja { background: var(--azul); }
 .v2 .franja-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
 .v2 .franja-item {
-  display: flex; align-items: center; gap: 12px; padding: 32px 0;
-  font-size: 11.5px; line-height: 1.45; color: #3f4554;
+  display: flex; align-items: center; gap: 14px; padding: 30px 0;
+  font-size: 13px; line-height: 1.5; color: #e7eaf2;
 }
-.v2 .franja-item svg { flex: none; color: var(--azul); }
+.v2 .franja-item svg { flex: none; color: #fff; }
 
 /* ─── Encabezado de sección ──────────────────────────────────────────────── */
 .v2 .sec { padding: 46px 0 8px; }
 .v2 .sec-cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
 .v2 .sec h2 {
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
-  font-size: 27px; color: var(--azul); font-weight: 600; line-height: 1.15;
+  font-size: 38px; color: var(--azul); font-weight: 600; line-height: 1.15;
 }
-.v2 .sec-bajada { margin-top: 5px; font-size: 12.5px; color: var(--gris); }
-.v2 .sec-link { font-size: 12px; color: var(--azul); font-weight: 500; white-space: nowrap; }
+.v2 .sec-bajada { margin-top: 7px; font-size: 14px; color: var(--gris); }
+.v2 .sec-link { font-size: 13.5px; color: var(--azul); font-weight: 500; white-space: nowrap; }
 
 /* ─── Tarjetas de la selección semanal ───────────────────────────────────── */
 .v2 .semana { background: var(--crema-2); }
@@ -125,14 +133,14 @@
 .v2 .semana-card { display: grid; grid-template-columns: 124px 1fr; gap: 18px; align-items: center; }
 .v2 .semana-foto { height: 265px; display: grid; place-items: center; }
 .v2 .semana-foto img { max-width: 100%; max-height: 265px; object-fit: contain; display: block; }
-.v2 .marca { font-size: 11px; color: var(--gris); }
+.v2 .marca { font-size: 12.5px; color: var(--gris); letter-spacing: .02em; }
 .v2 .semana-card h3 {
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
-  font-size: 17px; color: var(--azul); line-height: 1.2; margin-top: 2px;
+  font-size: 23px; color: var(--azul); line-height: 1.2; margin-top: 3px;
 }
-.v2 .semana-card .nota { margin-top: 7px; font-size: 11.5px; line-height: 1.5; color: var(--gris); }
-.v2 .precio { margin-top: 10px; font-size: 16px; font-weight: 700; color: var(--tinta); }
-.v2 .semana-card .boton { margin-top: 10px; height: 30px; font-size: 11px; padding: 0 16px; }
+.v2 .semana-card .nota { margin-top: 9px; font-size: 13.5px; line-height: 1.55; color: var(--gris); }
+.v2 .precio { margin-top: 12px; font-size: 20px; font-weight: 700; color: var(--azul); }
+.v2 .semana-card .boton { margin-top: 14px; height: 38px; font-size: 12.5px; padding: 0 20px; }
 
 /* ─── Tiras ──────────────────────────────────────────────────────────────── */
 .v2 .tiras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 32px 0 10px; }
@@ -144,10 +152,10 @@
 .v2 .tira > * { position: relative; }
 .v2 .tira h3 {
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
-  font-size: 22px; font-weight: 600;
+  font-size: 30px; font-weight: 600;
 }
-.v2 .tira p { margin-top: 3px; font-size: 11.5px; line-height: 1.4; max-width: 15ch; }
-.v2 .tira .mas { margin-top: 12px; font-size: 11px; font-weight: 600; }
+.v2 .tira p { margin-top: 6px; font-size: 13.5px; line-height: 1.45; max-width: 16ch; }
+.v2 .tira .mas { margin-top: 16px; font-size: 12.5px; font-weight: 600; }
 .v2 .tira.clara { color: var(--azul); }
 .v2 .tira.clara p { color: #5a6072; }
 .v2 .tira.oscura { color: #fff; }
@@ -155,7 +163,7 @@
 
 /* ─── Catálogo ───────────────────────────────────────────────────────────── */
 .v2 .catalogo { padding-bottom: 56px; }
-.v2 .orden { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--gris); }
+.v2 .orden { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gris); }
 .v2 .orden select {
   height: 30px; padding: 0 10px; border: 1px solid var(--linea); border-radius: 3px;
   background: var(--blanco); color: var(--tinta); font-size: 11.5px; outline: none;
@@ -166,11 +174,11 @@
 .v2 .filtro-cab {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
   padding: 11px 0; border: 0; background: transparent; cursor: pointer;
-  font-size: 12px; font-weight: 600; color: var(--tinta);
+  font-size: 13.5px; font-weight: 600; color: var(--tinta);
 }
 .v2 .filtro-cab svg { color: var(--gris); }
 .v2 .filtro-ops { padding-bottom: 10px; display: grid; gap: 7px; }
-.v2 .filtro-ops label { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #4b5162; cursor: pointer; }
+.v2 .filtro-ops label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4b5162; cursor: pointer; }
 .v2 .filtro-ops input { width: 12px; height: 12px; accent-color: var(--azul); }
 
 .v2 .productos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
@@ -188,12 +196,12 @@
 .v2 .producto-foto img { max-width: 60%; max-height: 178px; object-fit: contain; display: block; }
 .v2 .producto h3 {
   font-family: var(--font-cormorant), ui-serif, Georgia, serif;
-  font-size: 14.5px; color: var(--azul); line-height: 1.25; margin-top: 2px;
+  font-size: 18px; color: var(--azul); line-height: 1.25; margin-top: 3px;
   text-align: center;
 }
 .v2 .producto .marca, .v2 .producto .precio { text-align: center; }
-.v2 .producto .precio { font-size: 14px; margin-top: 8px; }
-.v2 .producto .boton { margin-top: 12px; height: 30px; font-size: 11px; }
+.v2 .producto .precio { font-size: 18px; margin-top: 10px; }
+.v2 .producto .boton { margin-top: 14px; height: 38px; font-size: 12.5px; }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1040px) {
@@ -201,9 +209,21 @@
   .v2 .semana-grid { grid-template-columns: 1fr; gap: 18px; }
 }
 @media (max-width: 860px) {
-  .v2 .hero-grid { grid-template-columns: 1fr; min-height: 0; }
-  .v2 .hero-texto { padding: 36px 0 28px; }
-  .v2 .hero-foto { min-height: 260px; }
+  /*
+    En pantalla angosta el recorte de la foto deja las botellas justo debajo
+    del texto y el velo horizontal ya se apagó: el titular quedaba ilegible.
+    Se corre el encuadre hacia la pared iluminada y el velo pasa a cubrir
+    todo el ancho.
+  */
+  .v2 .hero-foto img { object-position: 34% center; }
+  .v2 .hero-velo {
+    background: linear-gradient(to bottom,
+      rgb(247 243 236 / 0.93) 0%,
+      rgb(247 243 236 / 0.88) 62%,
+      rgb(247 243 236 / 0.74) 100%);
+  }
+  .v2 .hero .hero-firma { display: none; }
+  .v2 .hero-texto { padding: 48px 0; }
   .v2 .hero-firma { display: none; }
   .v2 .franja-grid { grid-template-columns: 1fr; }
   .v2 .franja-item + .franja-item { border-top: 1px solid var(--linea); }
@@ -214,6 +234,6 @@
 }
 @media (max-width: 520px) {
   .v2 .caja { width: min(1240px, 100% - 28px); }
-  .v2 .hero h1 { font-size: 32px; }
+  .v2 .hero h1 { font-size: 40px; }
   .v2 .productos { grid-template-columns: 1fr; }
 }
