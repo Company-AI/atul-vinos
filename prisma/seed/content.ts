@@ -31,11 +31,11 @@ export const CMS_SECTIONS = [
         encima, en oscuro, con un velo claro que sólo levanta el contraste.
       */
       media: {
-        imageUrl: "/media/hero/atul-hero.webp",
-        imageAlt: "Botella de vino, copa servida y corcho sobre una mesa de piedra",
+        imageUrl: "/media/hero/atul-hero-encuentro.webp",
+        imageAlt: "Manos brindando con copas de vino sobre una mesa servida",
         videoDesktopUrl: "",
         videoMobileUrl: "",
-        posterUrl: "/media/hero/atul-hero.webp",
+        posterUrl: "/media/hero/atul-hero-encuentro.webp",
       },
       overlay: "scrim-side",
       align: "left",

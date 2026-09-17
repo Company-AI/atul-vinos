@@ -290,7 +290,7 @@ export function VideoHero({
         )}
 
         {data.eyebrow && (
-          <p className={cn("eyebrow mb-5 opacity-0", textoOscuro ? "text-carbon-800 sm:text-stone-600" : "text-linen-300") + " animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]"}>
+          <p className={cn("eyebrow mb-5 opacity-0", textoOscuro ? "text-carbon-800" : "text-linen-300") + " animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]"}>
             {data.eyebrow}
           </p>
         )}
@@ -323,7 +323,7 @@ export function VideoHero({
           <p
             className={cn(
               "mt-7 max-w-[74%] text-lead opacity-0 sm:max-w-[52ch]",
-              textoOscuro ? "text-carbon-800 sm:text-stone-600" : "text-linen-200",
+              textoOscuro ? "text-carbon-800" : "text-linen-200",
               "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_460ms_forwards]",
               data.align === "center" && "mx-auto",
             )}

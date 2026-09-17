@@ -8,6 +8,10 @@ import { WineCardRow } from "./wine-card-row";
  * Bloque de un varietal: foto grande al costado y sus vinos al lado, en dos
  * filas de tres.
  *
+ * La foto no es una botella: la botella ya aparece en cada ficha de al lado,
+ * y repetirla en el panel no suma. Va una escena de gente tomando, que es lo
+ * que invita a entrar.
+ *
  * La grilla es de tres columnas y hasta seis productos, así que llena dos
  * filas exactas. Si el varietal tiene menos, renderiza los que hay en lugar
  * de dejar huecos: con tres botellas queda una fila completa, que se lee

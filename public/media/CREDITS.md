@@ -40,3 +40,14 @@ Regenerar con:
 | `media/video/vineyard-aerial.mp4` | Drone sobre el viñedo | https://www.pexels.com/video/3775895/ |
 | `media/video/club-desktop.mp4` | Vino tinto sirviéndose en la copa | https://www.pexels.com/video/1003933/ |
 | `media/video/club-mobile.mp4` | Vino sirviéndose, plano vertical | https://www.pexels.com/video/8093235/ |
+
+## Fotos de encuentro (agregadas a mano)
+
+Bajadas de Pexels con la misma licencia que el resto. No las descarga
+`assets:stock`: se eligieron a ojo para el hero y los bloques de varietal.
+
+| Archivo | Pexels |
+| --- | --- |
+| `hero/atul-hero-encuentro.webp` | https://www.pexels.com/photo/11845546/ |
+| `varietales/malbec.webp` | https://www.pexels.com/photo/7233015/ |
+| `varietales/cabernet.webp` | recorte de `scenes/toast.jpg`, ya acreditada arriba |
