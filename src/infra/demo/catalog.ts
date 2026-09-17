@@ -137,6 +137,41 @@ export function demoListProducts(filters: CatalogFilters = {}) {
 }
 
 /** Facetas para los filtros, derivadas del catálogo en memoria. */
+/**
+ * Sugeridos del carrito, sin base.
+ *
+ * Los más vendidos que no estén ya en el carrito. Igual que en la versión
+ * real, se descartan los que no tienen stock.
+ */
+export function demoCrossSellProducts(excludeIds: string[], limit = 3) {
+  return DEMO_PRODUCTS.filter(
+    (p) => p.kind === "WINE" && !excludeIds.includes(p.id) && p.available > 0,
+  )
+    .sort((a, b) => Number(b.bestSeller) - Number(a.bestSeller) || Number(b.featured) - Number(a.featured))
+    .slice(0, limit);
+}
+
+/**
+ * "También te puede gustar", sin base.
+ *
+ * Prioriza los que comparten región o varietal con el que se está mirando y
+ * completa con el resto si no alcanzan.
+ */
+export function demoRelatedProducts(
+  productId: string,
+  opts: { regionName?: string | null; grapes?: string[] },
+  limit = 4,
+) {
+  const otros = DEMO_PRODUCTS.filter((p) => p.id !== productId && p.available > 0);
+  const parecidos = otros.filter(
+    (p) =>
+      (opts.regionName && p.regionName === opts.regionName) ||
+      (opts.grapes?.length && p.grapes.some((g) => opts.grapes!.includes(g))),
+  );
+  const resto = otros.filter((p) => !parecidos.includes(p));
+  return [...parecidos, ...resto].slice(0, limit);
+}
+
 export function demoFilterOptions() {
   const contar = <T extends string>(valores: (T | null)[]) => {
     const mapa = new Map<string, number>();

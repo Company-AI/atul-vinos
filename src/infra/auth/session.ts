@@ -45,6 +45,10 @@ export async function destroySession(): Promise<void> {
 }
 
 export const getSession = cache(async (): Promise<SessionPayload | null> => {
+  // El demo no tiene login, así que tampoco tiene sesión: una cookie vieja de
+  // un deploy con base no puede arrastrar a nadie a consultar Prisma.
+  if (IS_DEMO) return null;
+
   const store = await cookies();
   const token = store.get(COOKIE_NAME)?.value;
   if (!token) return null;

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { listProducts } from "@/domain/catalog/service";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { demoPosts } from "@/infra/demo/content";
 import { getFavoriteIds } from "@/app/actions/favorites";
 import { WineGrid } from "@/components/shop/wine-grid";
 import { buttonVariants } from "@/ui/button";
@@ -15,6 +17,16 @@ export const metadata: Metadata = {
 };
 
 type PageProps = { searchParams: Promise<{ q?: string }> };
+
+/** Las notas que matchean, con el mismo criterio que la query real. */
+function buscarEnDemo(query: string) {
+  const q = query.toLowerCase();
+  return demoPosts()
+    .filter((p) =>
+      [p.title, p.excerpt ?? "", p.content].some((campo) => campo.toLowerCase().includes(q)),
+    )
+    .slice(0, 5);
+}
 
 export default async function SearchPage({ searchParams }: PageProps) {
   const { q } = await searchParams;
@@ -41,17 +53,19 @@ export default async function SearchPage({ searchParams }: PageProps) {
 
   const [{ items, total }, posts, favoriteIds] = await Promise.all([
     listProducts({ q: query, perPage: 24 }),
-    prisma.post.findMany({
-      where: {
-        isPublished: true,
-        OR: [
-          { title: { contains: query, mode: "insensitive" } },
-          { excerpt: { contains: query, mode: "insensitive" } },
-          { content: { contains: query, mode: "insensitive" } },
-        ],
-      },
-      take: 5,
-    }),
+    IS_DEMO
+      ? buscarEnDemo(query)
+      : prisma.post.findMany({
+          where: {
+            isPublished: true,
+            OR: [
+              { title: { contains: query, mode: "insensitive" } },
+              { excerpt: { contains: query, mode: "insensitive" } },
+              { content: { contains: query, mode: "insensitive" } },
+            ],
+          },
+          take: 5,
+        }),
     getFavoriteIds(),
   ]);
 

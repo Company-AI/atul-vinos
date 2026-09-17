@@ -3,9 +3,11 @@ import type { Prisma, WineIntensity, WineType } from "@prisma/client";
 import { prisma } from "@/infra/db/prisma";
 import { IS_DEMO } from "@/infra/demo/mode";
 import {
+  demoCrossSellProducts,
   demoFilterOptions,
   demoListProducts,
   demoProductDetail,
+  demoRelatedProducts,
 } from "@/infra/demo/catalog";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { toNumber } from "@/lib/money";
@@ -241,6 +243,17 @@ export async function getRelatedProducts(
   opts: { regionId?: string | null; lineId?: string | null; grapeIds?: string[] },
   limit = 4,
 ): Promise<ProductCard[]> {
+  if (IS_DEMO) {
+    // El demo no tiene ids de región ni de uva: cruza por nombre.
+    const actual = demoListProducts({ perPage: 200 });
+    const yo = (await actual).items.find((p) => p.id === productId);
+    return demoRelatedProducts(
+      productId,
+      { regionName: yo?.regionName ?? null, grapes: yo?.grapes ?? [] },
+      limit,
+    );
+  }
+
   const rows = await prisma.product.findMany({
     where: {
       status: "ACTIVE",
@@ -270,6 +283,8 @@ export async function getCrossSellProducts(
   excludeIds: string[],
   limit = 3,
 ): Promise<ProductCard[]> {
+  if (IS_DEMO) return demoCrossSellProducts(excludeIds, limit);
+
   const rows = await prisma.product.findMany({
     where: { status: "ACTIVE", kind: "WINE", id: { notIn: excludeIds.length ? excludeIds : ["-"] } },
     select: cardSelect,

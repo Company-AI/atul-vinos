@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Package } from "lucide-react";
 import { prisma } from "@/infra/db/prisma";
+import { IS_DEMO } from "@/infra/demo/mode";
 import { ORDER_STATUS_LABELS } from "@/domain/orders/status";
 import { formatDateTime } from "@/lib/dates";
 import { Badge } from "@/ui/badge";
@@ -23,14 +24,18 @@ type PageProps = { params: Promise<{ tracking: string }> };
 export default async function TrackingPage({ params }: PageProps) {
   const { tracking } = await params;
 
-  const shipment = await prisma.shipment.findFirst({
-    where: { trackingNumber: tracking },
-    include: {
-      carrier: true,
-      order: { select: { number: true, status: true, shippingSnapshot: true } },
-      events: { orderBy: { occurredAt: "desc" } },
-    },
-  });
+  // En demo no hay pedidos, así que ningún número de seguimiento existe: 404,
+  // que es lo mismo que devuelve el sitio real ante un número desconocido.
+  const shipment = IS_DEMO
+    ? null
+    : await prisma.shipment.findFirst({
+        where: { trackingNumber: tracking },
+        include: {
+          carrier: true,
+          order: { select: { number: true, status: true, shippingSnapshot: true } },
+          events: { orderBy: { occurredAt: "desc" } },
+        },
+      });
   if (!shipment) notFound();
 
   const address = shipment.order.shippingSnapshot as Record<string, string>;

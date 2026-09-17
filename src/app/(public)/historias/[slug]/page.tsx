@@ -37,19 +37,25 @@ export default async function StoryPage({ params }: PageProps) {
   const { slug } = await params;
 
   const [post, settings] = await Promise.all([
-    prisma.post.findFirst({
-      where: { slug, isPublished: true },
-      include: { category: true },
-    }),
+    IS_DEMO
+      ? demoPostBySlug(slug)
+      : prisma.post.findFirst({
+          where: { slug, isPublished: true },
+          include: { category: true },
+        }),
     getSettings(),
   ]);
   if (!post) notFound();
 
-  const related = await prisma.post.findMany({
-    where: { isPublished: true, id: { not: post.id } },
-    orderBy: { publishedAt: "desc" },
-    take: 3,
-  });
+  const related = IS_DEMO
+    ? demoPosts()
+        .filter((p) => p.id !== post.id)
+        .slice(0, 3)
+    : await prisma.post.findMany({
+        where: { isPublished: true, id: { not: post.id } },
+        orderBy: { publishedAt: "desc" },
+        take: 3,
+      });
 
   const jsonLd = {
     "@context": "https://schema.org",
