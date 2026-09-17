@@ -26,7 +26,13 @@ export function CategoryCircles({
 }) {
   return (
     <nav aria-label="Categorías" className="border-b border-linen-200 bg-bone">
-      <ul className="rail-snap rail-aligned gap-6 py-7 pr-gutter sm:gap-8">
+      {/*
+        Centrada desde lg, donde las categorías entran holgadas. Abajo de esa
+        medida sigue siendo un riel que se arrastra, y ahí queda alineada a la
+        izquierda a propósito: centrar un contenedor con scroll recorta el
+        principio y lo deja inalcanzable.
+      */}
+      <ul className="rail-snap mx-auto w-full max-w-[1600px] justify-start gap-10 px-gutter py-9 sm:gap-14 lg:justify-center">
         {items.map((item) => {
           const esActivo = item.label === activo;
           return (

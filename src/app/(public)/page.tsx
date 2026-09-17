@@ -11,6 +11,7 @@ import { SectionBanners, type SectionBanner } from "@/components/marketing/secti
 import { CategoryCircles, type CategoryCircle } from "@/components/shop/category-circles";
 import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias";
 import { WineCardRow } from "@/components/shop/wine-card-row";
+import { ProductRail } from "@/components/shop/product-rail";
 
 export const revalidate = 300;
 
@@ -55,12 +56,13 @@ const TIRAS: SectionBanner[] = [
 ];
 
 export default async function HomePage() {
-  const [sections, settings, seleccion, catalogo, favoriteIds] = await Promise.all([
+  const [sections, settings, seleccion, masVendidos, catalogo, favoriteIds] = await Promise.all([
     getPageSections("home"),
     getSettings(),
     // Tres botellas: es una selección, no una grilla. Si son ocho deja de
     // leerse como recomendación y pasa a ser catálogo, que ahora vive abajo.
     getShowcaseProducts("featured", 3),
+    getShowcaseProducts("bestSellers", 10),
     /*
       El catálogo NO ordena por destacados: la tira de arriba también lo hace,
       así que abría con las mismas dos botellas a 400px de distancia y se leía
@@ -121,19 +123,80 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <SectionBanners items={TIRAS} />
+      {/*
+        Promo fija al costado de un riel de productos.
+
+        El panel de la izquierda no rota ni cambia solo: es una sola pieza que
+        empuja a las cajas. A la derecha, los que más salen, en un riel que se
+        arrastra. La imagen del panel es una de las cajas reales, no un montaje.
+      */}
+      {masVendidos.length > 0 && (
+        <section className="mx-auto max-w-[1600px] px-gutter pt-16">
+          <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <Link
+              href="/box"
+              className="group relative hidden overflow-hidden rounded-md bg-carbon-900 lg:block"
+            >
+              <Image
+                src="/media/packs/pack-regalo.webp"
+                alt=""
+                fill
+                sizes="280px"
+                className="object-cover opacity-[0.72] transition-transform duration-[700ms] ease-out-expo group-hover:scale-[1.04]"
+              />
+              <span
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-carbon-950/85 via-carbon-950/35 to-carbon-950/10"
+              />
+              <span className="absolute inset-x-6 bottom-7">
+                <span className="eyebrow block text-linen-300">Cajas armadas</span>
+                <span className="mt-2.5 block font-display text-[26px] font-light leading-tight text-bone">
+                  Listas para regalar
+                </span>
+                <span className="mt-5 inline-flex items-center gap-2 rounded-md bg-bone px-4 py-2 text-[12px] font-medium text-carbon-900">
+                  Ver los box
+                  <ArrowRight className="size-3.5" aria-hidden />
+                </span>
+              </span>
+            </Link>
+
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <h2 className="font-display text-display-sm font-medium text-carbon-900">
+                    Los que más salen
+                  </h2>
+                  <p className="mt-1.5 text-[14px] text-stone-600">
+                    Lo que más nos piden, en orden.
+                  </p>
+                </div>
+                <Link
+                  href="/vinos"
+                  className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
+                >
+                  Ver todos
+                  <ArrowRight className="size-4" aria-hidden />
+                </Link>
+              </div>
+
+              <div className="mt-7">
+                <ProductRail productos={masVendidos} favoritos={favoriteIds} />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/*
-        Catálogo general, a dos columnas.
+        Catálogo general, a tres columnas.
 
-        La medida es más angosta que el resto de la home a propósito: la ficha
-        horizontal reserva el 38% del ancho para la botella, así que a dos
-        columnas sobre 1600px la foto quedaba enorme y el texto perdido al
-        costado. Con ~1180px cada columna ronda los 570px, que es donde la
-        ficha fue pensada.
+        Vuelve al ancho grande de la home: con tres columnas sobre 1600px cada
+        una ronda los 490px, que es la medida para la que está pensada la
+        ficha horizontal (reserva el 38% del ancho para la botella). A dos
+        columnas sobre este ancho la foto quedaba enorme.
       */}
       {catalogo.items.length > 0 && (
-        <section className="mx-auto max-w-[1180px] px-gutter pt-16">
+        <section className="mx-auto max-w-[1600px] px-gutter pt-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="font-display text-display-sm font-medium text-carbon-900">
@@ -158,7 +221,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="mt-9 grid gap-5 sm:grid-cols-2">
+          <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {catalogo.items.map((product) => (
               <WineCardRow
                 key={product.id}
@@ -169,6 +232,13 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/*
+        Las tiras van después del catálogo y no en el medio: la página la
+        manejan las grillas de producto, y las promos cierran en lugar de
+        interrumpir.
+      */}
+      <SectionBanners items={TIRAS} />
 
       {/*
         Una sola imagen y tres líneas: la historia completa vive en
