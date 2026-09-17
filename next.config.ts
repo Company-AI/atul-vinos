@@ -36,6 +36,16 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "no-store" },
         ],
       },
+      {
+        /*
+          El webhook de pagos tampoco se cachea. Estaba declarado sólo en
+          netlify.toml, que Vercel ignora: ahí una respuesta cacheada podría
+          hacer que un pago se dé por procesado sin haberlo procesado. Acá
+          vale en cualquier host.
+        */
+        source: "/api/webhooks/:path*",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
     ];
   },
 
