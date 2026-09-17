@@ -11,7 +11,7 @@ import { SectionBanners, type SectionBanner } from "@/components/marketing/secti
 import { CategoryCircles, type CategoryCircle } from "@/components/shop/category-circles";
 import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias";
 import { WineCardRow } from "@/components/shop/wine-card-row";
-import { ProductRail } from "@/components/shop/product-rail";
+import { VarietalBlock } from "@/components/shop/varietal-block";
 
 export const revalidate = 300;
 
@@ -56,13 +56,18 @@ const TIRAS: SectionBanner[] = [
 ];
 
 export default async function HomePage() {
-  const [sections, settings, seleccion, masVendidos, catalogo, favoriteIds] = await Promise.all([
+  const [sections, settings, seleccion, malbec, cabernet, catalogo, favoriteIds] = await Promise.all([
     getPageSections("home"),
     getSettings(),
     // Tres botellas: es una selección, no una grilla. Si son ocho deja de
     // leerse como recomendación y pasa a ser catálogo, que ahora vive abajo.
     getShowcaseProducts("featured", 3),
-    getShowcaseProducts("bestSellers", 10),
+    listProducts({ varietal: ["malbec"], perPage: 6, orden: "destacados" }),
+    listProducts({
+      varietal: ["cabernet-franc", "cabernet-sauvignon"],
+      perPage: 6,
+      orden: "destacados",
+    }),
     /*
       El catálogo NO ordena por destacados: la tira de arriba también lo hace,
       así que abría con las mismas dos botellas a 400px de distancia y se leía
@@ -124,68 +129,31 @@ export default async function HomePage() {
       </section>
 
       {/*
-        Promo fija al costado de un riel de productos.
+        Un bloque por varietal: la foto grande al costado y sus vinos al lado,
+        en dos filas de tres.
 
-        El panel de la izquierda no rota ni cambia solo: es una sola pieza que
-        empuja a las cajas. A la derecha, los que más salen, en un riel que se
-        arrastra. La imagen del panel es una de las cajas reales, no un montaje.
+        Hoy sólo Malbec llena las dos filas: son 14 de las 22 etiquetas del
+        catálogo. Cabernet tiene tres botellas entre Franc y Sauvignon, así
+        que su bloque muestra una fila. El componente renderiza lo que hay en
+        vez de dejar huecos.
       */}
-      {masVendidos.length > 0 && (
-        <section className="mx-auto max-w-[1600px] px-gutter pt-16">
-          <div className="grid gap-7 lg:grid-cols-[360px_minmax(0,1fr)]">
-            <Link
-              href="/box"
-              className="group relative hidden overflow-hidden rounded-md bg-carbon-900 lg:block"
-            >
-              <Image
-                src="/media/packs/pack-regalo.webp"
-                alt=""
-                fill
-                sizes="360px"
-                className="object-cover opacity-[0.72] transition-transform duration-[700ms] ease-out-expo group-hover:scale-[1.04]"
-              />
-              <span
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-carbon-950/85 via-carbon-950/35 to-carbon-950/10"
-              />
-              <span className="absolute inset-x-6 bottom-7">
-                <span className="eyebrow block text-linen-300">Cajas armadas</span>
-                <span className="mt-2.5 block font-display text-[26px] font-light leading-tight text-bone">
-                  Listas para regalar
-                </span>
-                <span className="mt-5 inline-flex items-center gap-2 rounded-md bg-bone px-4 py-2 text-[12px] font-medium text-carbon-900">
-                  Ver los box
-                  <ArrowRight className="size-3.5" aria-hidden />
-                </span>
-              </span>
-            </Link>
+      <VarietalBlock
+        titulo="Malbec"
+        bajada="La uva que mejor conocemos."
+        href="/vinos?varietal=malbec"
+        imagen="/media/varietales/malbec.webp"
+        productos={malbec.items}
+        favoritos={favoriteIds}
+      />
 
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <h2 className="font-display text-display-sm font-medium text-carbon-900">
-                    Los que más salen
-                  </h2>
-                  <p className="mt-1.5 text-[14px] text-stone-600">
-                    Lo que más nos piden, en orden.
-                  </p>
-                </div>
-                <Link
-                  href="/vinos"
-                  className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
-                >
-                  Ver todos
-                  <ArrowRight className="size-4" aria-hidden />
-                </Link>
-              </div>
-
-              <div className="mt-7">
-                <ProductRail productos={masVendidos} favoritos={favoriteIds} />
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+      <VarietalBlock
+        titulo="Cabernet"
+        bajada="Franc y Sauvignon, para salir del Malbec."
+        href="/vinos?varietal=cabernet-franc"
+        imagen="/media/varietales/cabernet.webp"
+        productos={cabernet.items}
+        favoritos={favoriteIds}
+      />
 
       {/*
         Catálogo general, a tres columnas.
