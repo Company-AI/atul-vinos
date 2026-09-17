@@ -132,7 +132,7 @@ export default async function HomePage() {
       */}
       {masVendidos.length > 0 && (
         <section className="mx-auto max-w-[1600px] px-gutter pt-16">
-          <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <div className="grid gap-7 lg:grid-cols-[360px_minmax(0,1fr)]">
             <Link
               href="/box"
               className="group relative hidden overflow-hidden rounded-md bg-carbon-900 lg:block"
@@ -141,7 +141,7 @@ export default async function HomePage() {
                 src="/media/packs/pack-regalo.webp"
                 alt=""
                 fill
-                sizes="280px"
+                sizes="360px"
                 className="object-cover opacity-[0.72] transition-transform duration-[700ms] ease-out-expo group-hover:scale-[1.04]"
               />
               <span

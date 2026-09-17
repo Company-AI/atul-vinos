@@ -13,8 +13,10 @@ import { WineCardRow } from "./wine-card-row";
  * flechas. No rota solo: el visitante controla el ritmo y nada se mueve
  * debajo del cursor.
  *
- * Las flechas se apagan en los extremos en lugar de desaparecer, así la
- * fila de controles no cambia de ancho al llegar al final.
+ * Las flechas van sobre los bordes del riel, centradas en vertical, y se
+ * apagan en los extremos en lugar de desaparecer: así el riel no se corre
+ * cuando se llega al final. En pantallas sin mouse no aparecen —ahí se
+ * arrastra con el dedo, que es más directo que apuntarle a un botón.
  */
 export function ProductRail({
   productos,
@@ -53,11 +55,13 @@ export function ProductRail({
     el.scrollBy({ left: signo * Math.max(280, el.clientWidth - 320), behavior: "smooth" });
   };
 
-  const flecha = (activa: boolean) =>
+  const flecha = (activa: boolean, lado: "izq" | "der") =>
     cn(
-      "grid size-9 place-items-center rounded-full border transition-colors",
+      "absolute top-1/2 z-10 hidden -translate-y-1/2 place-items-center rounded-full border shadow-card transition-colors lg:grid",
+      "size-10",
+      lado === "izq" ? "-left-5" : "-right-5",
       activa
-        ? "border-linen-300 bg-bone-pure text-carbon-800 hover:border-accent-700 hover:text-accent-700"
+        ? "border-linen-200 bg-bone-pure text-carbon-800 hover:border-accent-700 hover:text-accent-700"
         : "cursor-default border-linen-200 bg-bone text-stone-300",
     );
 
@@ -76,26 +80,24 @@ export function ProductRail({
         ))}
       </div>
 
-      <div className="mt-5 flex items-center justify-end gap-2">
-        <button
-          type="button"
-          onClick={() => mover(-1)}
-          disabled={!puedeIzq}
-          aria-label="Anterior"
-          className={flecha(puedeIzq)}
-        >
-          <ChevronLeft className="size-4" aria-hidden />
-        </button>
-        <button
-          type="button"
-          onClick={() => mover(1)}
-          disabled={!puedeDer}
-          aria-label="Siguiente"
-          className={flecha(puedeDer)}
-        >
-          <ChevronRight className="size-4" aria-hidden />
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => mover(-1)}
+        disabled={!puedeIzq}
+        aria-label="Anterior"
+        className={flecha(puedeIzq, "izq")}
+      >
+        <ChevronLeft className="size-[18px]" aria-hidden />
+      </button>
+      <button
+        type="button"
+        onClick={() => mover(1)}
+        disabled={!puedeDer}
+        aria-label="Siguiente"
+        className={flecha(puedeDer, "der")}
+      >
+        <ChevronRight className="size-[18px]" aria-hidden />
+      </button>
     </div>
   );
 }
