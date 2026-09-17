@@ -32,7 +32,7 @@ export const CMS_SECTIONS = [
       */
       media: {
         imageUrl: "/media/hero/atul-hero-encuentro.webp",
-        imageAlt: "Manos brindando con copas de vino sobre una mesa servida",
+        imageAlt: "Dos personas brindando con copas de vino frente a la montaña",
         videoDesktopUrl: "",
         videoMobileUrl: "",
         posterUrl: "/media/hero/atul-hero-encuentro.webp",
@@ -43,7 +43,7 @@ export const CMS_SECTIONS = [
       showLogo: false,
       scale: "page",
       layout: "overlay",
-      textTone: "dark",
+      textTone: "light",
       scrollCue: "",
     },
   },

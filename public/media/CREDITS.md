@@ -48,6 +48,6 @@ Bajadas de Pexels con la misma licencia que el resto. No las descarga
 
 | Archivo | Pexels |
 | --- | --- |
-| `hero/atul-hero-encuentro.webp` | https://www.pexels.com/photo/11845546/ |
-| `varietales/malbec.webp` | https://www.pexels.com/photo/7233015/ |
+| `hero/atul-hero-encuentro.webp` | https://www.pexels.com/photo/27349935/ |
+| `varietales/malbec.webp` | https://www.pexels.com/photo/36658282/ |
 | `varietales/cabernet.webp` | recorte de `scenes/toast.jpg`, ya acreditada arriba |

@@ -304,12 +304,7 @@ export function VideoHero({
             // para no quedar sobre el vidrio oscuro de la botella.
             data.scale === "hero"
               ? "max-w-[74%] text-display-2xl sm:max-w-[26ch]"
-              /*
-                14ch y no 19: en la foto del hero la silueta a contraluz
-                arranca cerca de la mitad del ancho, y con 19 el titular la
-                cruzaba. Sobre el contraluz el texto oscuro desaparece.
-              */
-              : "max-w-[74%] text-display-xl sm:max-w-[14ch]",
+              : "max-w-[74%] text-display-xl sm:max-w-[19ch]",
             data.align === "center" && "mx-auto",
           )}
         >
