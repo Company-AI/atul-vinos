@@ -7,11 +7,11 @@ import { getPageSections } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
 import { getFavoriteIds } from "@/app/actions/favorites";
 import { SectionRenderer } from "@/components/marketing/section-renderer";
-import { SectionBanners, type SectionBanner } from "@/components/marketing/section-banners";
 import { CategoryCircles, type CategoryCircle } from "@/components/shop/category-circles";
 import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias";
 import { WineCardRow } from "@/components/shop/wine-card-row";
 import { VarietalBlock } from "@/components/shop/varietal-block";
+import { LogoStrip, type LogoBodega } from "@/components/shop/logo-strip";
 
 export const revalidate = 300;
 
@@ -31,29 +31,26 @@ export async function generateMetadata(): Promise<Metadata> {
 */
 const CATEGORIAS: CategoryCircle[] = [TODOS_LOS_VINOS, ...CATEGORIAS_TIENDA];
 
-const TIRAS: SectionBanner[] = [
-  {
-    titulo: "Box",
-    bajada: "Experiencias en botella",
-    cta: "Ver box",
-    href: "/box",
-    imageUrl: "/media/banners/box.webp",
-  },
-  {
-    titulo: "Novedades",
-    bajada: "Lo nuevo en nuestra cava",
-    cta: "Ver novedades",
-    href: "/novedades",
-    imageUrl: "/media/banners/novedades.webp",
-  },
-  {
-    titulo: "Ofertas",
-    bajada: "Grandes vinos, mejores momentos",
-    cta: "Ver ofertas",
-    href: "/ofertas",
-    imageUrl: "/media/banners/ofertas.webp",
-  },
+/*
+  Bodegas que trabajamos, para la tira que corta entre los dos bloques de
+  varietal. Los logos son los oficiales de cada bodega, bajados de sus sitios.
+
+  Están las 7 que pude conseguir del listado de stock. Faltan 17 y se agregan
+  acá a medida que aparezcan: Antigal está, faltan CrowdFarming, Vista Grande,
+  Humanao, Los Dragones, Malma, Terra Camiare, Domaine Bousquet, Familia
+  Rubino, Finca Iral, Penedo Borges, Scotti Wines, Stella Crinita, El Mirlo,
+  Riccitelli, Rocamadre, Urqo y Yanay.
+*/
+const BODEGAS: LogoBodega[] = [
+  { nombre: "Miguel Minni", archivo: "/media/bodegas/miguel-minni.png" },
+  { nombre: "Antigal", archivo: "/media/bodegas/antigal.png" },
+  { nombre: "El Porvenir de Cafayate", archivo: "/media/bodegas/el-porvenir.png" },
+  { nombre: "Bodega Renacer", archivo: "/media/bodegas/renacer.png" },
+  { nombre: "Chañarmuyo", archivo: "/media/bodegas/chanarmuyo.png" },
+  { nombre: "La Mala María", archivo: "/media/bodegas/la-mala-maria.png" },
+  { nombre: "Otronia", archivo: "/media/bodegas/otronia.png" },
 ];
+
 
 export default async function HomePage() {
   const [sections, settings, seleccion, malbec, cabernet, catalogo, favoriteIds] = await Promise.all([
@@ -146,6 +143,8 @@ export default async function HomePage() {
         favoritos={favoriteIds}
       />
 
+      <LogoStrip bodegas={BODEGAS} />
+
       <VarietalBlock
         titulo="Cabernet"
         bajada="Franc y Sauvignon, para salir del Malbec."
@@ -206,40 +205,49 @@ export default async function HomePage() {
         manejan las grillas de producto, y las promos cierran en lugar de
         interrumpir.
       */}
-      <SectionBanners items={TIRAS} />
-
       {/*
-        Una sola imagen y tres líneas: la historia completa vive en
-        /quienes-somos. Acá sólo abre la puerta.
-      */}
-      <section className="mx-auto max-w-[1600px] px-gutter py-16">
-        <div className="grid items-center gap-10 overflow-hidden rounded-md border border-linen-200 bg-bone-pure lg:grid-cols-2 lg:gap-0">
-          <div className="relative min-h-[280px] lg:min-h-[380px]">
-            <Image
-              src="/media/scenes/cellar.jpg"
-              alt="Sala de crianza con barricas de roble"
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
-          </div>
+        Quiénes somos, a sangre.
 
-          <div className="px-7 pb-10 lg:px-14 lg:py-14">
-            <p className="eyebrow text-stone-500">Quiénes somos</p>
-            <h2 className="mt-5 font-display text-display-sm font-medium text-carbon-900">
-              No vendemos nada que no probemos.
-            </h2>
-            <p className="mt-5 max-w-[46ch] text-[15px] leading-[1.8] text-stone-600">
-              Somos distribuidores: vamos a la bodega, probamos la añada que se va a vender y
-              recién ahí compramos. Por eso el catálogo es corto y podemos defender cada botella.
-            </p>
-            <Link
-              href="/quienes-somos"
-              className="mt-8 inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
-            >
-              Conocé cómo elegimos
-              <ArrowRight className="size-4" aria-hidden />
-            </Link>
+        Antes era una caja con la foto a la izquierda y el texto a la derecha,
+        las dos mitades iguales y un borde alrededor: se leía como un banner
+        más. Ahora la foto ocupa la banda entera y el texto va en una tarjeta
+        crema que se le monta encima, corrida hacia la derecha. La tarjeta
+        arranca dentro de la foto, así que hay una sola pieza y no dos mitades
+        pegadas.
+      */}
+      <section className="relative mt-20 overflow-hidden">
+        <div className="relative min-h-[520px] lg:min-h-[560px]">
+          <Image
+            src="/media/scenes/cellar.jpg"
+            alt="Sala de crianza con barricas de roble"
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-r from-carbon-950/70 via-carbon-950/30 to-carbon-950/10"
+          />
+
+          <div className="relative mx-auto flex h-full max-w-[1600px] items-center px-gutter py-16">
+            <div className="ml-auto w-full max-w-[560px] rounded-md bg-bone-pure/95 p-9 backdrop-blur-sm lg:p-12">
+              <p className="eyebrow text-accent-700">Quiénes somos</p>
+              <h2 className="mt-5 font-display text-display-md font-light text-carbon-900">
+                No vendemos nada que no probemos.
+              </h2>
+              <p className="mt-6 text-[15px] leading-[1.85] text-stone-600">
+                Somos distribuidores: vamos a la bodega, probamos la añada que se va a vender y
+                recién ahí compramos. Por eso el catálogo es corto y podemos defender cada
+                botella que está en esta página.
+              </p>
+              <Link
+                href="/quienes-somos"
+                className="mt-8 inline-flex items-center gap-2 text-[13px] font-medium text-accent-700 transition-colors hover:text-accent-600"
+              >
+                Conocé cómo elegimos
+                <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
