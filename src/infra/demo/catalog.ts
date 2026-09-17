@@ -294,7 +294,7 @@ function packItemsDemo(pack: (typeof PACKS)[number], packId: string) {
 }
 
 /**
- * Conteos de taxonomía para las anotaciones de Terroir (/v4), que muestra
+ * Conteos de taxonomía para las anotaciones de catálogo, que muestran
  * cuántas regiones, bodegas y etiquetas hay en catálogo.
  */
 export function demoTaxonomy() {

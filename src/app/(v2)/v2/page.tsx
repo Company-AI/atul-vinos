@@ -1,140 +1,292 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { getShowcaseProducts, listProducts } from "@/domain/catalog/service";
-import { getPageSections } from "@/domain/cms/service";
-import { getSettings } from "@/domain/settings/service";
-import { getFavoriteIds } from "@/app/actions/favorites";
-import { SectionRenderer } from "@/components/marketing/section-renderer";
-import { SectionBanners, type SectionBanner } from "@/components/marketing/section-banners";
-import { FilterChips, type FilterChip } from "@/components/shop/filter-chips";
-import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias";
-import { WineCardRow } from "@/components/shop/wine-card-row";
+import { ChevronDown, Heart, MapPin, Package, ShoppingCart, Truck } from "lucide-react";
+import { formatARS } from "@/lib/money";
 
 export const revalidate = 300;
 
 /*
-  Primera maqueta. Se diferencia de la de "/" en la mecánica de descubrimiento:
-  acá los filtros son pastillas de texto y allá círculos con foto. Y suma una
-  sección propia de cajas al pie.
+  Contenido de la maqueta.
+
+  Los vinos, los precios y los textos son los de la captura del cliente, no
+  los del catálogo real: la captura muestra Norton Reserva, Antología,
+  Trumpeter Malbec, Rutini Cabernet Sauvignon y Norton Barrel Select, que hoy
+  no están cargados, y con precios propios. Como el pedido fue reproducir la
+  imagen, viven acá como datos de maqueta. Cuando esta versión se apruebe, se
+  reemplazan por el catálogo.
+
+  Las fotos de las botellas sí son reales: se bajaron de las tiendas oficiales
+  de Bodega Norton y Rutini Wines, que son las bodegas que distribuimos.
 */
-const FILTROS: FilterChip[] = [
-  TODOS_LOS_VINOS,
-  ...CATEGORIAS_TIENDA,
-  { label: "Ofertas", href: "/ofertas" },
+
+const SEMANA = [
+  {
+    marca: "Norton",
+    nombre: "Reserva Malbec",
+    nota: "Un Malbec que nunca falla. Ideal para una buena comida.",
+    precio: 18900,
+    imagen: "/media/wines/norton-reserva-malbec.png",
+  },
+  {
+    marca: "Rutini",
+    nombre: "Antología Blend",
+    nota: "Un blend elegante y equilibrado, perfecto para sorprender.",
+    precio: 24500,
+    imagen: "/media/wines/rutini-antologia.png",
+  },
+  {
+    marca: "Trumpeter",
+    nombre: "Malbec",
+    nota: "Frutado, moderno y muy disfrutable.",
+    precio: 16800,
+    imagen: "/media/wines/trumpeter-malbec.png",
+  },
 ];
 
-const TIRAS: SectionBanner[] = [
+const CATALOGO = [
   {
-    titulo: "Destacados",
-    bajada: "del mes",
-    cta: "Ver vinos",
-    href: "/vinos",
-    imageUrl: "/media/banners/ofertas.webp",
+    marca: "Norton",
+    nombre: "Reserva Malbec",
+    precio: 18900,
+    imagen: "/media/wines/norton-reserva-malbec.png",
+  },
+  {
+    marca: "Rutini",
+    nombre: "Cabernet Sauvignon",
+    precio: 22500,
+    imagen: "/media/wines/rutini-cabernet-sauvignon.png",
+  },
+  {
+    marca: "Trumpeter",
+    nombre: "Malbec",
+    precio: 16800,
+    imagen: "/media/wines/trumpeter-malbec.png",
+  },
+  {
+    marca: "Norton",
+    nombre: "Barrel Select",
+    precio: 28900,
+    imagen: "/media/wines/norton-barrel-select.png",
+  },
+];
+
+const TIPOS = [
+  { label: "Tinto", cantidad: 14 },
+  { label: "Blanco", cantidad: 4 },
+  { label: "Rosado", cantidad: 1 },
+  { label: "Espumante", cantidad: 1 },
+];
+
+const FILTROS_CERRADOS = ["Varietal", "Bodega", "Región", "Precio"];
+
+const TIRAS = [
+  {
+    titulo: "Boxes",
+    bajada: "Ideas listas para regalar.",
+    cta: "Ver boxes",
+    href: "/box",
+    imagen: "/media/v2/box.webp",
+    tono: "clara",
   },
   {
     titulo: "Novedades",
-    bajada: "que tenés que probar",
+    bajada: "Recién llegaron a la tienda.",
     cta: "Ver novedades",
     href: "/novedades",
-    imageUrl: "/media/banners/novedades.webp",
+    imagen: "/media/v2/novedades.webp",
+    tono: "oscura",
   },
   {
-    titulo: "Box",
-    bajada: "Experiencias en botella",
-    cta: "Ver box",
-    href: "/box",
-    imageUrl: "/media/banners/box.webp",
+    titulo: "Ofertas",
+    bajada: "Grandes vinos a mejores precios.",
+    cta: "Ver ofertas",
+    href: "/ofertas",
+    imagen: "/media/v2/ofertas.webp",
+    tono: "oscura",
   },
-];
+] as const;
 
-export default async function MaquetaUnoPage() {
-  const [sections, settings, vinos, cajas, favoriteIds] = await Promise.all([
-    getPageSections("home"),
-    getSettings(),
-    getShowcaseProducts("featured", 6),
-    listProducts({ soloPacks: true, perPage: 3, orden: "destacados" }),
-    getFavoriteIds(),
-  ]);
-
-  const hero = sections.filter((s) => s.key === "home.hero");
-
+export default function MaquetaDosPage() {
   return (
     <>
-      <SectionRenderer
-        sections={hero}
-        logoUrl={settings.company.logoLightUrl}
-        companyName={settings.company.name}
-      />
+      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+      <section className="hero">
+        <div className="hero-grid">
+          <div className="hero-texto">
+            <h1>
+              Vinos que probamos
+              <br />
+              antes de recomendar.
+            </h1>
+            <p>Una selección corta de etiquetas que conocemos y volveríamos a elegir.</p>
+            <div className="hero-botones">
+              <Link className="boton" href="/vinos">
+                Ver vinos
+              </Link>
+              <Link className="boton linea" href="/quienes-somos">
+                Conocer Atul
+              </Link>
+            </div>
+          </div>
 
-      <FilterChips items={FILTROS} activo="Todos" />
-
-      <section className="mx-auto max-w-[1600px] px-gutter pt-14">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="font-display text-display-sm font-medium text-carbon-900">
-            Nuestros vinos
-          </h2>
-          <Link
-            href="/vinos"
-            className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
-          >
-            Ver todos
-            <ArrowRight className="size-4" aria-hidden />
-          </Link>
-        </div>
-
-        <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {vinos.map((product, i) => (
-            <WineCardRow
-              key={product.id}
-              product={product}
-              isFavorite={favoriteIds.has(product.id)}
-              priority={i < 2}
+          <div className="hero-foto">
+            <Image
+              src="/media/v2/hero.webp"
+              alt="Norton Reserva Malbec, Rutini Antología y Trumpeter Malbec sobre una mesa de piedra"
+              fill
+              priority
+              sizes="(max-width: 860px) 100vw, 55vw"
             />
-          ))}
+            <p className="hero-firma">
+              Buenas botellas,
+              <br />
+              mejores momentos
+            </p>
+          </div>
         </div>
       </section>
 
-      <SectionBanners items={TIRAS} />
+      {/* ─── Servicios ────────────────────────────────────────────────────── */}
+      <section className="franja">
+        <div className="caja franja-grid">
+          <div className="franja-item">
+            <Truck size={19} strokeWidth={1.5} aria-hidden />
+            <span>
+              Envío sin cargo en
+              <br />
+              Río Cuarto, Las Higueras y Holmberg
+            </span>
+          </div>
+          <div className="franja-item">
+            <MapPin size={19} strokeWidth={1.5} aria-hidden />
+            <span>
+              Envíos a toda Córdoba
+              <br />y al centro del país
+            </span>
+          </div>
+          <div className="franja-item">
+            <Package size={19} strokeWidth={1.5} aria-hidden />
+            <span>
+              Retiro en depósito
+              <br />
+              en Río Cuarto
+            </span>
+          </div>
+        </div>
+      </section>
 
-      {cajas.items.length > 0 && (
-        <section className="mx-auto max-w-[1600px] px-gutter pb-4 pt-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+      {/* ─── Esta semana elegimos ─────────────────────────────────────────── */}
+      <section className="semana">
+        <div className="caja sec">
+          <div className="sec-cab">
             <div>
-              <h2 className="font-display text-display-sm font-medium text-carbon-900">
-                Nuestras cajas
-              </h2>
-              <p className="mt-1.5 text-[14px] text-stone-600">
-                Selecciones pensadas para cada ocasión.
-              </p>
+              <h2>Esta semana elegimos</h2>
+              <p className="sec-bajada">Tres vinos que siempre recomendamos.</p>
             </div>
-            <Link
-              href="/box"
-              className="inline-flex items-center gap-2 text-[13px] text-accent-700 transition-colors hover:text-accent-600"
-            >
-              Ver todos los box
-              <ArrowRight className="size-4" aria-hidden />
+            <Link className="sec-link" href="/vinos">
+              Ver todos →
             </Link>
           </div>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {cajas.items.map((pack) => (
-              <WineCardRow
-                key={pack.id}
-                product={pack}
-                isFavorite={favoriteIds.has(pack.id)}
-              />
+          <div className="semana-grid">
+            {SEMANA.map((v) => (
+              <article className="semana-card" key={`${v.marca}-${v.nombre}`}>
+                <div className="semana-foto">
+                  <Image src={v.imagen} alt={`${v.marca} ${v.nombre}`} width={96} height={150} />
+                </div>
+                <div>
+                  <p className="marca">{v.marca}</p>
+                  <h3>{v.nombre}</h3>
+                  <p className="nota">{v.nota}</p>
+                  <p className="precio">{formatARS(v.precio)}</p>
+                  <Link className="boton" href="/vinos">
+                    Ver botella
+                  </Link>
+                </div>
+              </article>
             ))}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-gutter py-20">
-        <span aria-hidden className="h-px flex-1 bg-linen-300" />
-        <p className="text-center text-[13px] uppercase tracking-[0.16em] text-stone-500">
-          «Más que vinos, encuentros»
-        </p>
-        <span aria-hidden className="h-px flex-1 bg-linen-300" />
+      {/* ─── Tiras ────────────────────────────────────────────────────────── */}
+      <div className="caja tiras">
+        {TIRAS.map((t) => (
+          <Link className={`tira ${t.tono}`} href={t.href} key={t.titulo}>
+            <Image src={t.imagen} alt="" fill sizes="(max-width: 860px) 100vw, 33vw" />
+            <h3>{t.titulo}</h3>
+            <p>{t.bajada}</p>
+            <span className="mas">{t.cta} →</span>
+          </Link>
+        ))}
       </div>
+
+      {/* ─── Nuestros vinos ───────────────────────────────────────────────── */}
+      <section className="caja sec catalogo">
+        <div className="sec-cab">
+          <div>
+            <h2>Nuestros vinos</h2>
+            <p className="sec-bajada">Explorá toda nuestra selección.</p>
+          </div>
+          <label className="orden">
+            Ordenar por
+            <select defaultValue="destacados">
+              <option value="destacados">Destacados</option>
+              <option value="precio-menor">Precio: menor a mayor</option>
+              <option value="precio-mayor">Precio: mayor a menor</option>
+              <option value="novedades">Novedades</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="catalogo-grid">
+          <aside className="filtros">
+            <div>
+              <button type="button" className="filtro-cab" aria-expanded="true">
+                Tipo
+                <ChevronDown size={14} strokeWidth={1.8} aria-hidden />
+              </button>
+              <div className="filtro-ops">
+                {TIPOS.map((t) => (
+                  <label key={t.label}>
+                    <input type="checkbox" />
+                    {t.label} ({t.cantidad})
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {FILTROS_CERRADOS.map((f) => (
+              <div key={f}>
+                <button type="button" className="filtro-cab" aria-expanded="false">
+                  {f}
+                  <ChevronDown size={14} strokeWidth={1.8} aria-hidden />
+                </button>
+              </div>
+            ))}
+          </aside>
+
+          <div className="productos">
+            {CATALOGO.map((v) => (
+              <article className="producto" key={`${v.marca}-${v.nombre}`}>
+                <button type="button" className="favorito" aria-label={`Guardar ${v.nombre}`}>
+                  <Heart size={15} strokeWidth={1.6} />
+                </button>
+                <div className="producto-foto">
+                  <Image src={v.imagen} alt={`${v.marca} ${v.nombre}`} width={110} height={132} />
+                </div>
+                <p className="marca">{v.marca}</p>
+                <h3>{v.nombre}</h3>
+                <p className="precio">{formatARS(v.precio)}</p>
+                <Link className="boton ancho" href="/vinos">
+                  <ShoppingCart size={13} strokeWidth={1.8} aria-hidden />
+                  Agregar
+                </Link>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   );
 }

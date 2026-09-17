@@ -1,10 +1,9 @@
 /*
-  Categorías de la tienda: una sola lista para las tres maquetas.
+  Categorías de la tienda.
 
-  Estaba duplicada en "/" y en "/v2", así que agregar una tercera copia en
-  "/v3" garantizaba que se desincronizaran. Cada maqueta la consume con el
-  componente que le corresponde —círculos con foto, pastillas de texto o
-  índice numerado— y compone sus propios extremos ("Todos", "Ofertas").
+  Estuvo duplicada entre maquetas y por eso se extrajo acá. Hoy la consume
+  sólo "/", que las muestra como círculos con foto y le agrega "Todos"
+  adelante.
 
   Se listan sólo las que tienen productos: no hay espumantes en catálogo, y
   mandar a alguien a un filtro vacío es peor que no ofrecer la categoría.

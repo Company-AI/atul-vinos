@@ -1,0 +1,219 @@
+/*
+  Maqueta 2 — calco de la captura que pasó el cliente.
+
+  CSS propio acotado a `.v2` en vez de utilidades de Tailwind: el objetivo es
+  reproducir medidas exactas, y el reset global (line-height 1.5, márgenes de
+  título en cero) obligaba a pelear cada valor. Acotado acá no se filtra a "/".
+*/
+
+.v2 {
+  --azul: #1e2d54;
+  --azul-claro: #2a3d6e;
+  --crema: #f7f3ec;
+  --crema-2: #faf7f2;
+  --blanco: #ffffff;
+  --tinta: #1b1f2a;
+  --gris: #6b7280;
+  --linea: #e6e1d8;
+
+  background: var(--blanco);
+  color: var(--tinta);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  line-height: normal;
+}
+
+.v2 * { box-sizing: border-box; }
+.v2 a { color: inherit; text-decoration: none; }
+.v2 button, .v2 input, .v2 select { font: inherit; }
+.v2 p { margin: 0; }
+.v2 h1, .v2 h2, .v2 h3, .v2 h4 { margin: 0; font-weight: 600; }
+.v2 .caja { width: min(1240px, 100% - 48px); margin-inline: auto; }
+
+/* ─── Cabecera ───────────────────────────────────────────────────────────── */
+.v2 .cab {
+  position: sticky; top: 0; z-index: 40;
+  background: var(--crema-2);
+  border-bottom: 1px solid var(--linea);
+}
+.v2 .cab-fila {
+  height: 100px; display: grid; align-items: center;
+  grid-template-columns: 1fr auto 1fr; gap: 20px;
+}
+.v2 .cab-izq { display: flex; align-items: center; }
+.v2 .cab-der { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+.v2 .icono {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  border: 0; background: transparent; color: var(--azul); cursor: pointer;
+}
+.v2 .buscador { position: relative; }
+.v2 .buscador input {
+  width: 200px; height: 34px; padding: 0 12px 0 32px;
+  border: 1px solid var(--linea); border-radius: 17px;
+  background: var(--blanco); color: var(--tinta); font-size: 12px; outline: none;
+}
+.v2 .buscador input:focus { border-color: var(--azul); }
+.v2 .buscador svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gris); }
+.v2 .carrito { position: relative; }
+.v2 .carrito .badge {
+  position: absolute; top: -2px; right: -4px;
+  display: grid; place-items: center; min-width: 15px; height: 15px; padding: 0 3px;
+  background: var(--azul); color: #fff; border-radius: 999px;
+  font-size: 9px; font-weight: 600;
+}
+
+/* ─── Hero ───────────────────────────────────────────────────────────────── */
+.v2 .hero { background: var(--crema); }
+.v2 .hero-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) 1.18fr; align-items: center;
+  min-height: 477px;
+  /* Replica el borde izquierdo de .caja para que el texto quede alineado con
+     el resto de la página, y deja que la foto siga hasta el borde derecho. */
+  padding-left: max(24px, calc((100vw - 1240px) / 2));
+}
+.v2 .hero-texto { padding: 48px 40px 48px 0; }
+.v2 .hero h1 {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-size: 44px; line-height: 1.12; letter-spacing: -0.01em;
+  color: var(--azul); font-weight: 600;
+}
+.v2 .hero p {
+  margin-top: 18px; max-width: 34ch;
+  font-size: 14px; line-height: 1.65; color: #4b5162;
+}
+.v2 .hero-botones { margin-top: 26px; display: flex; gap: 10px; }
+.v2 .boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  height: 38px; padding: 0 20px; border-radius: 4px;
+  font-size: 12.5px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--azul); background: var(--azul); color: #fff;
+}
+.v2 .boton:hover { background: var(--azul-claro); border-color: var(--azul-claro); }
+.v2 .boton.linea { background: transparent; color: var(--azul); }
+.v2 .boton.linea:hover { background: rgb(30 45 84 / 0.06); }
+.v2 .boton.ancho { width: 100%; }
+.v2 .hero-foto { position: relative; align-self: stretch; min-height: 477px; }
+.v2 .hero-foto img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+.v2 .hero .hero-firma {
+  position: absolute; right: 26px; top: 46px; width: 150px; margin: 0; max-width: none;
+  font-family: var(--font-parisienne), cursive;
+  font-size: 19px; line-height: 1.45; color: var(--azul); text-align: left;
+}
+
+/* ─── Franja de servicios ────────────────────────────────────────────────── */
+.v2 .franja { background: var(--crema-2); border-bottom: 1px solid var(--linea); }
+.v2 .franja-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.v2 .franja-item {
+  display: flex; align-items: center; gap: 12px; padding: 32px 0;
+  font-size: 11.5px; line-height: 1.45; color: #3f4554;
+}
+.v2 .franja-item svg { flex: none; color: var(--azul); }
+
+/* ─── Encabezado de sección ──────────────────────────────────────────────── */
+.v2 .sec { padding: 46px 0 8px; }
+.v2 .sec-cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.v2 .sec h2 {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-size: 27px; color: var(--azul); font-weight: 600; line-height: 1.15;
+}
+.v2 .sec-bajada { margin-top: 5px; font-size: 12.5px; color: var(--gris); }
+.v2 .sec-link { font-size: 12px; color: var(--azul); font-weight: 500; white-space: nowrap; }
+
+/* ─── Tarjetas de la selección semanal ───────────────────────────────────── */
+.v2 .semana { background: var(--crema-2); }
+.v2 .semana-grid { margin-top: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; padding-bottom: 70px; }
+.v2 .semana .sec { padding-top: 68px; }
+.v2 .semana-card { display: grid; grid-template-columns: 124px 1fr; gap: 18px; align-items: center; }
+.v2 .semana-foto { height: 265px; display: grid; place-items: center; }
+.v2 .semana-foto img { max-width: 100%; max-height: 265px; object-fit: contain; display: block; }
+.v2 .marca { font-size: 11px; color: var(--gris); }
+.v2 .semana-card h3 {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-size: 17px; color: var(--azul); line-height: 1.2; margin-top: 2px;
+}
+.v2 .semana-card .nota { margin-top: 7px; font-size: 11.5px; line-height: 1.5; color: var(--gris); }
+.v2 .precio { margin-top: 10px; font-size: 16px; font-weight: 700; color: var(--tinta); }
+.v2 .semana-card .boton { margin-top: 10px; height: 30px; font-size: 11px; padding: 0 16px; }
+
+/* ─── Tiras ──────────────────────────────────────────────────────────────── */
+.v2 .tiras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 32px 0 10px; }
+.v2 .tira {
+  position: relative; height: 232px; border-radius: 3px; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center; padding: 0 22px;
+}
+.v2 .tira img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.v2 .tira > * { position: relative; }
+.v2 .tira h3 {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-size: 22px; font-weight: 600;
+}
+.v2 .tira p { margin-top: 3px; font-size: 11.5px; line-height: 1.4; max-width: 15ch; }
+.v2 .tira .mas { margin-top: 12px; font-size: 11px; font-weight: 600; }
+.v2 .tira.clara { color: var(--azul); }
+.v2 .tira.clara p { color: #5a6072; }
+.v2 .tira.oscura { color: #fff; }
+.v2 .tira.oscura p { color: #c9cfdd; }
+
+/* ─── Catálogo ───────────────────────────────────────────────────────────── */
+.v2 .catalogo { padding-bottom: 56px; }
+.v2 .orden { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--gris); }
+.v2 .orden select {
+  height: 30px; padding: 0 10px; border: 1px solid var(--linea); border-radius: 3px;
+  background: var(--blanco); color: var(--tinta); font-size: 11.5px; outline: none;
+}
+.v2 .catalogo-grid { margin-top: 20px; display: grid; grid-template-columns: 148px 1fr; gap: 26px; }
+
+.v2 .filtros > div + div { border-top: 1px solid var(--linea); }
+.v2 .filtro-cab {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 0; border: 0; background: transparent; cursor: pointer;
+  font-size: 12px; font-weight: 600; color: var(--tinta);
+}
+.v2 .filtro-cab svg { color: var(--gris); }
+.v2 .filtro-ops { padding-bottom: 10px; display: grid; gap: 7px; }
+.v2 .filtro-ops label { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #4b5162; cursor: pointer; }
+.v2 .filtro-ops input { width: 12px; height: 12px; accent-color: var(--azul); }
+
+.v2 .productos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.v2 .producto {
+  position: relative; border: 1px solid var(--linea); border-radius: 3px;
+  background: var(--blanco); padding: 14px 14px 16px; display: flex; flex-direction: column;
+}
+.v2 .favorito {
+  position: absolute; top: 10px; right: 10px; width: 22px; height: 22px;
+  display: grid; place-items: center; border: 0; background: transparent;
+  color: var(--gris); cursor: pointer;
+}
+.v2 .favorito:hover { color: var(--azul); }
+.v2 .producto-foto { height: 178px; display: grid; place-items: center; margin-bottom: 12px; }
+.v2 .producto-foto img { max-width: 60%; max-height: 178px; object-fit: contain; display: block; }
+.v2 .producto h3 {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-size: 14.5px; color: var(--azul); line-height: 1.25; margin-top: 2px;
+  text-align: center;
+}
+.v2 .producto .marca, .v2 .producto .precio { text-align: center; }
+.v2 .producto .precio { font-size: 14px; margin-top: 8px; }
+.v2 .producto .boton { margin-top: 12px; height: 30px; font-size: 11px; }
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1040px) {
+  .v2 .productos { grid-template-columns: repeat(3, 1fr); }
+  .v2 .semana-grid { grid-template-columns: 1fr; gap: 18px; }
+}
+@media (max-width: 860px) {
+  .v2 .hero-grid { grid-template-columns: 1fr; min-height: 0; }
+  .v2 .hero-texto { padding: 36px 0 28px; }
+  .v2 .hero-foto { min-height: 260px; }
+  .v2 .hero-firma { display: none; }
+  .v2 .franja-grid { grid-template-columns: 1fr; }
+  .v2 .franja-item + .franja-item { border-top: 1px solid var(--linea); }
+  .v2 .tiras { grid-template-columns: 1fr; }
+  .v2 .catalogo-grid { grid-template-columns: 1fr; }
+  .v2 .productos { grid-template-columns: repeat(2, 1fr); }
+  .v2 .buscador { display: none; }
+}
+@media (max-width: 520px) {
+  .v2 .caja { width: min(1240px, 100% - 28px); }
+  .v2 .hero h1 { font-size: 32px; }
+  .v2 .productos { grid-template-columns: 1fr; }
+}
