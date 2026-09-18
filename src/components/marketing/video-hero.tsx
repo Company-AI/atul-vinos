@@ -91,7 +91,25 @@ export function VideoHero({
     full: "min-h-[88svh] lg:min-h-[100svh]",
     tall: "min-h-[72svh] lg:min-h-[82svh]",
     medium: "min-h-[56svh] lg:min-h-[64svh]",
+    /*
+      Banda baja: la foto sigue siendo la entrada pero deja los productos
+      arriba del pliegue.
+
+      El min-height acá casi nunca manda. Con el titular en tres líneas y el
+      padding de un hero normal la sección mide ~810px en desktop, muy por
+      encima de cualquiera de estos mínimos, así que bajar el mínimo solo no
+      achica nada: lo que achica es apretar el contenido. Por eso "short"
+      además baja el padding vertical, la escala del titular y los aires
+      entre piezas (ver `compacto` más abajo).
+    */
+    short: "min-h-[42svh] lg:min-h-[48svh]",
   } as const;
+
+  /*
+    Sólo la banda baja recorta aires. El resto de los heroes mantiene su
+    respiración original.
+  */
+  const compacto = data.height === "short";
 
   /*
     Modo partido: el texto va sobre fondo sólido y la foto al costado. El
@@ -274,7 +292,13 @@ export function VideoHero({
       <div
         className={cn(
           "relative mx-auto w-full max-w-[1440px] px-gutter",
-          data.align === "center" ? "py-28 lg:py-32" : "pb-20 pt-32 lg:pb-28",
+          data.align === "center"
+            ? compacto
+              ? "py-16 lg:py-20"
+              : "py-28 lg:py-32"
+            : compacto
+              ? "pb-12 pt-20 lg:pb-16 lg:pt-24"
+              : "pb-20 pt-32 lg:pb-28",
           data.align === "center" && "flex flex-col items-center",
         )}
       >
@@ -285,12 +309,12 @@ export function VideoHero({
             width={260}
             height={52}
             priority={priority}
-            className="mb-9 h-9 w-auto lg:h-11"
+            className={cn("w-auto", compacto ? "mb-6 h-7 lg:h-8" : "mb-9 h-9 lg:h-11")}
           />
         )}
 
         {data.eyebrow && (
-          <p className={cn("eyebrow mb-5 opacity-0", textoOscuro ? "text-carbon-800" : "text-linen-300") + " animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]"}>
+          <p className={cn("eyebrow opacity-0", compacto ? "mb-4" : "mb-5", textoOscuro ? "text-carbon-800" : "text-linen-300") + " animate-[reveal-up_800ms_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]"}>
             {data.eyebrow}
           </p>
         )}
@@ -302,9 +326,16 @@ export function VideoHero({
             "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_320ms_forwards]",
             // En mobile el producto ocupa el borde derecho: el texto se corta antes
             // para no quedar sobre el vidrio oscuro de la botella.
+            /*
+              En la banda baja el titular baja un escalón. A display-xl son
+              96px y tres líneas: 274px de los 810 que medía la sección. El
+              ancho máximo no se toca —está calibrado para que el texto no
+              caiga sobre las copas de la foto—, así que lo que cede es el
+              cuerpo, no el encuadre.
+            */
             data.scale === "hero"
-              ? "max-w-[74%] text-display-2xl sm:max-w-[26ch]"
-              : "max-w-[74%] text-display-xl sm:max-w-[19ch]",
+              ? cn("max-w-[74%] sm:max-w-[26ch]", compacto ? "text-display-xl" : "text-display-2xl")
+              : cn("max-w-[74%] sm:max-w-[19ch]", compacto ? "text-display-lg" : "text-display-xl"),
             data.align === "center" && "mx-auto",
           )}
         >
@@ -322,7 +353,8 @@ export function VideoHero({
         {data.subtitle && (
           <p
             className={cn(
-              "mt-7 max-w-[74%] text-lead opacity-0 sm:max-w-[52ch]",
+              "max-w-[74%] text-lead opacity-0 sm:max-w-[52ch]",
+              compacto ? "mt-5" : "mt-7",
               textoOscuro ? "text-carbon-800" : "text-linen-200",
               "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_460ms_forwards]",
               data.align === "center" && "mx-auto",
@@ -335,7 +367,8 @@ export function VideoHero({
         {(data.ctaPrimary.label || data.ctaSecondary.label) && (
           <div
             className={cn(
-              "mt-10 flex flex-col items-start gap-3 opacity-0 sm:flex-row sm:items-center",
+              "flex flex-col items-start gap-3 opacity-0 sm:flex-row sm:items-center",
+              compacto ? "mt-7" : "mt-10",
               "animate-[reveal-up_900ms_cubic-bezier(0.16,1,0.3,1)_600ms_forwards]",
               data.align === "center" && "justify-center",
             )}

@@ -35,7 +35,7 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "subtitle", label: "Bajada", kind: "textarea" },
     { key: "overlay", label: "Oscurecimiento", kind: "select", options: ["scrim-bottom", "scrim-full", "scrim-side", "none"] },
     { key: "align", label: "Alineación", kind: "select", options: ["center", "left"] },
-    { key: "height", label: "Altura", kind: "select", options: ["full", "tall", "medium"] },
+    { key: "height", label: "Altura", kind: "select", options: ["full", "tall", "medium", "short"] },
     { key: "scale", label: "Escala del título", kind: "select", options: ["page", "hero"] },
     { key: "layout", label: "Composición", kind: "select", options: ["overlay", "split"], hint: "«Partido» pone el texto sobre fondo sólido con la foto al lado." },
     { key: "textTone", label: "Color del texto", kind: "select", options: ["light", "dark"], hint: "Oscuro para fotos claras, como la pared beige del hero." },
@@ -118,6 +118,16 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "title", label: "Título", kind: "textarea" },
     { key: "tone", label: "Fondo", kind: "select", options: ["linen", "light", "dark"] },
   ],
+  news_ticker: [
+    {
+      key: "speed",
+      label: "Velocidad",
+      kind: "select",
+      options: ["normal", "lenta", "rapida"],
+      hint: "Es la duración de una vuelta: con muchas novedades el renglón pasa más rápido. Si cargás más de seis, bajá a «lenta».",
+    },
+    { key: "tone", label: "Fondo", kind: "select", options: ["accent", "wine", "carbon", "linen"] },
+  ],
   gallery: [
     { key: "eyebrow", label: "Volanta", kind: "text" },
     { key: "title", label: "Título", kind: "textarea" },
@@ -125,6 +135,18 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "tone", label: "Fondo", kind: "select", options: ["light", "linen", "dark"] },
   ],
 };
+
+/* Los mismos que renderiza NewsTicker. Lista cerrada, no campo libre. */
+const ICONOS_NOVEDAD = [
+  { value: "none", label: "Sin ícono" },
+  { value: "truck", label: "Camión (envío)" },
+  { value: "percent", label: "Porcentaje (descuento)" },
+  { value: "card", label: "Tarjeta (cuotas)" },
+  { value: "gift", label: "Regalo (box)" },
+  { value: "sparkle", label: "Destello (novedad)" },
+  { value: "clock", label: "Reloj (por tiempo limitado)" },
+  { value: "pin", label: "Pin (zona de entrega)" },
+] as const;
 
 const HAS_MEDIA: BlockType[] = ["video_hero", "editorial", "club_teaser", "split_sticky"];
 const HAS_CTA: BlockType[] = ["video_hero", "editorial", "showcase", "club_teaser", "featured_wines", "statement", "split_sticky"];
@@ -179,6 +201,8 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
   const bullets = (data.bullets ?? []) as string[];
   const steps = (data.steps ?? []) as { title: string; body: string }[];
   const items = (data.items ?? []) as { title: string; subtitle: string; imageUrl: string; href: string }[];
+  // El renglón de novedades usa "items" con otra forma que showcase.
+  const novedades = (data.items ?? []) as { text: string; icon: string; href: string }[];
 
   const setField = (key: string, value: unknown) => setData((d) => ({ ...d, [key]: value }));
   const setMedia = (key: string, value: string) =>
@@ -353,6 +377,53 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
                 <Button size="sm" variant="subtle" className="mt-2"
                   onClick={() => setField("steps", [...steps, { title: "", body: "" }])}>
                   <Plus className="size-3.5" /> Agregar paso
+                </Button>
+              )}
+            </fieldset>
+          )}
+
+          {section.type === "news_ticker" && (
+            <fieldset className="border-t border-linen-200 pt-4">
+              <legend className="mb-3 text-[11px] uppercase tracking-wider text-stone-500">
+                Novedades del mes
+              </legend>
+              <ul className="space-y-3">
+                {novedades.map((item, index) => (
+                  <li key={index} className="grid gap-2 sm:grid-cols-[2fr_1fr_1fr_40px]">
+                    <Input value={item.text} placeholder="Ej: 3 cuotas sin interés" disabled={!canEdit}
+                      onChange={(e) => {
+                        const next = [...novedades];
+                        next[index] = { ...item, text: e.target.value };
+                        setField("items", next);
+                      }} />
+                    <Select value={item.icon} disabled={!canEdit}
+                      onChange={(e) => {
+                        const next = [...novedades];
+                        next[index] = { ...item, icon: e.target.value };
+                        setField("items", next);
+                      }}>
+                      {ICONOS_NOVEDAD.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </Select>
+                    <Input value={item.href} placeholder="Link (opcional)" disabled={!canEdit}
+                      onChange={(e) => {
+                        const next = [...novedades];
+                        next[index] = { ...item, href: e.target.value };
+                        setField("items", next);
+                      }} />
+                    <button type="button" aria-label="Quitar novedad" disabled={!canEdit}
+                      onClick={() => setField("items", novedades.filter((_, i) => i !== index))}
+                      className="rounded-sm p-2 text-stone-500 hover:text-danger-500">
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              {canEdit && (
+                <Button size="sm" variant="subtle" className="mt-2"
+                  onClick={() => setField("items", [...novedades, { text: "", icon: "none", href: "" }])}>
+                  <Plus className="size-3.5" /> Agregar novedad
                 </Button>
               )}
             </fieldset>

@@ -241,10 +241,61 @@
   animation: shimmer 1.6s linear infinite;
 }
 
+/* ═══════════════════ Renglón de novedades ══════════════════════════════════
+   Marquesina de una línea. La base es un riel que se puede arrastrar: si el
+   navegador pide movimiento reducido, la animación no se aplica y queda una
+   tira horizontal normal, legible y navegable. El desplazamiento automático
+   es la mejora, no el mecanismo.
+
+   El truco del bucle sin costura es duplicar la lista: se anima -50% del
+   ancho total, que es exactamente una copia, y el salto al reiniciar cae en
+   un punto idéntico al de partida. La copia va con aria-hidden.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@utility ticker-viewport {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  &::-webkit-scrollbar { display: none; }
+}
+
+@utility ticker-track {
+  display: flex;
+  flex: none;
+  align-items: center;
+  min-width: max-content;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ticker-viewport { overflow-x: hidden; }
+
+  .ticker-track {
+    animation: ticker-scroll var(--ticker-duration, 42s) linear infinite;
+    will-change: transform;
+  }
+
+  /* Se frena al pasar el mouse para poder leer un ítem puntual. */
+  .ticker-viewport:hover .ticker-track,
+  .ticker-viewport:focus-within .ticker-track {
+    animation-play-state: paused;
+  }
+}
+
 /* ═══════════════════ Accesibilidad: reduced motion ═════════════════════════ */
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+
+  /* Sin animación la copia no cumple ninguna función: sólo repetiría la
+     lista dentro de una tira que ahora se recorre a mano. */
+  [data-ticker-copia] { display: none; }
+
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

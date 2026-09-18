@@ -13,6 +13,7 @@ import { FiguresSection } from "./figures-section";
 import { SplitStickySection } from "./split-sticky-section";
 import { GallerySection } from "./gallery-section";
 import { PromoRail } from "./promo-rail";
+import { NewsTicker } from "./news-ticker";
 
 /**
  * Traduce los bloques del CMS a componentes. Los tipos desconocidos se ignoran
@@ -70,6 +71,8 @@ export function SectionRenderer({
             return <GallerySection key={section.id} data={section.data as BlockData<"gallery">} id={id} />;
           case "promo_rail":
             return <PromoRail key={section.id} data={section.data as BlockData<"promo_rail">} id={id} />;
+          case "news_ticker":
+            return <NewsTicker key={section.id} data={section.data as BlockData<"news_ticker">} />;
           default:
             return null;
         }

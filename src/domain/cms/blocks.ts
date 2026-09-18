@@ -29,7 +29,7 @@ export const videoHeroBlock = z.object({
   media: media.prefault({}),
   overlay: z.enum(["scrim-bottom", "scrim-full", "scrim-side", "none"]).default("scrim-bottom"),
   align: z.enum(["left", "center"]).default("center"),
-  height: z.enum(["full", "tall", "medium"]).default("full"),
+  height: z.enum(["full", "tall", "medium", "short"]).default("full"),
   showLogo: z.boolean().default(true),
   /** display-2xl para el hero de portada; display-xl para heroes interiores. */
   scale: z.enum(["hero", "page"]).default("page"),
@@ -222,6 +222,34 @@ export const promoRailBlock = z.object({
   tone: z.enum(["light", "linen", "dark"]).default("linen"),
 });
 
+/**
+ * Renglón de novedades que se desplaza solo.
+ *
+ * Es una línea, no una grilla: promos del mes, cuotas, envío sin cargo, lo
+ * que se quiera empujar en ese momento. Va entre dos secciones de producto y
+ * sirve de corte, así que tiene que leerse de un vistazo mientras pasa.
+ *
+ * Los íconos son una lista cerrada y no un campo libre: el admin elige de un
+ * menú y el frontend renderiza un componente conocido (spec §44).
+ */
+export const newsTickerBlock = z.object({
+  items: z
+    .array(
+      z.object({
+        text: z.string().default(""),
+        icon: z
+          .enum(["none", "truck", "percent", "card", "gift", "sparkle", "clock", "pin"])
+          .default("none"),
+        /** Vacío deja el ítem sin enlace. */
+        href: z.string().default(""),
+      }),
+    )
+    .default([]),
+  /** Segundos que tarda una vuelta completa. Más alto, más lento. */
+  speed: z.enum(["lenta", "normal", "rapida"]).default("normal"),
+  tone: z.enum(["accent", "wine", "carbon", "linen"]).default("accent"),
+});
+
 export const BLOCK_SCHEMAS = {
   video_hero: videoHeroBlock,
   editorial: editorialBlock,
@@ -237,6 +265,7 @@ export const BLOCK_SCHEMAS = {
   split_sticky: splitStickyBlock,
   gallery: galleryBlock,
   promo_rail: promoRailBlock,
+  news_ticker: newsTickerBlock,
 } as const;
 
 export type BlockType = keyof typeof BLOCK_SCHEMAS;
@@ -256,6 +285,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   split_sticky: "Foto fija con texto",
   gallery: "Mosaico de fotos",
   promo_rail: "Tira de promos y destacados",
+  news_ticker: "Renglón de novedades (se desplaza)",
 };
 
 export type BlockData<T extends BlockType> = z.infer<(typeof BLOCK_SCHEMAS)[T]>;

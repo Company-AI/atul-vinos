@@ -10,7 +10,6 @@ import { SectionRenderer } from "@/components/marketing/section-renderer";
 import { CategoryCircles, type CategoryCircle } from "@/components/shop/category-circles";
 import { CATEGORIAS_TIENDA, TODOS_LOS_VINOS } from "@/components/shop/categorias";
 import { WineCardRow } from "@/components/shop/wine-card-row";
-import { VarietalBlock } from "@/components/shop/varietal-block";
 import { LogoStrip, type LogoBodega } from "@/components/shop/logo-strip";
 import { buttonVariants } from "@/ui/button";
 
@@ -33,8 +32,8 @@ export async function generateMetadata(): Promise<Metadata> {
 const CATEGORIAS: CategoryCircle[] = [TODOS_LOS_VINOS, ...CATEGORIAS_TIENDA];
 
 /*
-  Bodegas que trabajamos, para la tira que corta entre los dos bloques de
-  varietal. Los logos son los oficiales, bajados del sitio de cada bodega.
+  Bodegas que trabajamos, para la tira que cierra el recorrido de producto.
+  Los logos son los oficiales, bajados del sitio de cada bodega.
 
   Van 15 de las 24 del listado de stock. Las que faltan no tienen sitio
   propio —se venden por Instagram o por vinotecas— y hay que pedirle el
@@ -66,18 +65,12 @@ const BODEGAS: LogoBodega[] = [
 
 
 export default async function HomePage() {
-  const [sections, settings, seleccion, malbec, cabernet, catalogo, favoriteIds] = await Promise.all([
+  const [sections, settings, seleccion, catalogo, favoriteIds] = await Promise.all([
     getPageSections("home"),
     getSettings(),
     // Tres botellas: es una selección, no una grilla. Si son ocho deja de
     // leerse como recomendación y pasa a ser catálogo, que ahora vive abajo.
     getShowcaseProducts("featured", 3),
-    listProducts({ varietal: ["malbec"], perPage: 6, orden: "destacados" }),
-    listProducts({
-      varietal: ["cabernet-franc", "cabernet-sauvignon"],
-      perPage: 6,
-      orden: "destacados",
-    }),
     /*
       El catálogo NO ordena por destacados: la tira de arriba también lo hace,
       así que abría con las mismas dos botellas a 400px de distancia y se leía
@@ -89,8 +82,10 @@ export default async function HomePage() {
     getFavoriteIds(),
   ]);
 
-  // Sólo el hero viene del CMS; el resto de la home es estructura de tienda.
+  // Del CMS vienen el hero y el renglón de novedades; el resto de la home es
+  // estructura de tienda y no se edita por bloque.
   const hero = sections.filter((s) => s.key === "home.hero");
+  const novedades = sections.filter((s) => s.key === "home.novedades");
 
   return (
     <>
@@ -139,33 +134,16 @@ export default async function HomePage() {
       </section>
 
       {/*
-        Un bloque por varietal: la foto grande al costado y sus vinos al lado,
-        en dos filas de tres.
+        Corte entre la selección y el catálogo: un renglón que se desplaza con
+        las novedades del mes. Sale del CMS, así que cambia sin tocar código.
 
-        Hoy sólo Malbec llena las dos filas: son 14 de las 22 etiquetas del
-        catálogo. Cabernet tiene tres botellas entre Franc y Sauvignon, así
-        que su bloque muestra una fila. El componente renderiza lo que hay en
-        vez de dejar huecos.
+        Antes acá iban dos bloques por varietal —Malbec y Cabernet, cada uno
+        con su foto grande y sus botellas— pero repetían fichas que el
+        catálogo de abajo ya muestra, y el patrón no escalaba: de las 22
+        etiquetas, 14 son Malbec, así que ningún otro varietal llenaba sus
+        filas.
       */}
-      <VarietalBlock
-        titulo="Malbec"
-        bajada="La uva que mejor conocemos."
-        href="/vinos?varietal=malbec"
-        imagen="/media/varietales/malbec.webp"
-        productos={malbec.items}
-        favoritos={favoriteIds}
-      />
-
-      <LogoStrip bodegas={BODEGAS} />
-
-      <VarietalBlock
-        titulo="Cabernet"
-        bajada="Franc y Sauvignon, para salir del Malbec."
-        href="/vinos?varietal=cabernet-franc"
-        imagen="/media/varietales/cabernet.webp"
-        productos={cabernet.items}
-        favoritos={favoriteIds}
-      />
+      <SectionRenderer sections={novedades} />
 
       {/*
         Catálogo general, a tres columnas.
@@ -231,10 +209,11 @@ export default async function HomePage() {
       )}
 
       {/*
-        Las tiras van después del catálogo y no en el medio: la página la
-        manejan las grillas de producto, y las promos cierran en lugar de
-        interrumpir.
+        Las bodegas cierran el recorrido de producto: quién está detrás de lo
+        que se acaba de mirar, justo antes de quiénes somos y los datos.
       */}
+      <LogoStrip bodegas={BODEGAS} />
+
       {/*
         Quiénes somos, a sangre.
 

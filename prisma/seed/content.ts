@@ -39,12 +39,46 @@ export const CMS_SECTIONS = [
       },
       overlay: "scrim-side",
       align: "left",
-      height: "medium",
-      showLogo: false,
+      height: "short",
+      showLogo: true,
       scale: "page",
       layout: "overlay",
       textTone: "light",
       scrollCue: "",
+    },
+  },
+  {
+    key: "home.novedades",
+    page: "home",
+    type: "news_ticker",
+    title: "Renglón de novedades de la home",
+    sortOrder: 20,
+    data: {
+      /*
+        Corta entre "Los seleccionados de la semana" y "Nuestros vinos".
+
+        No repite la franja azul de arriba: esa ya publica envío gratis en Río
+        Cuarto, 10% off en la segunda compra y hasta 6 cuotas sin interés, y
+        dos bandas del mismo azul diciendo lo mismo se leen como un error.
+        Acá van las condiciones y los atajos que la franja no cubre.
+
+        Este es el renglón que se cambia cada mes desde el admin: promos con
+        fecha, la financiación del momento, un lanzamiento. Se carga en
+        Contenido → "Renglón de novedades de la home".
+      */
+      items: [
+        { text: "Envíos a toda Córdoba y al centro del país", icon: "pin", href: "/envios" },
+        { text: "Retiro en depósito en Río Cuarto", icon: "clock", href: "/envios" },
+        { text: "Box armados para regalar", icon: "gift", href: "/box" },
+        {
+          text: "Probamos cada etiqueta antes de venderla",
+          icon: "sparkle",
+          href: "/quienes-somos",
+        },
+        { text: "Sumate al Club y recibí una selección por mes", icon: "card", href: "/club" },
+      ],
+      speed: "normal",
+      tone: "accent",
     },
   },
   {
