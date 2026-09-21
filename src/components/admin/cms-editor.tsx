@@ -126,6 +126,13 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
       kind: "text",
       hint: "Va a la derecha de la franja, en pantallas grandes. Vacío lo oculta.",
     },
+    {
+      key: "speed",
+      label: "Velocidad",
+      kind: "select",
+      options: ["normal", "lenta", "rapida"],
+      hint: "Sólo si la franja está en movimiento. El ritmo se mantiene aunque agregues avisos.",
+    },
   ],
   promo_banner: [
     { key: "height", label: "Alto de la banda", kind: "select", options: ["media", "alta"] },
@@ -166,6 +173,9 @@ const ICONOS_NOVEDAD = [
   { value: "clock", label: "Reloj (por tiempo limitado)" },
   { value: "pin", label: "Pin (zona de entrega)" },
 ] as const;
+
+/* Bloques con un interruptor de movimiento propio. */
+const HAS_MOVIMIENTO: BlockType[] = ["benefits_bar"];
 
 const HAS_MEDIA: BlockType[] = ["video_hero", "editorial", "club_teaser", "split_sticky"];
 const HAS_CTA: BlockType[] = ["video_hero", "editorial", "showcase", "club_teaser", "featured_wines", "statement", "split_sticky"];
@@ -637,6 +647,15 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
                 <Checkbox checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
                 Sección visible en el sitio
               </label>
+              {HAS_MOVIMIENTO.includes(section.type) && (
+                <label className="flex items-center gap-2.5 text-[13px]">
+                  <Checkbox
+                    checked={data.enMovimiento !== false}
+                    onChange={(e) => setField("enMovimiento", e.target.checked)}
+                  />
+                  Se desplaza sola
+                </label>
+              )}
               {section.updatedBy && (
                 <span className="text-[11px] text-stone-500">
                   Última edición: {section.updatedBy}

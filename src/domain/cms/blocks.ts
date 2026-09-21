@@ -311,6 +311,12 @@ export const benefitsBarBlock = z.object({
     .default([]),
   /** Remate manuscrito a la derecha. Vacío lo oculta. */
   remate: z.string().default(""),
+  /**
+   * La franja se desplaza sola. Apagarlo la deja fija, que es como estaba
+   * antes: los avisos repartidos a lo ancho, sin movimiento.
+   */
+  enMovimiento: z.boolean().default(true),
+  speed: z.enum(["lenta", "normal", "rapida"]).default("normal"),
 });
 
 export const BLOCK_SCHEMAS = {

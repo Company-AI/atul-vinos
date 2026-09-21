@@ -74,6 +74,13 @@ export const CMS_SECTIONS = [
         { text: "3 cuotas sin interés", detail: "Con todas las tarjetas.", icon: "card" },
       ],
       remate: "Buenos vinos, personas reales.",
+      /*
+        La franja se desplaza sola, sin que nadie tenga que tocar nada. Lo
+        pidió el cliente: "que corra y no que la gente tenga que clickear
+        para cambiar". Se apaga desde el admin con "Se desplaza sola".
+      */
+      enMovimiento: true,
+      speed: "normal",
     },
   },
   {
