@@ -71,6 +71,12 @@ export const CMS_SECTIONS = [
           los otorga automáticamente al crear la cuenta. Hoy el panel lo
           promete y el checkout no lo aplica.
 
+        Las fotos se eligen por cómo quedan en el recorte de la banda, que es
+        muy apaisado (unos 3,8 a 1) y toma sólo una franja del medio. Medido
+        sobre ese recorte: pouring-dark, sparkling y glass-dark dan 24 de
+        brillo sobre 255 —quedan negras, la banda parece rota—, mientras que
+        toast, barrels y grapes-cluster están entre 97 y 126 y sí se ven.
+
         Se sacó el panel del Club para no estirar la vuelta: con cuatro
         paneles a 7 segundos ya son 28, y el último casi no se ve. Está
         cargado el contenido si se lo quiere volver a poner.
@@ -86,8 +92,8 @@ export const CMS_SECTIONS = [
           ctaHref: "/box",
         },
         {
-          imageUrl: "/media/scenes/pouring-dark.jpg",
-          imageAlt: "Vino sirviéndose en una copa sobre fondo oscuro",
+          imageUrl: "/media/scenes/barrels.jpg",
+          imageAlt: "Barricas de roble en la sala de crianza",
           kicker: "Financiación",
           title: "Tres cuotas sin interés",
           body: "Elegí las botellas y pagalas en tres.",
@@ -95,8 +101,8 @@ export const CMS_SECTIONS = [
           ctaHref: "/vinos",
         },
         {
-          imageUrl: "/media/scenes/sparkling.jpg",
-          imageAlt: "Dos copas de espumante brindando",
+          imageUrl: "/media/scenes/grapes-cluster.jpg",
+          imageAlt: "Racimo de uvas tintas en la planta",
           kicker: "Primera compra",
           title: "10% en tu primera compra",
           body: "Registrate en la tienda y accedé al descuento en tu primer pedido.",
