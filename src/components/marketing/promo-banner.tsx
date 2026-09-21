@@ -42,44 +42,19 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     crea contexto de posicionamiento: el offsetParent de los paneles es la
     sección, y cualquier cambio de layout en el envoltorio corría la cuenta.
   */
+  /*
+    Mover el riel es una sola línea: asignar scrollLeft.
+
+    Que el movimiento sea suave o instantáneo lo decide la clase `banner-rail`
+    en globals.css, no este archivo. Es a propósito: pedirlo desde acá con
+    `scrollTo({behavior:"smooth"})` obliga a manejar los navegadores que
+    aceptan el pedido y no lo ejecutan, y toda corrección posterior termina
+    peleando con una animación pendiente que después se pasa de panel.
+  */
   const irA = useCallback((i: number) => {
     const riel = rielRef.current;
     if (!riel) return;
-    const destino = riel.clientWidth * i;
-    const partida = riel.scrollLeft;
-    if (Math.abs(destino - partida) < 2) return;
-
-    /*
-      Dos resguardos para que el carrusel no quede nunca inerte.
-
-      1. Soporte declarado. Safari de iOS ignoró `behavior: "smooth"` hasta la
-         15.4; si el navegador no lo conoce, se salta y listo.
-
-      2. Soporte declarado pero inerte. Pasa con las animaciones frenadas o
-         en pestañas en segundo plano: el navegador acepta el pedido y nunca
-         lo ejecuta. A los 250ms se mira si el riel se movió ALGO. Si no se
-         movió nada, no hay animación en curso y se salta.
-
-      La condición es "no se movió nada", no "no llegó": la primera versión
-      saltaba cuando todavía no había llegado, y eso pisaba una animación en
-      vuelo que después retomaba y sumaba su propio recorrido desde la nueva
-      posición, pasándose de panel. Medido en producción: dos paneles en 0,6
-      segundos. Si el riel se movió aunque sea un píxel, la animación está
-      viva y no hay que tocarla.
-    */
-    const soportaSuave =
-      typeof document !== "undefined" && "scrollBehavior" in document.documentElement.style;
-
-    if (!soportaSuave) {
-      riel.scrollLeft = destino;
-      return;
-    }
-
-    riel.scrollTo({ left: destino, behavior: "smooth" });
-    window.setTimeout(() => {
-      const actual = rielRef.current;
-      if (actual && Math.abs(actual.scrollLeft - partida) < 2) actual.scrollLeft = destino;
-    }, 250);
+    riel.scrollLeft = riel.clientWidth * i;
   }, []);
 
   /*
@@ -183,7 +158,7 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
       <div
         ref={rielRef}
         onPointerDown={() => setInteractuado(true)}
-        className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="banner-rail flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item, i) => (
           <article

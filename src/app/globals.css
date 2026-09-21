@@ -241,6 +241,25 @@
   animation: shimmer 1.6s linear infinite;
 }
 
+/* ═══════════════════ Banda promocional ═════════════════════════════════════
+   El riel del carrusel decide acá si el movimiento es suave, y el JavaScript
+   sólo asigna scrollLeft.
+
+   Antes el JS pedía `scrollTo({behavior:"smooth"})` y corregía después si no
+   se movía, porque hay navegadores que aceptan el pedido y no lo ejecutan.
+   Esa corrección peleaba con la animación: cuando el navegador la retomaba,
+   aplicaba su propio recorrido desde la posición ya corregida y se pasaba un
+   panel entero. Un clic movía dos.
+
+   Así no hay carrera posible. Asignar scrollLeft usa el scroll-behavior del
+   elemento: si el navegador lo soporta, anima; si no, salta. Y con movimiento
+   reducido la regla no se aplica, que es justo lo que corresponde.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .banner-rail { scroll-behavior: smooth; }
+}
+
 /* ═══════════════════ Renglón de novedades ══════════════════════════════════
    Marquesina de una línea. La base es un riel que se puede arrastrar: si el
    navegador pide movimiento reducido, la animación no se aplica y queda una

@@ -59,11 +59,21 @@ export const CMS_SECTIONS = [
         Corta entre "Los seleccionados de la semana" y "Nuestros vinos", y es
         el lugar donde se empuja lo del mes.
 
-        Los tres textos se corresponden con lo que el sitio tiene cargado: hay
-        box de 2, 4 y 6 botellas, el envío a domicilio en Río Cuarto, Las
-        Higueras y Holmberg está en cero sin monto mínimo, y el Club existe con
-        sus tres planes. Si alguno de esos tres datos cambia, este texto cambia
-        con él.
+        Los textos de cuotas y del 10% son los que pidió el cliente por audio.
+        Dos cosas quedan pendientes de su lado y hay que resolverlas antes de
+        publicar de verdad:
+
+        · Contradicen la franja azul superior, que publica "hasta 6 cuotas sin
+          interés" y "10% off en tu segunda compra". Son promesas distintas
+          sobre lo mismo y hoy conviven en la misma pantalla. Esos textos
+          viven en src/components/site/promo-bar.tsx, escritos a mano.
+        · El 10% por registrarse no tiene mecánica: hay cupones, pero nadie
+          los otorga automáticamente al crear la cuenta. Hoy el panel lo
+          promete y el checkout no lo aplica.
+
+        Se sacó el panel del Club para no estirar la vuelta: con cuatro
+        paneles a 7 segundos ya son 28, y el último casi no se ve. Está
+        cargado el contenido si se lo quiere volver a poner.
       */
       items: [
         {
@@ -76,6 +86,24 @@ export const CMS_SECTIONS = [
           ctaHref: "/box",
         },
         {
+          imageUrl: "/media/scenes/pouring-dark.jpg",
+          imageAlt: "Vino sirviéndose en una copa sobre fondo oscuro",
+          kicker: "Financiación",
+          title: "Tres cuotas sin interés",
+          body: "Elegí las botellas y pagalas en tres.",
+          ctaLabel: "Ver los vinos",
+          ctaHref: "/vinos",
+        },
+        {
+          imageUrl: "/media/scenes/sparkling.jpg",
+          imageAlt: "Dos copas de espumante brindando",
+          kicker: "Primera compra",
+          title: "10% en tu primera compra",
+          body: "Registrate en la tienda y accedé al descuento en tu primer pedido.",
+          ctaLabel: "Crear mi cuenta",
+          ctaHref: "/registrarme",
+        },
+        {
           imageUrl: "/media/scenes/potrerillos-andes.jpg",
           imageAlt: "Camino de montaña con la cordillera de fondo",
           kicker: "Envíos",
@@ -83,15 +111,6 @@ export const CMS_SECTIONS = [
           body: "Gratis en Río Cuarto y la zona. Al resto, tarifa por región y seguimiento del pedido.",
           ctaLabel: "Ver zonas y plazos",
           ctaHref: "/envios",
-        },
-        {
-          imageUrl: "/media/scenes/mendoza-vineyard-view.jpg",
-          imageAlt: "Viñedo de Mendoza con los Andes de fondo",
-          kicker: "Club Atul",
-          title: "Tres botellas por mes, elegidas por nosotros",
-          body: "Con la ficha de por qué elegimos cada una. Pausás o cambiás cuando quieras.",
-          ctaLabel: "Conocer el Club",
-          ctaHref: "/club",
         },
       ],
       height: "media",
