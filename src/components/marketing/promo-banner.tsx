@@ -264,6 +264,19 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
                 sizes="100vw"
                 className="object-cover"
                 priority={i === 0}
+                /*
+                  Todas las fotos se piden de entrada, no a demanda.
+
+                  Con carga diferida el panel puede aparecer antes que su
+                  imagen y se ve una banda oscura vacía. Acá el panel aparece
+                  solo, por el giro automático, así que nadie provoca la carga
+                  a tiempo: medido en producción, el panel de las cuotas seguía
+                  sin foto después de cuarenta segundos en la página.
+
+                  Sólo la primera lleva `priority`, que además la precarga; las
+                  otras se descargan sin prioridad mientras la primera se ve.
+                */
+                loading={i === 0 ? undefined : "eager"}
               />
             )}
 
