@@ -16,7 +16,28 @@ import { RevealNoFlashScript, RevealObserver } from "@/ui/reveal-observer";
 */
 const NAV: SidebarItem[] = [
   { label: "Inicio", href: "/", icon: "inicio" },
-  { label: "Vinos", href: "/vinos", icon: "wine" },
+  {
+    label: "Vinos",
+    href: "/vinos",
+    icon: "wine",
+    /*
+      Se despliega en vez de ir directo al catálogo entero. Lo pidió el
+      cliente: quien entra por el menú suele estar buscando un tipo concreto,
+      y mandarlo a las 22 etiquetas lo obliga a filtrar después.
+
+      Sólo van los tipos que tienen vinos cargados: 18 tintos, 2 blancos, 2
+      rosados y 1 dulce. Espumantes no hay —el cliente los mencionó como
+      ejemplo— y mandar a alguien a un filtro vacío es peor que no ofrecer la
+      opción. Cuando entren, se agregan acá.
+    */
+    hijos: [
+      { label: "Todos los vinos", href: "/vinos" },
+      { label: "Tintos", href: "/vinos?tipo=TINTO" },
+      { label: "Blancos", href: "/vinos?tipo=BLANCO" },
+      { label: "Rosados", href: "/vinos?tipo=ROSADO" },
+      { label: "Dulces", href: "/vinos?tipo=DULCE" },
+    ],
+  },
   { label: "Box", href: "/box", icon: "box" },
   { label: "Novedades", href: "/novedades", icon: "nuevo" },
   { label: "Ofertas", href: "/ofertas", icon: "oferta" },

@@ -24,6 +24,12 @@ import type { BlockData } from "@/domain/cms/blocks";
  */
 
 const ALTURAS = {
+  /*
+    Tira fina, a la altura de la tira de bodegas (~183px). A este alto el
+    texto no entra apilado: el titular, la bajada y el botón pasan a
+    componerse en fila, usando el ancho en lugar de la altura.
+  */
+  baja: "min-h-[172px] sm:min-h-[188px] lg:min-h-[200px]",
   media: "min-h-[300px] sm:min-h-[340px] lg:min-h-[380px]",
   alta: "min-h-[380px] sm:min-h-[440px] lg:min-h-[500px]",
 } as const;
@@ -222,6 +228,12 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
   if (items.length === 0) return null;
 
   const centrado = data.align === "center";
+  /*
+    En la tira fina el contenido se compone en fila —texto a la izquierda,
+    botón a la derecha— porque apilado no entra: medido, kicker + titular +
+    bajada + botón suman unos 177px y la banda tiene 152 de alto útil.
+  */
+  const compacta = data.height === "baja";
 
   return (
     <section
@@ -297,37 +309,55 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
 
             <div
               className={cn(
-                "relative mx-auto flex h-full max-w-[1600px] flex-col justify-center px-gutter pt-14",
-                varios ? "pb-20" : "pb-14",
-                centrado && "items-center text-center",
+                "relative mx-auto flex h-full max-w-[1600px] px-gutter",
+                compacta
+                  ? "items-center justify-between gap-6 py-6"
+                  : cn(
+                      "flex-col justify-center pt-14",
+                      varios ? "pb-20" : "pb-14",
+                      centrado && "items-center text-center",
+                    ),
               )}
             >
-              {item.kicker && <p className="eyebrow text-clay-400">{item.kicker}</p>}
+              <div className={cn("min-w-0", !compacta && centrado && "contents")}>
+                {item.kicker && <p className="eyebrow text-clay-400">{item.kicker}</p>}
 
-              <h2
-                className={cn(
-                  "mt-4 max-w-[20ch] font-display text-display-md font-light text-bone",
-                  centrado && "mx-auto",
-                )}
-              >
-                {item.title}
-              </h2>
-
-              {item.body && (
-                <p
+                <h2
                   className={cn(
-                    "mt-4 max-w-[46ch] text-[15px] leading-relaxed text-linen-200",
-                    centrado && "mx-auto",
+                    "font-display font-light text-bone",
+                    compacta
+                      ? "mt-1.5 text-[20px] leading-tight sm:text-[24px]"
+                      : "mt-4 max-w-[20ch] text-display-md",
+                    !compacta && centrado && "mx-auto",
                   )}
                 >
-                  {item.body}
-                </p>
-              )}
+                  {item.title}
+                </h2>
+
+                {item.body && (
+                  <p
+                    className={cn(
+                      "text-linen-200",
+                      compacta
+                        ? "mt-1.5 hidden max-w-[60ch] text-[13px] leading-snug sm:block"
+                        : "mt-4 max-w-[46ch] text-[15px] leading-relaxed",
+                      !compacta && centrado && "mx-auto",
+                    )}
+                  >
+                    {item.body}
+                  </p>
+                )}
+              </div>
 
               {item.ctaLabel && (
                 <Link
                   href={item.ctaHref}
-                  className="mt-7 inline-flex w-fit items-center gap-2 rounded-md bg-bone px-6 py-3 text-[13px] font-medium uppercase tracking-[0.08em] text-carbon-900 transition-colors hover:bg-bone-pure"
+                  className={cn(
+                    "inline-flex w-fit shrink-0 items-center gap-2 rounded-md bg-bone font-medium uppercase tracking-[0.08em] text-carbon-900 transition-colors hover:bg-bone-pure",
+                    compacta
+                      ? "mr-14 px-4 py-2.5 text-[12px]"
+                      : "mt-7 px-6 py-3 text-[13px]",
+                  )}
                 >
                   {item.ctaLabel}
                   <ArrowRight className="size-4" aria-hidden />
@@ -348,7 +378,7 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
           alineados al mismo contenedor que el contenido, y no pisan nada.
         */
         <div className="pointer-events-none absolute inset-x-0 bottom-0">
-          <div className="mx-auto flex max-w-[1600px] items-center justify-end gap-4 px-gutter pb-5">
+          <div className={cn("mx-auto flex max-w-[1600px] items-center justify-end gap-4 px-gutter", compacta ? "pb-3" : "pb-5")}>
             <div className="pointer-events-auto flex items-center gap-2.5">
               {items.map((item, i) => (
                 <button
@@ -368,7 +398,13 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
               ))}
             </div>
 
-            <div className="pointer-events-auto flex items-center gap-2">
+            {/*
+              En la tira fina las flechas no entran: la banda mide 200px y el
+              botón ya ocupa la derecha. Quedan los puntos, que además de
+              indicar en cuál va sirven para saltar de panel. El giro
+              automático y el arrastre siguen funcionando igual.
+            */}
+            <div className={cn("pointer-events-auto items-center gap-2", compacta ? "hidden" : "flex")}>
               {(
                 [
                   ["anterior", ChevronLeft, -1],

@@ -280,8 +280,11 @@ export const promoBannerBlock = z.object({
       }),
     )
     .default([]),
-  /** Alto de la banda. "alta" pesa como el bloque de quiénes somos. */
-  height: z.enum(["media", "alta"]).default("media"),
+  /**
+   * Alto de la banda. "baja" es una tira fina, a la altura de la tira de
+   * bodegas; "alta" pesa como el bloque de quiénes somos.
+   */
+  height: z.enum(["baja", "media", "alta"]).default("media"),
   align: z.enum(["left", "center"]).default("left"),
   /** Gira solo. Apagado por defecto: ver la nota de arriba. */
   autoplay: z.boolean().default(false),

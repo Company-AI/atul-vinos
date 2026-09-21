@@ -5,10 +5,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { House, Mail, Menu, Package, Sparkles, Tag, Users, Wine, X } from "lucide-react";
+import { ChevronDown, House, Mail, Menu, Package, Sparkles, Tag, Users, Wine, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-export type SidebarItem = { label: string; href: string; icon: keyof typeof ICONOS };
+export type SidebarItem = {
+  label: string;
+  href: string;
+  icon: keyof typeof ICONOS;
+  /**
+   * Opciones que se abren dentro del menú en vez de navegar de una.
+   *
+   * Lo pidió el cliente: al entrar por las tres rayitas y tocar "Vinos", uno
+   * espera elegir por dónde entrar —tinto, blanco, rosado— y no caer en el
+   * catálogo entero. El enlace a "todos" sigue estando, primero de la lista.
+   */
+  hijos?: { label: string; href: string }[];
+};
 
 const ICONOS = {
   inicio: House,
@@ -41,20 +53,62 @@ type Props = {
  */
 function SidebarContenido({ items, secundarios, tagline, logo }: Props) {
   const pathname = usePathname();
+  /* Sólo uno abierto a la vez: el cajón es angosto y dos listas desplegadas
+     empujan el resto del menú fuera de la pantalla. */
+  const [desplegado, setDesplegado] = useState<string | null>(null);
 
   const enlace = (item: SidebarItem) => {
     const Icon = ICONOS[item.icon];
     const activo = pathname === item.href || pathname.startsWith(`${item.href}/`);
+    const fila =
+      "flex items-center gap-3.5 rounded-sm py-2.5 pl-1 pr-2 text-[15px] transition-colors";
+    const tono = activo ? "text-accent-700" : "text-carbon-800 hover:text-accent-700";
+
+    if (item.hijos && item.hijos.length > 0) {
+      const abierto = desplegado === item.href;
+      return (
+        <li key={item.href}>
+          <button
+            type="button"
+            onClick={() => setDesplegado(abierto ? null : item.href)}
+            aria-expanded={abierto}
+            className={cn(fila, tono, "w-full text-left")}
+          >
+            <Icon
+              className={cn("size-[18px] shrink-0", activo ? "text-accent-700" : "text-stone-500")}
+              aria-hidden
+            />
+            {item.label}
+            <ChevronDown
+              aria-hidden
+              className={cn(
+                "ml-auto size-4 text-stone-500 transition-transform duration-200",
+                abierto && "rotate-180",
+              )}
+            />
+          </button>
+
+          {abierto && (
+            <ul className="mb-1 ml-[9px] border-l border-linen-300 pl-5">
+              {item.hijos.map((hijo) => (
+                <li key={hijo.href}>
+                  <Link
+                    href={hijo.href}
+                    className="block py-2 text-[14px] text-stone-600 transition-colors hover:text-accent-700"
+                  >
+                    {hijo.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      );
+    }
+
     return (
       <li key={item.href}>
-        <Link
-          href={item.href}
-          aria-current={activo ? "page" : undefined}
-          className={cn(
-            "flex items-center gap-3.5 rounded-sm py-2.5 pl-1 pr-2 text-[15px] transition-colors",
-            activo ? "text-accent-700" : "text-carbon-800 hover:text-accent-700",
-          )}
-        >
+        <Link href={item.href} aria-current={activo ? "page" : undefined} className={cn(fila, tono)}>
           <Icon
             className={cn("size-[18px] shrink-0", activo ? "text-accent-700" : "text-stone-500")}
             aria-hidden

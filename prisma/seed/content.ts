@@ -161,7 +161,12 @@ export const CMS_SECTIONS = [
           ctaHref: "/envios",
         },
       ],
-      height: "media",
+      /*
+        Tira fina, a la altura de la tira de bodegas. Lo pidió el cliente:
+        "que sea más angosto, una altura similar o un poquito más al renglón
+        de las bodegas que trabajamos, y que siga corriendo tal cual está".
+      */
+      height: "baja",
       align: "left",
       /*
         Gira solo cada 7 segundos: alcanza para leer volanta, título, bajada y

@@ -135,7 +135,7 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     },
   ],
   promo_banner: [
-    { key: "height", label: "Alto de la banda", kind: "select", options: ["media", "alta"] },
+    { key: "height", label: "Alto de la banda", kind: "select", options: ["baja", "media", "alta"] },
     { key: "align", label: "Posición del texto", kind: "select", options: ["left", "center"] },
     {
       key: "autoplaySeconds",
