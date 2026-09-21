@@ -24,7 +24,10 @@ export const SHIPPING_ZONES: ZoneSeed[] = [
       name: "Río Cuarto y alrededores", sortOrder: 10,
       provinces: ["Córdoba"], cities: ["Río Cuarto", "Las Higueras", "Holmberg"],
       rates: [
-        { name: "Envío a domicilio", price: 3500, freeFrom: 60000, etaMinDays: 1, etaMaxDays: 2 },
+        // Gratis siempre, sin monto mínimo: es la promesa que publica la home
+        // y la franja superior. Si algún día vuelve a tener costo, este 0 y
+        // esos dos textos tienen que moverse juntos.
+        { name: "Envío a domicilio", price: 0, etaMinDays: 1, etaMaxDays: 2 },
         { name: "Retiro en depósito", price: 0, etaMinDays: 0, etaMaxDays: 1 },
       ],
     },

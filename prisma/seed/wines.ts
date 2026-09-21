@@ -649,59 +649,76 @@ export type PackSeed = {
  * una imagen de estilo hasta que fotografiemos los estuches propios.
  */
 export const PACKS: PackSeed[] = [
+  /*
+    La línea es de 2, 4 y 6 botellas.
+
+    `compareAtPrice` es la suma exacta de los componentes a precio de lista y
+    `price` el del pack: la diferencia es el descuento real, no un tachado
+    inventado. Si cambia el precio de una botella hay que recalcular el pack
+    que la contiene, porque si no el "más barato que por separado" deja de ser
+    cierto.
+  */
   {
-    name: "Selección Malbec x3",
-    slug: "seleccion-malbec-x3",
-    sku: "PACK-MLB3",
-    price: 69900,
-    compareAtPrice: 79283,
-    shortDescription: "Tres Malbec de tres zonas para entender de qué depende el estilo.",
+    name: "Selección Malbec x6",
+    slug: "seleccion-malbec-x6",
+    sku: "PACK-MLB6",
+    // 5.633 + 14.900 + 19.050 + 24.183 + 27.500 + 41.200 = 132.466
+    price: 117900,
+    compareAtPrice: 132466,
+    shortDescription: "Seis Malbec de cuatro zonas para entender de qué depende el estilo.",
     description:
-      "Un Malbec de Luján de Cuyo, uno del Valle de Uco y uno de altura. La misma uva, tres suelos distintos: es la forma más rápida de entender por qué el origen cambia todo. Va con una ficha comparativa escrita por nosotros.",
+      "Maipú, Luján de Cuyo, Valle de Uco y Gualtallary. La misma uva, cuatro suelos distintos y seis escalones de precio: es la forma más rápida de entender por qué el origen cambia todo. Va con una ficha comparativa escrita por nosotros.",
     category: "Packs",
     tags: ["Pack", "Para descubrir"],
     components: [
+      { slug: "norton-talisman-malbec", quantity: 1 },
       { slug: "trumpeter-reserve-malbec", quantity: 1 },
       { slug: "norton-doc-malbec", quantity: 1 },
       { slug: "norton-altura-malbec", quantity: 1 },
+      { slug: "blend-of-terroirs-malbec", quantity: 1 },
+      { slug: "rutini-single-vineyard-gualtallary-malbec", quantity: 1 },
     ],
     image: "pack-malbec",
     featured: true,
     bestSeller: true,
   },
   {
-    name: "Valle de Uco x3",
-    slug: "valle-de-uco-x3",
-    sku: "PACK-UCO3",
-    price: 88900,
-    compareAtPrice: 100200,
-    shortDescription: "Un tinto, un blanco y un rosado de la zona que hoy define a Mendoza.",
+    name: "Valle de Uco x4",
+    slug: "valle-de-uco-x4",
+    sku: "PACK-UCO4",
+    // 31.800 + 30.300 + 33.000 + 20.300 = 115.400
+    price: 103900,
+    compareAtPrice: 115400,
+    shortDescription: "Dos tintos, un blanco y un rosado de la zona que hoy define a Mendoza.",
     description:
-      "El Valle de Uco es donde está pasando lo más interesante del vino argentino. Este pack lo recorre en tres estilos distintos, todos de la misma región, para ver qué tienen en común.",
+      "El Valle de Uco es donde está pasando lo más interesante del vino argentino. Este pack lo recorre en cuatro estilos distintos, todos de la misma región, para ver qué tienen en común.",
     category: "Packs",
     tags: ["Pack", "Terroir"],
     components: [
       { slug: "rutini-coleccion-cabernet-franc", quantity: 1 },
+      { slug: "rutini-coleccion-cabernet-malbec", quantity: 1 },
       { slug: "rutini-coleccion-chardonnay", quantity: 1 },
       { slug: "rutini-coleccion-rose-de-malbec", quantity: 1 },
     ],
     image: "pack-uco",
   },
   {
-    name: "Para el asado x3",
-    slug: "para-el-asado-x3",
-    sku: "PACK-ASA3",
-    price: 52900,
-    compareAtPrice: 58483,
-    shortDescription: "Tres tintos con estructura para aguantar el fuego y la sobremesa.",
+    name: "Para el asado x4",
+    slug: "para-el-asado-x4",
+    sku: "PACK-ASA4",
+    // 9.900 + 17.000 + 20.300 + 22.333 = 69.533
+    price: 62900,
+    compareAtPrice: 69533,
+    shortDescription: "Cuatro tintos con estructura para aguantar el fuego y la sobremesa.",
     description:
-      "Probado en asados propios. Tres tintos que no se pierden contra la sal, la grasa y el chimichurri, en tres escalones de precio para que elijas según la ocasión.",
+      "Probado en asados propios. Cuatro tintos que no se pierden contra la sal, la grasa y el chimichurri, en cuatro escalones de precio para que elijas según la ocasión.",
     category: "Packs",
     tags: ["Pack", "Más vendido"],
     components: [
+      { slug: "norton-select-malbec", quantity: 1 },
       { slug: "encuentro-malbec", quantity: 1 },
-      { slug: "norton-perdriel-malbec", quantity: 1 },
       { slug: "rutini-coleccion-cabernet-malbec", quantity: 1 },
+      { slug: "norton-perdriel-malbec", quantity: 1 },
     ],
     image: "pack-asado",
     bestSeller: true,
@@ -710,6 +727,7 @@ export const PACKS: PackSeed[] = [
     name: "Regalo alta gama x2",
     slug: "regalo-alta-gama-x2",
     sku: "PACK-REG2",
+    // 67.400 + 41.200 = 108.600
     price: 104900,
     compareAtPrice: 108600,
     shortDescription: "Dos botellas de guarda en caja de madera, listas para regalar.",
