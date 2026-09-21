@@ -33,6 +33,8 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
   const rielRef = useRef<HTMLDivElement>(null);
   const [activo, setActivo] = useState(0);
   const [interactuado, setInteractuado] = useState(false);
+  /** Número de la última solicitud de movimiento, para descartar correcciones viejas. */
+  const pedidoRef = useRef(0);
 
   const varios = items.length > 1;
 
@@ -43,18 +45,37 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     sección, y cualquier cambio de layout en el envoltorio corría la cuenta.
   */
   /*
-    Mover el riel es una sola línea: asignar scrollLeft.
+    Mover el riel: se asigna scrollLeft y, pasada la animación, se comprueba
+    que haya llegado.
 
-    Que el movimiento sea suave o instantáneo lo decide la clase `banner-rail`
-    en globals.css, no este archivo. Es a propósito: pedirlo desde acá con
-    `scrollTo({behavior:"smooth"})` obliga a manejar los navegadores que
-    aceptan el pedido y no lo ejecutan, y toda corrección posterior termina
-    peleando con una animación pendiente que después se pasa de panel.
+    La clase `banner-rail` le pone scroll-behavior suave, así que la
+    asignación anima. Pero Chrome no siempre termina el recorrido en un
+    contenedor con scroll-snap: medido en producción, un salto de 1512px se
+    quedaba en 1257 y ahí se detenía, dejando el panel cortado a la mitad.
+
+    Por eso hay una comprobación al final, no una corrección en el medio. La
+    diferencia importa: corregir a los 250ms —como hacía la versión anterior—
+    pisaba una animación todavía en vuelo, que al retomar sumaba su propio
+    recorrido desde la nueva posición y se pasaba un panel entero. A los
+    900ms la animación ya terminó y no queda nada con qué chocar.
+
+    `pedidoRef` descarta las comprobaciones que quedaron viejas: si mientras
+    tanto alguien arrastró el riel o pidió otro panel, esta corrección ya no
+    corresponde y se abandona en lugar de arrastrar al visitante de vuelta.
   */
   const irA = useCallback((i: number) => {
     const riel = rielRef.current;
     if (!riel) return;
-    riel.scrollLeft = riel.clientWidth * i;
+    const destino = riel.clientWidth * i;
+    const pedido = ++pedidoRef.current;
+
+    riel.scrollLeft = destino;
+
+    window.setTimeout(() => {
+      const actual = rielRef.current;
+      if (!actual || pedidoRef.current !== pedido) return;
+      if (Math.abs(actual.scrollLeft - destino) > 4) actual.scrollLeft = destino;
+    }, 900);
   }, []);
 
   /*
@@ -157,7 +178,11 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     >
       <div
         ref={rielRef}
-        onPointerDown={() => setInteractuado(true)}
+        onPointerDown={() => {
+          // Invalida la comprobación pendiente: si la persona arrastra, manda ella.
+          pedidoRef.current += 1;
+          setInteractuado(true);
+        }}
         className="banner-rail flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item, i) => (
