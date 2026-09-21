@@ -35,6 +35,8 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
   const [interactuado, setInteractuado] = useState(false);
   /** Cuadro pendiente de la animación en curso, para poder interrumpirla. */
   const animRef = useRef<number | null>(null);
+  /** Cierre de seguridad por si los cuadros se frenan a mitad de recorrido. */
+  const cierreRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const varios = items.length > 1;
 
@@ -62,10 +64,17 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     const riel = rielRef.current;
     if (!riel) return;
 
-    if (animRef.current !== null) {
-      cancelAnimationFrame(animRef.current);
-      animRef.current = null;
-    }
+    const cortar = () => {
+      if (animRef.current !== null) {
+        cancelAnimationFrame(animRef.current);
+        animRef.current = null;
+      }
+      if (cierreRef.current !== null) {
+        clearTimeout(cierreRef.current);
+        cierreRef.current = null;
+      }
+    };
+    cortar();
 
     const destino = riel.clientWidth * i;
     const partida = riel.scrollLeft;
@@ -95,12 +104,30 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     };
 
     animRef.current = requestAnimationFrame(cuadro);
+
+    /*
+      Cierre de seguridad. Chrome frena los cuadros cuando la ventana no se
+      está componiendo —medido: uno por segundo—, y entonces el recorrido se
+      queda a mitad de panel. Pasado el tiempo de la animación se corta y se
+      va al destino.
+
+      Esto no tiene la carrera que tenían los intentos anteriores: la única
+      animación que puede estar tocando el riel es la nuestra, y la cancelamos
+      antes de asignar. No hay nada del navegador con qué chocar.
+    */
+    cierreRef.current = setTimeout(() => {
+      if (animRef.current === null) return;
+      cortar();
+      const actual = rielRef.current;
+      if (actual) actual.scrollLeft = destino;
+    }, DURACION + 140);
   }, []);
 
-  // Si el componente se va con una animación viva, se cancela el cuadro.
+  // Si el componente se va con algo pendiente, se cancela.
   useEffect(
     () => () => {
       if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+      if (cierreRef.current !== null) clearTimeout(cierreRef.current);
     },
     [],
   );
@@ -210,6 +237,10 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
           if (animRef.current !== null) {
             cancelAnimationFrame(animRef.current);
             animRef.current = null;
+          }
+          if (cierreRef.current !== null) {
+            clearTimeout(cierreRef.current);
+            cierreRef.current = null;
           }
           setInteractuado(true);
         }}
