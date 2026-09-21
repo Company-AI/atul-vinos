@@ -18,6 +18,8 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   logoLightUrl: { label: "Logo (fondo oscuro)" },
   isotipoUrl: { label: "Isotipo (fondo claro)", hint: "La A con la copa, sin la palabra." },
   isotipoLightUrl: { label: "Isotipo (fondo oscuro)" },
+  isologoUrl: { label: "Isologo (fondo claro)", hint: "El sello redondo con la A, la copa y la palabra. Va en la cabecera." },
+  isologoLightUrl: { label: "Isologo (fondo oscuro)" },
   faviconUrl: { label: "Favicon" },
   email: { label: "Email de contacto" },
   phone: { label: "Teléfono" },

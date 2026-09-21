@@ -19,6 +19,13 @@ export const companySettings = z.object({
    */
   isotipoUrl: z.string().default("/brand/isotipo-azul.png"),
   isotipoLightUrl: z.string().default("/brand/isotipo-crema.png"),
+  /**
+   * Isologo: el sello redondo con la A, la copa y la palabra adentro. Es el
+   * que va en la cabecera del sitio. Necesita bastante altura para que el
+   * texto de adentro se lea: por debajo de 60px "ATUL" deja de distinguirse.
+   */
+  isologoUrl: z.string().default("/brand/isologo-azul.png"),
+  isologoLightUrl: z.string().default("/brand/isologo-crema.png"),
   faviconUrl: z.string().default("/favicon.ico"),
   email: z.string().default("hola@atulwines.com"),
   phone: z.string().default("+54 358 400 0000"),

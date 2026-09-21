@@ -60,6 +60,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <SiteTopbar
           companyName={settings.company.name}
           logoUrl={settings.company.logoUrl}
+          isologoUrl={settings.company.isologoUrl}
           menuSiempreVisible
           cartCount={cartCount}
           isLoggedIn={Boolean(session)}

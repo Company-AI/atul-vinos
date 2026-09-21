@@ -18,6 +18,7 @@ import { SidebarMenu, type SidebarItem } from "./site-sidebar";
 export function SiteTopbar({
   companyName,
   logoUrl,
+  isologoUrl,
   cartCount,
   isLoggedIn,
   nav,
@@ -28,6 +29,8 @@ export function SiteTopbar({
 }: {
   companyName: string;
   logoUrl: string;
+  /** Sello redondo de la marca. Si no hay, cae al logotipo horizontal. */
+  isologoUrl?: string;
   cartCount: number;
   isLoggedIn: boolean;
   nav: SidebarItem[];
@@ -43,7 +46,9 @@ export function SiteTopbar({
   return (
     <>
       <header className="sticky top-0 z-[50] border-b border-linen-200 bg-bone/95 backdrop-blur-md">
-        <div className="mx-auto grid h-[72px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6">
+        <div className={`mx-auto grid max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 ${
+            isologoUrl ? "h-[80px] sm:h-[88px]" : "h-[72px]"
+          }`}>
           <div className="flex items-center justify-start">
             <SidebarMenu
               items={nav}
@@ -58,13 +63,19 @@ export function SiteTopbar({
             aria-label={`${companyName} — inicio`}
             className={logoSoloEnMobile ? "justify-self-center lg:hidden" : "justify-self-center"}
           >
+            {/*
+              El sello redondo lleva la palabra adentro, así que necesita más
+              altura que el logotipo horizontal para que se lea: medido, por
+              debajo de 60px "ATUL" se convierte en una mancha. Por eso la
+              cabecera es más alta cuando se usa el sello.
+            */}
             <Image
-              src={logoUrl}
+              src={isologoUrl || logoUrl}
               alt={companyName}
-              width={683}
-              height={227}
+              width={isologoUrl ? 900 : 683}
+              height={isologoUrl ? 900 : 227}
               priority
-              className="h-9 w-auto sm:h-11"
+              className={isologoUrl ? "h-14 w-auto sm:h-16" : "h-9 w-auto sm:h-11"}
             />
           </Link>
 
