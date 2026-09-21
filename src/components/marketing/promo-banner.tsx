@@ -46,24 +46,40 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     const riel = rielRef.current;
     if (!riel) return;
     const destino = riel.clientWidth * i;
-    riel.scrollTo({ left: destino, behavior: "smooth" });
+    const partida = riel.scrollLeft;
+    if (Math.abs(destino - partida) < 2) return;
 
     /*
-      Respaldo por si el desplazamiento suave no se aplica.
+      Dos resguardos para que el carrusel no quede nunca inerte.
 
-      Safari de iOS ignoró `behavior: "smooth"` en scrollTo hasta la 15.4, y
-      un navegador con las animaciones frenadas tampoco lo ejecuta. En esos
-      casos el carrusel quedaría inerte: las flechas no harían nada y no habría
-      ningún error que lo delate. Si a los 400ms el riel no se movió hacia el
-      destino, se salta de una. Un salto es peor que una transición, pero
-      muchísimo mejor que un botón muerto.
+      1. Soporte declarado. Safari de iOS ignoró `behavior: "smooth"` hasta la
+         15.4; si el navegador no lo conoce, se salta y listo.
+
+      2. Soporte declarado pero inerte. Pasa con las animaciones frenadas o
+         en pestañas en segundo plano: el navegador acepta el pedido y nunca
+         lo ejecuta. A los 250ms se mira si el riel se movió ALGO. Si no se
+         movió nada, no hay animación en curso y se salta.
+
+      La condición es "no se movió nada", no "no llegó": la primera versión
+      saltaba cuando todavía no había llegado, y eso pisaba una animación en
+      vuelo que después retomaba y sumaba su propio recorrido desde la nueva
+      posición, pasándose de panel. Medido en producción: dos paneles en 0,6
+      segundos. Si el riel se movió aunque sea un píxel, la animación está
+      viva y no hay que tocarla.
     */
+    const soportaSuave =
+      typeof document !== "undefined" && "scrollBehavior" in document.documentElement.style;
+
+    if (!soportaSuave) {
+      riel.scrollLeft = destino;
+      return;
+    }
+
+    riel.scrollTo({ left: destino, behavior: "smooth" });
     window.setTimeout(() => {
-      if (!rielRef.current) return;
-      if (Math.abs(rielRef.current.scrollLeft - destino) > 8) {
-        rielRef.current.scrollLeft = destino;
-      }
-    }, 400);
+      const actual = rielRef.current;
+      if (actual && Math.abs(actual.scrollLeft - partida) < 2) actual.scrollLeft = destino;
+    }, 250);
   }, []);
 
   /*
@@ -114,14 +130,32 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     const riel = rielRef.current;
     if (!riel) return;
 
-    let id: ReturnType<typeof setInterval>;
+    /*
+      `arrancar` tiene que poder llamarse dos veces seguidas sin apilar
+      temporizadores.
+
+      Antes creaba uno nuevo sin cancelar el anterior y sólo guardaba el
+      último id, así que cada `mouseleave` sin su `mouseenter` dejaba un
+      intervalo huérfano corriendo para siempre: el carrusel se iba acelerando
+      solo, saltando de panel cada menos tiempo. Se vio en producción pasando
+      de panel a los 0,8 segundos en lugar de los 7 configurados.
+    */
+    let id: ReturnType<typeof setInterval> | null = null;
+
+    const frenar = () => {
+      if (id !== null) {
+        clearInterval(id);
+        id = null;
+      }
+    };
+
     const arrancar = () => {
+      frenar();
       id = setInterval(() => {
         const actual = Math.round(riel.scrollLeft / riel.clientWidth);
         irA((actual + 1) % items.length);
       }, data.autoplaySeconds * 1000);
     };
-    const frenar = () => clearInterval(id);
 
     arrancar();
     riel.addEventListener("mouseenter", frenar);
