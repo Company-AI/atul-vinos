@@ -45,7 +45,25 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
   const irA = useCallback((i: number) => {
     const riel = rielRef.current;
     if (!riel) return;
-    riel.scrollTo({ left: riel.clientWidth * i, behavior: "smooth" });
+    const destino = riel.clientWidth * i;
+    riel.scrollTo({ left: destino, behavior: "smooth" });
+
+    /*
+      Respaldo por si el desplazamiento suave no se aplica.
+
+      Safari de iOS ignoró `behavior: "smooth"` en scrollTo hasta la 15.4, y
+      un navegador con las animaciones frenadas tampoco lo ejecuta. En esos
+      casos el carrusel quedaría inerte: las flechas no harían nada y no habría
+      ningún error que lo delate. Si a los 400ms el riel no se movió hacia el
+      destino, se salta de una. Un salto es peor que una transición, pero
+      muchísimo mejor que un botón muerto.
+    */
+    window.setTimeout(() => {
+      if (!rielRef.current) return;
+      if (Math.abs(rielRef.current.scrollLeft - destino) > 8) {
+        rielRef.current.scrollLeft = destino;
+      }
+    }, 400);
   }, []);
 
   /*
@@ -99,9 +117,8 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     let id: ReturnType<typeof setInterval>;
     const arrancar = () => {
       id = setInterval(() => {
-        const ancho = riel.clientWidth;
-        const actual = Math.round(riel.scrollLeft / ancho);
-        riel.scrollTo({ left: ancho * ((actual + 1) % items.length), behavior: "smooth" });
+        const actual = Math.round(riel.scrollLeft / riel.clientWidth);
+        irA((actual + 1) % items.length);
       }, data.autoplaySeconds * 1000);
     };
     const frenar = () => clearInterval(id);
@@ -116,7 +133,7 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
       riel.removeEventListener("mouseleave", arrancar);
       riel.removeEventListener("focusin", frenar);
     };
-  }, [varios, data.autoplay, data.autoplaySeconds, items.length, interactuado]);
+  }, [varios, data.autoplay, data.autoplaySeconds, items.length, interactuado, irA]);
 
   if (items.length === 0) return null;
 

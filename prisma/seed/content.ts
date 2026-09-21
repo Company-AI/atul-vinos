@@ -59,22 +59,35 @@ export const CMS_SECTIONS = [
         Corta entre "Los seleccionados de la semana" y "Nuestros vinos", y es
         el lugar donde se empuja lo del mes.
 
-        Los dos paneles de arranque son las dos ofertas que la tienda ya
-        tiene, con el texto tomado de sus propias páginas: nada acá promete
-        algo que no esté publicado en /box o en /club.
+        Dos textos de acá van más allá de lo que hoy tiene cargado el sitio y
+        hay que emparejarlos antes de publicar:
 
-        El giro automático viene apagado. Con dos paneles y las flechas a la
-        vista se entiende que hay más, y nada se mueve solo debajo del cursor.
+        · "3 y 6 botellas": el catálogo tiene tres box de 3 y uno de 2.
+          Ninguno de 6. Hay que cargarlo o cambiar el texto.
+        · "Gratis en Río Cuarto y la zona": la tabla de envíos cobra $3.500 a
+          domicilio y sólo lo hace gratis a partir de $60.000. Si el envío es
+          gratis siempre, hay que poner el precio de esa zona en cero desde
+          Configuración → Envíos; si no, el checkout va a contradecir a la
+          banda justo cuando la persona está por pagar.
       */
       items: [
         {
-          imageUrl: "/media/scenes/barrels.jpg",
-          imageAlt: "Barricas de roble en la sala de crianza",
+          imageUrl: "/media/scenes/toast.jpg",
+          imageAlt: "Tres personas brindando con copas de vino tinto",
           kicker: "Box",
-          title: "Cajas armadas por nosotros",
-          body: "Cada una con una idea detrás, y más barata que comprar las botellas por separado.",
+          title: "Box armados de 3 y 6 botellas",
+          body: "Cada uno con una idea detrás, y más barato que comprar las botellas por separado.",
           ctaLabel: "Ver los Box",
           ctaHref: "/box",
+        },
+        {
+          imageUrl: "/media/scenes/potrerillos-andes.jpg",
+          imageAlt: "Camino de montaña con la cordillera de fondo",
+          kicker: "Envíos",
+          title: "Enviamos a todo el país",
+          body: "Gratis en Río Cuarto y la zona. Al resto, tarifa por región y seguimiento del pedido.",
+          ctaLabel: "Ver zonas y plazos",
+          ctaHref: "/envios",
         },
         {
           imageUrl: "/media/scenes/mendoza-vineyard-view.jpg",
@@ -88,7 +101,13 @@ export const CMS_SECTIONS = [
       ],
       height: "media",
       align: "left",
-      autoplay: false,
+      /*
+        Gira solo cada 7 segundos: alcanza para leer volanta, título, bajada y
+        decidir si hacer clic. Se frena al pasar el mouse y se apaga del todo
+        apenas alguien toca una flecha, un punto o arrastra. Con movimiento
+        reducido no gira nunca.
+      */
+      autoplay: true,
       autoplaySeconds: 7,
     },
   },
