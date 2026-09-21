@@ -33,8 +33,8 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
   const rielRef = useRef<HTMLDivElement>(null);
   const [activo, setActivo] = useState(0);
   const [interactuado, setInteractuado] = useState(false);
-  /** Número de la última solicitud de movimiento, para descartar correcciones viejas. */
-  const pedidoRef = useRef(0);
+  /** Cuadro pendiente de la animación en curso, para poder interrumpirla. */
+  const animRef = useRef<number | null>(null);
 
   const varios = items.length > 1;
 
@@ -45,38 +45,65 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
     sección, y cualquier cambio de layout en el envoltorio corría la cuenta.
   */
   /*
-    Mover el riel: se asigna scrollLeft y, pasada la animación, se comprueba
-    que haya llegado.
+    El recorrido se anima acá, cuadro por cuadro, en lugar de pedírselo al
+    navegador.
 
-    La clase `banner-rail` le pone scroll-behavior suave, así que la
-    asignación anima. Pero Chrome no siempre termina el recorrido en un
-    contenedor con scroll-snap: medido en producción, un salto de 1512px se
-    quedaba en 1257 y ahí se detenía, dejando el panel cortado a la mitad.
+    `scroll-behavior: smooth` parecía lo correcto y resultó ser la causa de
+    todo: Chrome deja animaciones pendientes que bloquean los desplazamientos
+    siguientes, y el riel terminaba clavado a mitad de panel. Cualquier
+    corrección posterior chocaba con esas animaciones y saltaba de a dos.
 
-    Por eso hay una comprobación al final, no una corrección en el medio. La
-    diferencia importa: corregir a los 250ms —como hacía la versión anterior—
-    pisaba una animación todavía en vuelo, que al retomar sumaba su propio
-    recorrido desde la nueva posición y se pasaba un panel entero. A los
-    900ms la animación ya terminó y no queda nada con qué chocar.
-
-    `pedidoRef` descarta las comprobaciones que quedaron viejas: si mientras
-    tanto alguien arrastró el riel o pidió otro panel, esta corrección ya no
-    corresponde y se abandona en lugar de arrastrar al visitante de vuelta.
+    Con requestAnimationFrame el control es propio: se interrumpe cuando hace
+    falta, termina siempre en el píxel exacto del panel, y si el navegador
+    frena los cuadros —pestaña en segundo plano— simplemente no se mueve, que
+    es inofensivo. Con movimiento reducido va directo, sin recorrido.
   */
   const irA = useCallback((i: number) => {
     const riel = rielRef.current;
     if (!riel) return;
+
+    if (animRef.current !== null) {
+      cancelAnimationFrame(animRef.current);
+      animRef.current = null;
+    }
+
     const destino = riel.clientWidth * i;
-    const pedido = ++pedidoRef.current;
+    const partida = riel.scrollLeft;
+    const delta = destino - partida;
+    if (Math.abs(delta) < 2) return;
 
-    riel.scrollLeft = destino;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      riel.scrollLeft = destino;
+      return;
+    }
 
-    window.setTimeout(() => {
-      const actual = rielRef.current;
-      if (!actual || pedidoRef.current !== pedido) return;
-      if (Math.abs(actual.scrollLeft - destino) > 4) actual.scrollLeft = destino;
-    }, 900);
+    const DURACION = 480;
+    const arranque = performance.now();
+
+    const cuadro = (ahora: number) => {
+      const t = Math.min(1, (ahora - arranque) / DURACION);
+      // easeInOutCubic: arranca y frena suave, constante en el medio.
+      const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      riel.scrollLeft = partida + delta * e;
+
+      if (t < 1) {
+        animRef.current = requestAnimationFrame(cuadro);
+      } else {
+        riel.scrollLeft = destino;
+        animRef.current = null;
+      }
+    };
+
+    animRef.current = requestAnimationFrame(cuadro);
   }, []);
+
+  // Si el componente se va con una animación viva, se cancela el cuadro.
+  useEffect(
+    () => () => {
+      if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    },
+    [],
+  );
 
   /*
     Las flechas no miran el estado de React sino dónde está parado el riel.
@@ -179,11 +206,14 @@ export function PromoBanner({ data, id }: { data: BlockData<"promo_banner">; id?
       <div
         ref={rielRef}
         onPointerDown={() => {
-          // Invalida la comprobación pendiente: si la persona arrastra, manda ella.
-          pedidoRef.current += 1;
+          // Si la persona arrastra, manda ella: se corta la animación en curso.
+          if (animRef.current !== null) {
+            cancelAnimationFrame(animRef.current);
+            animRef.current = null;
+          }
           setInteractuado(true);
         }}
-        className="banner-rail flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item, i) => (
           <article

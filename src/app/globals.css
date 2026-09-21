@@ -242,23 +242,16 @@
 }
 
 /* ═══════════════════ Banda promocional ═════════════════════════════════════
-   El riel del carrusel decide acá si el movimiento es suave, y el JavaScript
-   sólo asigna scrollLeft.
+   El riel del carrusel NO lleva scroll-behavior: smooth, a propósito.
 
-   Antes el JS pedía `scrollTo({behavior:"smooth"})` y corregía después si no
-   se movía, porque hay navegadores que aceptan el pedido y no lo ejecutan.
-   Esa corrección peleaba con la animación: cuando el navegador la retomaba,
-   aplicaba su propio recorrido desde la posición ya corregida y se pasaba un
-   panel entero. Un clic movía dos.
-
-   Así no hay carrera posible. Asignar scrollLeft usa el scroll-behavior del
-   elemento: si el navegador lo soporta, anima; si no, salta. Y con movimiento
-   reducido la regla no se aplica, que es justo lo que corresponde.
+   Con esa propiedad puesta, Chrome deja animaciones pendientes que bloquean
+   los desplazamientos siguientes: medido contra el sitio publicado, un salto
+   de 1512px se detenía en 1257, y a partir de ahí toda asignación de
+   scrollLeft quedaba sin efecto. Con snap apagado seguía trabado; apagando
+   además el suave, llegaba exacto. El componente anima el recorrido por su
+   cuenta con requestAnimationFrame, que sí puede interrumpir y terminar
+   donde corresponde.
    ═══════════════════════════════════════════════════════════════════════════ */
-
-@media (prefers-reduced-motion: no-preference) {
-  .banner-rail { scroll-behavior: smooth; }
-}
 
 /* ═══════════════════ Renglón de novedades ══════════════════════════════════
    Marquesina de una línea. La base es un riel que se puede arrastrar: si el
