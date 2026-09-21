@@ -36,6 +36,7 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "overlay", label: "Oscurecimiento", kind: "select", options: ["scrim-bottom", "scrim-full", "scrim-side", "none"] },
     { key: "align", label: "Alineación", kind: "select", options: ["center", "left"] },
     { key: "height", label: "Altura", kind: "select", options: ["full", "tall", "medium", "short"] },
+    { key: "logoVariant", label: "Marca sobre el título", kind: "select", options: ["isotipo", "wordmark"], hint: "«Isotipo» es la A con la copa; el logotipo completo ya está en la cabecera." },
     { key: "scale", label: "Escala del título", kind: "select", options: ["page", "hero"] },
     { key: "layout", label: "Composición", kind: "select", options: ["overlay", "split"], hint: "«Partido» pone el texto sobre fondo sólido con la foto al lado." },
     { key: "textTone", label: "Color del texto", kind: "select", options: ["light", "dark"], hint: "Oscuro para fotos claras, como la pared beige del hero." },

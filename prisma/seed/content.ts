@@ -41,6 +41,7 @@ export const CMS_SECTIONS = [
       align: "left",
       height: "short",
       showLogo: true,
+      logoVariant: "isotipo",
       scale: "page",
       layout: "overlay",
       textTone: "light",

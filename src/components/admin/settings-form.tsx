@@ -16,6 +16,8 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   tagline: { label: "Bajada de marca" },
   logoUrl: { label: "Logo (fondo claro)" },
   logoLightUrl: { label: "Logo (fondo oscuro)" },
+  isotipoUrl: { label: "Isotipo (fondo claro)", hint: "La A con la copa, sin la palabra." },
+  isotipoLightUrl: { label: "Isotipo (fondo oscuro)" },
   faviconUrl: { label: "Favicon" },
   email: { label: "Email de contacto" },
   phone: { label: "Teléfono" },

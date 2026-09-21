@@ -12,6 +12,13 @@ export const companySettings = z.object({
   tagline: z.string().default("Vinos de todo el país"),
   logoUrl: z.string().default("/brand/logotipo-azul.png"),
   logoLightUrl: z.string().default("/brand/logotipo-crema.png"),
+  /**
+   * Isotipo: la A cuyo travesaño es una copa, sin la palabra. Sirve donde el
+   * logotipo completo sería redundante o no entra —el hero debajo de la
+   * cabecera, un formato cuadrado, un avatar—.
+   */
+  isotipoUrl: z.string().default("/brand/isotipo-azul.png"),
+  isotipoLightUrl: z.string().default("/brand/isotipo-crema.png"),
   faviconUrl: z.string().default("/favicon.ico"),
   email: z.string().default("hola@atulwines.com"),
   phone: z.string().default("+54 358 400 0000"),

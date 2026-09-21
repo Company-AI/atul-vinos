@@ -31,6 +31,11 @@ export const videoHeroBlock = z.object({
   align: z.enum(["left", "center"]).default("center"),
   height: z.enum(["full", "tall", "medium", "short"]).default("full"),
   showLogo: z.boolean().default(true),
+  /**
+   * Qué marca va arriba del titular. "isotipo" es la A sola: no compite con
+   * el logotipo de la cabecera, que ya está a 150px de distancia.
+   */
+  logoVariant: z.enum(["wordmark", "isotipo"]).default("wordmark"),
   /** display-2xl para el hero de portada; display-xl para heroes interiores. */
   scale: z.enum(["hero", "page"]).default("page"),
   /**

@@ -92,6 +92,7 @@ export default async function HomePage() {
       <SectionRenderer
         sections={hero}
         logoUrl={settings.company.logoLightUrl}
+        isotipoUrl={settings.company.isotipoLightUrl}
         companyName={settings.company.name}
       />
 

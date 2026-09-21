@@ -28,11 +28,14 @@ type NetworkInformation = {
 export function VideoHero({
   data,
   logoUrl,
+  isotipoUrl,
   companyName,
   priority = true,
 }: {
   data: BlockData<"video_hero">;
   logoUrl?: string;
+  /** Isotipo de la marca; se usa cuando el bloque pide logoVariant "isotipo". */
+  isotipoUrl?: string;
   companyName?: string;
   priority?: boolean;
 }) {
@@ -110,6 +113,14 @@ export function VideoHero({
     respiración original.
   */
   const compacto = data.height === "short";
+
+  /*
+    Qué marca va arriba del titular. El isotipo evita repetir el logotipo que
+    la cabecera ya muestra a ~150px de distancia; si no hay archivo cargado,
+    cae al logotipo antes que no mostrar nada.
+  */
+  const esIsotipo = data.logoVariant === "isotipo" && Boolean(isotipoUrl);
+  const marcaUrl = esIsotipo ? isotipoUrl : logoUrl;
 
   /*
     Modo partido: el texto va sobre fondo sólido y la foto al costado. El
@@ -302,14 +313,28 @@ export function VideoHero({
           data.align === "center" && "flex flex-col items-center",
         )}
       >
-        {data.showLogo && logoUrl && (
+        {/*
+          El isotipo es cuadrado y el logotipo apaisado: con la misma altura el
+          primero se ve diminuto. Por eso cada variante lleva su propia escala,
+          y el isotipo va bastante más alto para pesar lo mismo en la página.
+        */}
+        {data.showLogo && marcaUrl && (
           <Image
-            src={logoUrl}
+            src={marcaUrl}
             alt={companyName ?? ""}
-            width={260}
-            height={52}
+            width={esIsotipo ? 120 : 260}
+            height={esIsotipo ? 118 : 52}
             priority={priority}
-            className={cn("w-auto", compacto ? "mb-6 h-7 lg:h-8" : "mb-9 h-9 lg:h-11")}
+            className={cn(
+              "w-auto",
+              esIsotipo
+                ? compacto
+                  ? "mb-5 h-12 lg:h-14"
+                  : "mb-7 h-14 lg:h-16"
+                : compacto
+                  ? "mb-6 h-7 lg:h-8"
+                  : "mb-9 h-9 lg:h-11",
+            )}
           />
         )}
 
