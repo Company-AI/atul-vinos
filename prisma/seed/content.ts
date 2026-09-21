@@ -49,11 +49,61 @@ export const CMS_SECTIONS = [
     },
   },
   {
+    key: "home.banner",
+    page: "home",
+    type: "promo_banner",
+    title: "Banda promocional de la home",
+    sortOrder: 20,
+    data: {
+      /*
+        Corta entre "Los seleccionados de la semana" y "Nuestros vinos", y es
+        el lugar donde se empuja lo del mes.
+
+        Los dos paneles de arranque son las dos ofertas que la tienda ya
+        tiene, con el texto tomado de sus propias páginas: nada acá promete
+        algo que no esté publicado en /box o en /club.
+
+        El giro automático viene apagado. Con dos paneles y las flechas a la
+        vista se entiende que hay más, y nada se mueve solo debajo del cursor.
+      */
+      items: [
+        {
+          imageUrl: "/media/scenes/barrels.jpg",
+          imageAlt: "Barricas de roble en la sala de crianza",
+          kicker: "Box",
+          title: "Cajas armadas por nosotros",
+          body: "Cada una con una idea detrás, y más barata que comprar las botellas por separado.",
+          ctaLabel: "Ver los Box",
+          ctaHref: "/box",
+        },
+        {
+          imageUrl: "/media/scenes/mendoza-vineyard-view.jpg",
+          imageAlt: "Viñedo de Mendoza con los Andes de fondo",
+          kicker: "Club Atul",
+          title: "Tres botellas por mes, elegidas por nosotros",
+          body: "Con la ficha de por qué elegimos cada una. Pausás o cambiás cuando quieras.",
+          ctaLabel: "Conocer el Club",
+          ctaHref: "/club",
+        },
+      ],
+      height: "media",
+      align: "left",
+      autoplay: false,
+      autoplaySeconds: 7,
+    },
+  },
+  {
     key: "home.novedades",
     page: "home",
     type: "news_ticker",
     title: "Renglón de novedades de la home",
-    sortOrder: 20,
+    sortOrder: 21,
+    /*
+      Oculto: el corte entre la selección y el catálogo lo hace hoy la banda
+      con foto ("home.banner"). Este renglón queda cargado y se prende desde
+      el admin si se prefiere la versión fina, o se dejan los dos.
+    */
+    isActive: false,
     data: {
       /*
         Corta entre "Los seleccionados de la semana" y "Nuestros vinos".

@@ -13,7 +13,11 @@ import type { Section } from "@/domain/cms/service";
  */
 
 export function demoPageSections(page: string): Section[] {
-  return CMS_SECTIONS.filter((s) => s.page === page)
+  return CMS_SECTIONS.filter(
+    // Mismo criterio que la consulta real: una sección oculta no se renderiza.
+    // Sin esta línea el demo mostraba secciones que la base sí filtra.
+    (s) => s.page === page && ((s as { isActive?: boolean }).isActive ?? true),
+  )
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((s) => ({
       id: `demo-${s.key}`,

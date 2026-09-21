@@ -255,6 +255,39 @@ export const newsTickerBlock = z.object({
   tone: z.enum(["accent", "wine", "carbon", "linen"]).default("accent"),
 });
 
+/**
+ * Banda promocional a sangre, de uno o varios paneles.
+ *
+ * Con un solo panel es un banner fijo: una foto grande, un título y un botón.
+ * Con varios se convierte en un carrusel con puntos y flechas.
+ *
+ * El avance automático existe pero viene apagado. Un panel que se mueve solo
+ * esconde el resto del mensaje y se lleva el contenido de abajo del cursor
+ * justo cuando alguien iba a hacer clic; que gire es una decisión, no el
+ * comportamiento por defecto. Con movimiento reducido no gira nunca.
+ */
+export const promoBannerBlock = z.object({
+  items: z
+    .array(
+      z.object({
+        imageUrl: z.string().default(""),
+        imageAlt: z.string().default(""),
+        kicker: z.string().default(""),
+        title: z.string().default(""),
+        body: z.string().default(""),
+        ctaLabel: z.string().default(""),
+        ctaHref: z.string().default("/vinos"),
+      }),
+    )
+    .default([]),
+  /** Alto de la banda. "alta" pesa como el bloque de quiénes somos. */
+  height: z.enum(["media", "alta"]).default("media"),
+  align: z.enum(["left", "center"]).default("left"),
+  /** Gira solo. Apagado por defecto: ver la nota de arriba. */
+  autoplay: z.boolean().default(false),
+  autoplaySeconds: z.number().min(3).max(20).default(7),
+});
+
 export const BLOCK_SCHEMAS = {
   video_hero: videoHeroBlock,
   editorial: editorialBlock,
@@ -271,6 +304,7 @@ export const BLOCK_SCHEMAS = {
   gallery: galleryBlock,
   promo_rail: promoRailBlock,
   news_ticker: newsTickerBlock,
+  promo_banner: promoBannerBlock,
 } as const;
 
 export type BlockType = keyof typeof BLOCK_SCHEMAS;
@@ -291,6 +325,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   gallery: "Mosaico de fotos",
   promo_rail: "Tira de promos y destacados",
   news_ticker: "Renglón de novedades (se desplaza)",
+  promo_banner: "Banda promocional con foto",
 };
 
 export type BlockData<T extends BlockType> = z.infer<(typeof BLOCK_SCHEMAS)[T]>;

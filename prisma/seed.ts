@@ -628,6 +628,8 @@ async function main() {
       data: {
         key: s.key, page: s.page, type: s.type, title: s.title,
         sortOrder: s.sortOrder, data: s.data as object, updatedBy: superAdmin.email,
+        // Sin la marca, visible: es lo que vale para casi todas las secciones.
+        isActive: (s as { isActive?: boolean }).isActive ?? true,
       },
     });
   }

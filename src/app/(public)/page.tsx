@@ -85,7 +85,15 @@ export default async function HomePage() {
   // Del CMS vienen el hero y el renglón de novedades; el resto de la home es
   // estructura de tienda y no se edita por bloque.
   const hero = sections.filter((s) => s.key === "home.hero");
-  const novedades = sections.filter((s) => s.key === "home.novedades");
+  /*
+    El corte entre la selección y el catálogo. Hay dos piezas cargadas —la
+    banda con foto y el renglón fino— y se elige cuál va prendiendo y
+    apagando secciones en el admin, sin tocar código. Si quedan las dos
+    activas se muestran en el orden que tengan.
+  */
+  const corte = sections.filter(
+    (s) => s.key === "home.banner" || s.key === "home.novedades",
+  );
 
   return (
     <>
@@ -144,7 +152,7 @@ export default async function HomePage() {
         etiquetas, 14 son Malbec, así que ningún otro varietal llenaba sus
         filas.
       */}
-      <SectionRenderer sections={novedades} />
+      <SectionRenderer sections={corte} />
 
       {/*
         Catálogo general, a tres columnas.

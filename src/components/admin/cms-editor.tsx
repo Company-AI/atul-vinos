@@ -119,6 +119,16 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "title", label: "Título", kind: "textarea" },
     { key: "tone", label: "Fondo", kind: "select", options: ["linen", "light", "dark"] },
   ],
+  promo_banner: [
+    { key: "height", label: "Alto de la banda", kind: "select", options: ["media", "alta"] },
+    { key: "align", label: "Posición del texto", kind: "select", options: ["left", "center"] },
+    {
+      key: "autoplaySeconds",
+      label: "Segundos por panel",
+      kind: "text",
+      hint: "Sólo si el giro automático está activado. Entre 3 y 20.",
+    },
+  ],
   news_ticker: [
     {
       key: "speed",
@@ -204,6 +214,10 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
   const items = (data.items ?? []) as { title: string; subtitle: string; imageUrl: string; href: string }[];
   // El renglón de novedades usa "items" con otra forma que showcase.
   const novedades = (data.items ?? []) as { text: string; icon: string; href: string }[];
+  const paneles = (data.items ?? []) as {
+    imageUrl: string; imageAlt: string; kicker: string; title: string;
+    body: string; ctaLabel: string; ctaHref: string;
+  }[];
 
   const setField = (key: string, value: unknown) => setData((d) => ({ ...d, [key]: value }));
   const setMedia = (key: string, value: string) =>
@@ -378,6 +392,64 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
                 <Button size="sm" variant="subtle" className="mt-2"
                   onClick={() => setField("steps", [...steps, { title: "", body: "" }])}>
                   <Plus className="size-3.5" /> Agregar paso
+                </Button>
+              )}
+            </fieldset>
+          )}
+
+          {section.type === "promo_banner" && (
+            <fieldset className="border-t border-linen-200 pt-4">
+              <legend className="mb-3 text-[11px] uppercase tracking-wider text-stone-500">
+                Paneles
+              </legend>
+              <p className="mb-3 text-[12px] text-stone-500">
+                Con un panel es un banner fijo. Con dos o más aparecen las flechas y los puntos.
+              </p>
+              <ul className="space-y-4">
+                {paneles.map((panel, index) => {
+                  const set = (campo: string, valor: string) => {
+                    const next = [...paneles];
+                    next[index] = { ...panel, [campo]: valor };
+                    setField("items", next);
+                  };
+                  return (
+                    <li key={index} className="grid gap-2 border-l-2 border-linen-200 pl-3">
+                      <div className="grid gap-2 sm:grid-cols-[1fr_2fr_40px]">
+                        <Input value={panel.kicker} placeholder="Volanta" disabled={!canEdit}
+                          onChange={(e) => set("kicker", e.target.value)} />
+                        <Input value={panel.title} placeholder="Título" disabled={!canEdit}
+                          onChange={(e) => set("title", e.target.value)} />
+                        <button type="button" aria-label="Quitar panel" disabled={!canEdit}
+                          onClick={() => setField("items", paneles.filter((_, i) => i !== index))}
+                          className="rounded-sm p-2 text-stone-500 hover:text-danger-500">
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                      <Textarea value={panel.body} placeholder="Texto" rows={2} disabled={!canEdit}
+                        onChange={(e) => set("body", e.target.value)} />
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <Input value={panel.imageUrl} placeholder="Imagen (/media/...)" disabled={!canEdit}
+                          onChange={(e) => set("imageUrl", e.target.value)} />
+                        <Input value={panel.imageAlt} placeholder="Descripción de la imagen" disabled={!canEdit}
+                          onChange={(e) => set("imageAlt", e.target.value)} />
+                        <Input value={panel.ctaLabel} placeholder="Texto del botón" disabled={!canEdit}
+                          onChange={(e) => set("ctaLabel", e.target.value)} />
+                        <Input value={panel.ctaHref} placeholder="Link del botón" disabled={!canEdit}
+                          onChange={(e) => set("ctaHref", e.target.value)} />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              {canEdit && (
+                <Button size="sm" variant="subtle" className="mt-3"
+                  onClick={() =>
+                    setField("items", [...paneles, {
+                      imageUrl: "", imageAlt: "", kicker: "", title: "",
+                      body: "", ctaLabel: "", ctaHref: "/vinos",
+                    }])
+                  }>
+                  <Plus className="size-3.5" /> Agregar panel
                 </Button>
               )}
             </fieldset>

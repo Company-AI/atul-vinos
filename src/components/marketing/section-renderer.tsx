@@ -14,6 +14,7 @@ import { SplitStickySection } from "./split-sticky-section";
 import { GallerySection } from "./gallery-section";
 import { PromoRail } from "./promo-rail";
 import { NewsTicker } from "./news-ticker";
+import { PromoBanner } from "./promo-banner";
 
 /**
  * Traduce los bloques del CMS a componentes. Los tipos desconocidos se ignoran
@@ -76,6 +77,8 @@ export function SectionRenderer({
             return <PromoRail key={section.id} data={section.data as BlockData<"promo_rail">} id={id} />;
           case "news_ticker":
             return <NewsTicker key={section.id} data={section.data as BlockData<"news_ticker">} />;
+          case "promo_banner":
+            return <PromoBanner key={section.id} data={section.data as BlockData<"promo_banner">} id={id} />;
           default:
             return null;
         }
