@@ -38,6 +38,15 @@ type Props = {
   tagline: string[];
   /** Logo al tope de la columna. En mobile lo muestra la barra superior. */
   logo?: { url: string; alt: string };
+  /**
+   * Se llama al tocar cualquier enlace. El cajón lo usa para cerrarse.
+   *
+   * No alcanza con reaccionar al cambio de ruta: pasar de "/vinos?tipo=TINTO"
+   * a "/vinos?tipo=BLANCO" deja la ruta igual y sólo cambia el query, así que
+   * el cajón se quedaba abierto encima del catálogo que la persona acababa de
+   * pedir. Avisar desde el enlace cubre los dos casos.
+   */
+  onNavegar?: () => void;
 };
 
 /**
@@ -51,7 +60,7 @@ type Props = {
  * hijo: la columna vive en el layout y el cajón mobile se dispara desde la
  * barra superior.
  */
-function SidebarContenido({ items, secundarios, tagline, logo }: Props) {
+function SidebarContenido({ items, secundarios, tagline, logo, onNavegar }: Props) {
   const pathname = usePathname();
   /* Sólo uno abierto a la vez: el cajón es angosto y dos listas desplegadas
      empujan el resto del menú fuera de la pantalla. */
@@ -94,6 +103,7 @@ function SidebarContenido({ items, secundarios, tagline, logo }: Props) {
                 <li key={hijo.href}>
                   <Link
                     href={hijo.href}
+                    onClick={onNavegar}
                     className="block py-2 text-[14px] text-stone-600 transition-colors hover:text-accent-700"
                   >
                     {hijo.label}
@@ -108,7 +118,12 @@ function SidebarContenido({ items, secundarios, tagline, logo }: Props) {
 
     return (
       <li key={item.href}>
-        <Link href={item.href} aria-current={activo ? "page" : undefined} className={cn(fila, tono)}>
+        <Link
+          href={item.href}
+          aria-current={activo ? "page" : undefined}
+          onClick={onNavegar}
+          className={cn(fila, tono)}
+        >
           <Icon
             className={cn("size-[18px] shrink-0", activo ? "text-accent-700" : "text-stone-500")}
             aria-hidden
@@ -122,7 +137,7 @@ function SidebarContenido({ items, secundarios, tagline, logo }: Props) {
   return (
     <div className="flex min-h-full flex-col">
       {logo && (
-        <Link href="/" aria-label={`${logo.alt} — inicio`} className="mb-8 block px-6">
+        <Link href="/" aria-label={`${logo.alt} — inicio`} onClick={onNavegar} className="mb-8 block px-6">
           <Image src={logo.url} alt={logo.alt} width={683} height={227} priority className="h-11 w-auto" />
         </Link>
       )}
@@ -192,6 +207,12 @@ export function SidebarMenu({ siempreVisible = false, ...props }: Props & { siem
   const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
 
+  /*
+    Red de seguridad: si la ruta cambia por otra vía —el botón de atrás, un
+    enlace de afuera del menú— el cajón se cierra igual. El cierre principal
+    lo dispara el propio enlace, porque cambiar sólo el query no cambia la
+    ruta y este efecto no se enteraría.
+  */
   useEffect(() => setAbierto(false), [pathname]);
 
   useEffect(() => {
@@ -241,7 +262,7 @@ export function SidebarMenu({ siempreVisible = false, ...props }: Props & { siem
                   <X className="size-5" aria-hidden />
                 </button>
               </div>
-              <SidebarContenido {...props} />
+              <SidebarContenido {...props} onNavegar={() => setAbierto(false)} />
             </div>
             <button
               type="button"
