@@ -1,4 +1,4 @@
-import { getActiveBanners } from "@/domain/cms/service";
+import { getActiveBanners, getSection } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
 import { getCartCount } from "@/domain/cart/service";
 import { getSession } from "@/infra/auth/session";
@@ -30,10 +30,12 @@ const NAV_SECUNDARIA: SidebarItem[] = [
 const TAGLINE = ["Vinos", "que", "conectan"];
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [settings, cartCount, session] = await Promise.all([
+  const [settings, cartCount, session, beneficios] = await Promise.all([
     getSettings(),
     getCartCount(),
     getSession(),
+    // Los beneficios de la franja superior se editan desde Contenido.
+    getSection("site.beneficios", "benefits_bar"),
   ]);
 
   // Los banners del CMS siguen disponibles, pero la franja fija de beneficios
@@ -45,7 +47,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <RevealNoFlashScript />
       <RevealObserver />
 
-      <PromoBar remate="Buenos vinos, personas reales." />
+      <PromoBar data={beneficios} />
 
       {/*
         Sin columna lateral fija: el menú se repliega detrás de las tres

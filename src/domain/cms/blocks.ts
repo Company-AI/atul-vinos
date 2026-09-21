@@ -288,6 +288,31 @@ export const promoBannerBlock = z.object({
   autoplaySeconds: z.number().min(3).max(20).default(7),
 });
 
+/**
+ * Franja de beneficios de la cabecera.
+ *
+ * Son las promesas comerciales que aparecen en TODAS las páginas, así que
+ * viven acá y no escritas en el componente: cuando cambia la financiación o
+ * un descuento hay que poder moverlo sin tocar código ni desplegar. Estaban
+ * duplicadas a mano y terminaron contradiciendo a la home, que es exactamente
+ * lo que esto evita.
+ */
+export const benefitsBarBlock = z.object({
+  items: z
+    .array(
+      z.object({
+        text: z.string().default(""),
+        detail: z.string().default(""),
+        icon: z
+          .enum(["none", "truck", "percent", "card", "gift", "sparkle", "clock", "pin"])
+          .default("none"),
+      }),
+    )
+    .default([]),
+  /** Remate manuscrito a la derecha. Vacío lo oculta. */
+  remate: z.string().default(""),
+});
+
 export const BLOCK_SCHEMAS = {
   video_hero: videoHeroBlock,
   editorial: editorialBlock,
@@ -305,6 +330,7 @@ export const BLOCK_SCHEMAS = {
   promo_rail: promoRailBlock,
   news_ticker: newsTickerBlock,
   promo_banner: promoBannerBlock,
+  benefits_bar: benefitsBarBlock,
 } as const;
 
 export type BlockType = keyof typeof BLOCK_SCHEMAS;
@@ -326,6 +352,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   promo_rail: "Tira de promos y destacados",
   news_ticker: "Renglón de novedades (se desplaza)",
   promo_banner: "Banda promocional con foto",
+  benefits_bar: "Franja de beneficios (todas las páginas)",
 };
 
 export type BlockData<T extends BlockType> = z.infer<(typeof BLOCK_SCHEMAS)[T]>;

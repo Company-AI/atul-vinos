@@ -119,6 +119,14 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "title", label: "Título", kind: "textarea" },
     { key: "tone", label: "Fondo", kind: "select", options: ["linen", "light", "dark"] },
   ],
+  benefits_bar: [
+    {
+      key: "remate",
+      label: "Remate manuscrito",
+      kind: "text",
+      hint: "Va a la derecha de la franja, en pantallas grandes. Vacío lo oculta.",
+    },
+  ],
   promo_banner: [
     { key: "height", label: "Alto de la banda", kind: "select", options: ["media", "alta"] },
     { key: "align", label: "Posición del texto", kind: "select", options: ["left", "center"] },
@@ -214,6 +222,7 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
   const items = (data.items ?? []) as { title: string; subtitle: string; imageUrl: string; href: string }[];
   // El renglón de novedades usa "items" con otra forma que showcase.
   const novedades = (data.items ?? []) as { text: string; icon: string; href: string }[];
+  const beneficios = (data.items ?? []) as { text: string; detail: string; icon: string }[];
   const paneles = (data.items ?? []) as {
     imageUrl: string; imageAlt: string; kicker: string; title: string;
     body: string; ctaLabel: string; ctaHref: string;
@@ -392,6 +401,52 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
                 <Button size="sm" variant="subtle" className="mt-2"
                   onClick={() => setField("steps", [...steps, { title: "", body: "" }])}>
                   <Plus className="size-3.5" /> Agregar paso
+                </Button>
+              )}
+            </fieldset>
+          )}
+
+          {section.type === "benefits_bar" && (
+            <fieldset className="border-t border-linen-200 pt-4">
+              <legend className="mb-3 text-[11px] uppercase tracking-wider text-stone-500">
+                Beneficios
+              </legend>
+              <p className="mb-3 text-[12px] text-stone-500">
+                Aparecen arriba de todas las páginas. Entran tres cómodos; con más, la
+                franja se recorre de costado en pantallas chicas.
+              </p>
+              <ul className="space-y-3">
+                {beneficios.map((item, index) => {
+                  const set = (campo: string, valor: string) => {
+                    const next = [...beneficios];
+                    next[index] = { ...item, [campo]: valor };
+                    setField("items", next);
+                  };
+                  return (
+                    <li key={index} className="grid gap-2 sm:grid-cols-[1.4fr_1.4fr_1fr_40px]">
+                      <Input value={item.text} placeholder="Ej: 3 cuotas sin interés" disabled={!canEdit}
+                        onChange={(e) => set("text", e.target.value)} />
+                      <Input value={item.detail} placeholder="Aclaración (opcional)" disabled={!canEdit}
+                        onChange={(e) => set("detail", e.target.value)} />
+                      <Select value={item.icon} disabled={!canEdit}
+                        onChange={(e) => set("icon", e.target.value)}>
+                        {ICONOS_NOVEDAD.map((o) => (
+                          <option key={o.value} value={o.value}>{o.label}</option>
+                        ))}
+                      </Select>
+                      <button type="button" aria-label="Quitar beneficio" disabled={!canEdit}
+                        onClick={() => setField("items", beneficios.filter((_, i) => i !== index))}
+                        className="rounded-sm p-2 text-stone-500 hover:text-danger-500">
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              {canEdit && (
+                <Button size="sm" variant="subtle" className="mt-2"
+                  onClick={() => setField("items", [...beneficios, { text: "", detail: "", icon: "none" }])}>
+                  <Plus className="size-3.5" /> Agregar beneficio
                 </Button>
               )}
             </fieldset>

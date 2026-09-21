@@ -49,6 +49,34 @@ export const CMS_SECTIONS = [
     },
   },
   {
+    key: "site.beneficios",
+    page: "site",
+    type: "benefits_bar",
+    title: "Franja de beneficios (todas las páginas)",
+    sortOrder: 10,
+    data: {
+      /*
+        Las tres promesas comerciales del sitio. Aparecen arriba de todas las
+        páginas y son las mismas que repite la banda de la home: si cambian,
+        se cambian acá y en "home.banner", que son los dos únicos lugares.
+
+        Antes estaban escritas a mano en promo-bar.tsx y habían quedado
+        contradiciendo a la home —"hasta 6 cuotas" contra "tres cuotas", "10%
+        en la segunda compra" contra "en la primera"—. Por eso ahora viven en
+        el CMS.
+
+        Ninguna de las tres está resuelta de punta a punta todavía; ver la
+        nota en "home.banner".
+      */
+      items: [
+        { text: "10% off registrándote", detail: "En tu primera compra.", icon: "sparkle" },
+        { text: "10% off por transferencia", detail: "Sobre el total del pedido.", icon: "percent" },
+        { text: "3 cuotas sin interés", detail: "Con todas las tarjetas.", icon: "card" },
+      ],
+      remate: "Buenos vinos, personas reales.",
+    },
+  },
+  {
     key: "home.banner",
     page: "home",
     type: "promo_banner",
@@ -59,17 +87,24 @@ export const CMS_SECTIONS = [
         Corta entre "Los seleccionados de la semana" y "Nuestros vinos", y es
         el lugar donde se empuja lo del mes.
 
-        Los textos de cuotas y del 10% son los que pidió el cliente por audio.
-        Dos cosas quedan pendientes de su lado y hay que resolverlas antes de
-        publicar de verdad:
+        Las promesas comerciales son las mismas que publica la franja superior
+        ("site.beneficios"). Son los dos únicos lugares donde se escriben: si
+        cambia una, se cambian las dos.
 
-        · Contradicen la franja azul superior, que publica "hasta 6 cuotas sin
-          interés" y "10% off en tu segunda compra". Son promesas distintas
-          sobre lo mismo y hoy conviven en la misma pantalla. Esos textos
-          viven en src/components/site/promo-bar.tsx, escritos a mano.
-        · El 10% por registrarse no tiene mecánica: hay cupones, pero nadie
-          los otorga automáticamente al crear la cuenta. Hoy el panel lo
-          promete y el checkout no lo aplica.
+        NINGUNA de las tres está resuelta de punta a punta todavía, y hay que
+        cerrarlas antes de abrir la tienda de verdad:
+
+        · 10% registrándote — existe el cupón BIENVENIDO10 (10%, sólo primera
+          compra, mínimo $20.000), pero hay que escribirlo a mano en el
+          checkout. Nadie lo entrega al crear la cuenta. O se aplica solo, o
+          el texto tiene que decir el código y el mínimo.
+        · 10% por transferencia — no hay forma de cumplirlo: el único medio de
+          pago es Mercado Pago y el checkout no ofrece transferencia como
+          opción propia, así que no hay dónde aplicar el descuento.
+        · 3 cuotas sin interés — las cuotas las define la configuración de
+          Mercado Pago, no este código, y el costo de la financiación lo paga
+          el vendedor. Las preguntas frecuentes decían "hasta 6 según tu
+          banco"; se corrigieron para no contradecir esto.
 
         Las fotos se eligen por cómo quedan en el recorte de la banda, que es
         muy apaisado (unos 3,8 a 1) y toma sólo una franja del medio. Medido
@@ -78,8 +113,8 @@ export const CMS_SECTIONS = [
         toast, barrels y grapes-cluster están entre 97 y 126 y sí se ven.
 
         Se sacó el panel del Club para no estirar la vuelta: con cuatro
-        paneles a 7 segundos ya son 28, y el último casi no se ve. Está
-        cargado el contenido si se lo quiere volver a poner.
+        paneles a 7 segundos ya son 28, y el último casi no se ve. Además el
+        Club todavía no se lanza (ver la nota del layout público).
       */
       items: [
         {
@@ -95,8 +130,8 @@ export const CMS_SECTIONS = [
           imageUrl: "/media/scenes/barrels.jpg",
           imageAlt: "Barricas de roble en la sala de crianza",
           kicker: "Financiación",
-          title: "Tres cuotas sin interés",
-          body: "Elegí las botellas y pagalas en tres.",
+          title: "3 cuotas sin interés",
+          body: "Con todas las tarjetas. Y 10% off si pagás por transferencia.",
           ctaLabel: "Ver los vinos",
           ctaHref: "/vinos",
         },
@@ -104,8 +139,8 @@ export const CMS_SECTIONS = [
           imageUrl: "/media/scenes/grapes-cluster.jpg",
           imageAlt: "Racimo de uvas tintas en la planta",
           kicker: "Primera compra",
-          title: "10% en tu primera compra",
-          body: "Registrate en la tienda y accedé al descuento en tu primer pedido.",
+          title: "10% off registrándote",
+          body: "Creá tu cuenta y el descuento se aplica en tu primer pedido.",
           ctaLabel: "Crear mi cuenta",
           ctaHref: "/registrarme",
         },
@@ -807,7 +842,7 @@ export const FAQS = [
   { question: "¿Puedo retirar en el depósito?", answer: "Sí, sin cargo. Elegí «Retiro en depósito» en el checkout y te avisamos cuando esté listo. También podés probar algo antes de llevarlo.", group: "envios", sortOrder: 40 },
   { question: "¿Qué pasa si una botella llega rota?", answer: "La reponemos sin costo. Escribinos dentro de las 48 horas con una foto del embalaje y de la botella.", group: "envios", sortOrder: 50 },
   { question: "¿Qué medios de pago aceptan?", answer: "Tarjetas de crédito y débito, dinero en cuenta y transferencia a través de Mercado Pago. Las suscripciones del Club se debitan automáticamente todos los meses con la tarjeta que registres.", group: "pagos", sortOrder: 10 },
-  { question: "¿Puedo pagar en cuotas?", answer: "Sí, con tarjeta de crédito hay hasta 6 cuotas disponibles según tu banco. Las cuotas se muestran en el checkout antes de confirmar.", group: "pagos", sortOrder: 20 },
+  { question: "¿Puedo pagar en cuotas?", answer: "Sí: 3 cuotas sin interés con todas las tarjetas de crédito. Las cuotas y el total financiado se muestran en el checkout antes de confirmar.", group: "pagos", sortOrder: 20 },
   { question: "¿Hacen descuento por cantidad?", answer: "Sí. A partir de la caja de 6 botellas del mismo vino aplicamos precio por caja, y los socios del Club suman su descuento encima. Para volúmenes mayores, escribinos.", group: "pagos", sortOrder: 30 },
   { question: "¿Cómo funciona el Club?", answer: "Elegís un plan y todos los meses se debita automáticamente. Nosotros armamos una selección distinta cada mes con lo que más nos entusiasma de lo que entró, y te la enviamos a tu domicilio. No hay contrato ni permanencia mínima.", group: "club", sortOrder: 10 },
   { question: "¿Puedo elegir los vinos de mi caja?", answer: "No, y esa es la idea: el Club es para descubrir cosas que no habrías elegido solo. Si algún varietal no te gusta, avisanos y lo tenemos en cuenta al armar tu caja.", group: "club", sortOrder: 20 },
