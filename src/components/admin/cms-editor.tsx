@@ -41,6 +41,7 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "layout", label: "Composición", kind: "select", options: ["overlay", "split"], hint: "«Partido» pone el texto sobre fondo sólido con la foto al lado." },
     { key: "textTone", label: "Color del texto", kind: "select", options: ["light", "dark"], hint: "Oscuro para fotos claras, como la pared beige del hero." },
     { key: "scrollCue", label: "Indicador de scroll", kind: "text", hint: "Texto corto al pie. Vacío lo oculta." },
+    { key: "autoplaySeconds", label: "Segundos por pantalla", kind: "text", hint: "Sólo con más de una pantalla cargada. Entre 3 y 20." },
   ],
   editorial: [
     { key: "eyebrow", label: "Volanta", kind: "text" },
@@ -233,6 +234,11 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
   // El renglón de novedades usa "items" con otra forma que showcase.
   const novedades = (data.items ?? []) as { text: string; icon: string; href: string }[];
   const beneficios = (data.items ?? []) as { text: string; detail: string; icon: string }[];
+  const pantallas = (data.slides ?? []) as {
+    eyebrow: string; title: string; titleAccent: string; subtitle: string;
+    media?: { imageUrl?: string; imageAlt?: string; posterUrl?: string };
+    ctaPrimary?: { label?: string; href?: string };
+  }[];
   const paneles = (data.items ?? []) as {
     imageUrl: string; imageAlt: string; kicker: string; title: string;
     body: string; ctaLabel: string; ctaHref: string;
@@ -411,6 +417,73 @@ function SectionEditor({ section, canEdit }: { section: SectionRow; canEdit: boo
                 <Button size="sm" variant="subtle" className="mt-2"
                   onClick={() => setField("steps", [...steps, { title: "", body: "" }])}>
                   <Plus className="size-3.5" /> Agregar paso
+                </Button>
+              )}
+            </fieldset>
+          )}
+
+          {section.type === "video_hero" && (
+            <fieldset className="border-t border-linen-200 pt-4">
+              <legend className="mb-3 text-[11px] uppercase tracking-wider text-stone-500">
+                Pantallas del hero
+              </legend>
+              <p className="mb-3 text-[12px] text-stone-500">
+                Sin pantallas cargadas se usa el texto y la foto de arriba. Con dos o más, el
+                hero se convierte en carrusel y va cambiando solo.
+              </p>
+              <ul className="space-y-4">
+                {pantallas.map((p, index) => {
+                  const set = (campo: string, valor: string) => {
+                    const next = [...pantallas];
+                    next[index] = { ...p, [campo]: valor };
+                    setField("slides", next);
+                  };
+                  const setSub = (grupo: "media" | "ctaPrimary", campo: string, valor: string) => {
+                    const next = [...pantallas];
+                    next[index] = { ...p, [grupo]: { ...(p[grupo] ?? {}), [campo]: valor } };
+                    setField("slides", next);
+                  };
+                  return (
+                    <li key={index} className="grid gap-2 border-l-2 border-linen-200 pl-3">
+                      <div className="grid gap-2 sm:grid-cols-[1fr_2fr_40px]">
+                        <Input value={p.eyebrow} placeholder="Volanta" disabled={!canEdit}
+                          onChange={(e) => set("eyebrow", e.target.value)} />
+                        <Input value={p.title} placeholder="Título" disabled={!canEdit}
+                          onChange={(e) => set("title", e.target.value)} />
+                        <button type="button" aria-label="Quitar pantalla" disabled={!canEdit}
+                          onClick={() => setField("slides", pantallas.filter((_, i) => i !== index))}
+                          className="rounded-sm p-2 text-stone-500 hover:text-danger-500">
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                      <Input value={p.titleAccent} placeholder="Segunda línea (itálica)" disabled={!canEdit}
+                        onChange={(e) => set("titleAccent", e.target.value)} />
+                      <Textarea value={p.subtitle} placeholder="Bajada" rows={2} disabled={!canEdit}
+                        onChange={(e) => set("subtitle", e.target.value)} />
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <Input value={p.media?.imageUrl ?? ""} placeholder="Imagen (/media/...)" disabled={!canEdit}
+                          onChange={(e) => { setSub("media", "imageUrl", e.target.value); }} />
+                        <Input value={p.media?.imageAlt ?? ""} placeholder="Descripción de la imagen" disabled={!canEdit}
+                          onChange={(e) => setSub("media", "imageAlt", e.target.value)} />
+                        <Input value={p.ctaPrimary?.label ?? ""} placeholder="Texto del botón" disabled={!canEdit}
+                          onChange={(e) => setSub("ctaPrimary", "label", e.target.value)} />
+                        <Input value={p.ctaPrimary?.href ?? ""} placeholder="Link del botón" disabled={!canEdit}
+                          onChange={(e) => setSub("ctaPrimary", "href", e.target.value)} />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              {canEdit && (
+                <Button size="sm" variant="subtle" className="mt-3"
+                  onClick={() =>
+                    setField("slides", [...pantallas, {
+                      eyebrow: "", title: "", titleAccent: "", subtitle: "",
+                      media: { imageUrl: "", imageAlt: "", posterUrl: "" },
+                      ctaPrimary: { label: "", href: "/vinos" },
+                    }])
+                  }>
+                  <Plus className="size-3.5" /> Agregar pantalla
                 </Button>
               )}
             </fieldset>

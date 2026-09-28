@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useCarrusel } from "./use-carrusel";
 import { cn } from "@/lib/cn";
 import { buttonVariants } from "@/ui/button";
 import type { BlockData } from "@/domain/cms/blocks";
@@ -123,6 +124,32 @@ export function VideoHero({
   const marcaUrl = esIsotipo ? isotipoUrl : logoUrl;
 
   /*
+    Pantallas del hero. Sin `slides` cargadas hay una sola, armada con los
+    campos sueltos del bloque: así los heroes de las páginas interiores siguen
+    funcionando igual sin tocarlos.
+  */
+  const pantallas =
+    data.slides.length > 0
+      ? data.slides
+      : [
+          {
+            eyebrow: data.eyebrow,
+            title: data.title,
+            titleAccent: data.titleAccent,
+            subtitle: data.subtitle,
+            ctaPrimary: data.ctaPrimary,
+            ctaSecondary: data.ctaSecondary,
+            media: data.media,
+          },
+        ];
+
+  const carrusel = useCarrusel({
+    cantidad: pantallas.length,
+    autoplaySegundos: data.autoplaySeconds,
+  });
+  const { rielRef, activo, varios, alArrastrar, alElegir } = carrusel;
+
+  /*
     Modo partido: el texto va sobre fondo sólido y la foto al costado. El
     overlay depende de que la imagen sea lo bastante oscura donde cae el
     titular, y con fotos claras el texto se pierde. Acá el contraste está
@@ -198,6 +225,250 @@ export function VideoHero({
               />
             )}
           </div>
+        </div>
+      </section>
+    );
+  }
+
+
+  const velos = (
+    <>
+      {data.overlay !== "none" && !textoOscuro && (
+        <div
+          aria-hidden
+          className={cn(
+            "absolute inset-0",
+            data.overlay === "scrim-bottom" && "scrim-bottom",
+            data.overlay === "scrim-side" && "scrim-side",
+            data.overlay === "scrim-full" && "scrim-full",
+          )}
+        />
+      )}
+
+      {data.overlay !== "none" && textoOscuro && (
+        <>
+          {/*
+            Dos velos distintos porque el encuadre cambia: en desktop el texto
+            cae sobre pared y basta con el degradado corto; en mobile el recorte
+            acerca la botella al texto, así que el velo llega más a la derecha.
+          */}
+          <div
+            aria-hidden
+            className="absolute inset-0 sm:hidden"
+            style={{
+              background:
+                "linear-gradient(to right, rgb(247 243 236 / 0.80) 0%, rgb(247 243 236 / 0.50) 45%, rgb(247 243 236 / 0.34) 68%, rgb(247 243 236 / 0) 76%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 hidden sm:block"
+            style={{
+              background:
+                "linear-gradient(to right, rgb(247 243 236 / 0.72) 0%, rgb(247 243 236 / 0.34) 42%, rgb(247 243 236 / 0) 68%)",
+            }}
+          />
+        </>
+      )}
+    </>
+  );
+
+  const contenido = (p: (typeof pantallas)[number], i: number) => (
+    <div
+      className={cn(
+        "relative mx-auto w-full max-w-[1440px] px-gutter",
+        data.align === "center"
+          ? compacto
+            ? "py-16 lg:py-20"
+            : "py-28 lg:py-32"
+          : compacto
+            ? "pb-12 pt-20 lg:pb-16 lg:pt-24"
+            : "pb-20 pt-32 lg:pb-28",
+        data.align === "center" && "flex flex-col items-center",
+        varios && "pb-16 lg:pb-20",
+      )}
+    >
+      {/*
+        El isotipo es cuadrado y el logotipo apaisado: con la misma altura el
+        primero se ve diminuto. Por eso cada variante lleva su propia escala.
+      */}
+      {data.showLogo && marcaUrl && (
+        <Image
+          src={marcaUrl}
+          alt={companyName ?? ""}
+          width={esIsotipo ? 120 : 260}
+          height={esIsotipo ? 118 : 52}
+          priority={priority && i === 0}
+          className={cn(
+            "w-auto",
+            esIsotipo
+              ? compacto
+                ? "mb-5 h-12 lg:h-14"
+                : "mb-7 h-14 lg:h-16"
+              : compacto
+                ? "mb-6 h-7 lg:h-8"
+                : "mb-9 h-9 lg:h-11",
+          )}
+        />
+      )}
+
+      {p.eyebrow && (
+        <p
+          className={cn(
+            "eyebrow",
+            compacto ? "mb-4" : "mb-5",
+            textoOscuro ? "text-carbon-800" : "text-linen-300",
+          )}
+        >
+          {p.eyebrow}
+        </p>
+      )}
+
+      <h1
+        className={cn(
+          "font-display",
+          textoOscuro ? "font-medium uppercase text-carbon-900" : "font-light text-bone",
+          /*
+            El ancho máximo está calibrado para que el texto no caiga sobre las
+            copas de la foto; en la banda baja lo que cede es el cuerpo.
+          */
+          data.scale === "hero"
+            ? cn("max-w-[74%] sm:max-w-[26ch]", compacto ? "text-display-xl" : "text-display-2xl")
+            : cn("max-w-[74%] sm:max-w-[19ch]", compacto ? "text-display-lg" : "text-display-xl"),
+          data.align === "center" && "mx-auto",
+        )}
+      >
+        {p.title}
+        {p.titleAccent && (
+          <>
+            <br />
+            <span
+              className={cn(
+                "accent-italic",
+                textoOscuro ? "font-light normal-case text-carbon-800" : "text-linen-200",
+              )}
+            >
+              {p.titleAccent}
+            </span>
+          </>
+        )}
+      </h1>
+
+      {p.subtitle && (
+        <p
+          className={cn(
+            "max-w-[74%] text-lead sm:max-w-[52ch]",
+            compacto ? "mt-5" : "mt-7",
+            textoOscuro ? "text-carbon-800" : "text-linen-200",
+            data.align === "center" && "mx-auto",
+          )}
+        >
+          {p.subtitle}
+        </p>
+      )}
+
+      {(p.ctaPrimary.label || p.ctaSecondary.label) && (
+        <div
+          className={cn(
+            "flex flex-col items-start gap-3 sm:flex-row sm:items-center",
+            compacto ? "mt-7" : "mt-10",
+            data.align === "center" && "justify-center",
+          )}
+        >
+          {p.ctaPrimary.label && (
+            <Link
+              href={p.ctaPrimary.href}
+              className={buttonVariants({ variant: "primary", size: "lg", uppercase: true })}
+            >
+              {p.ctaPrimary.label}
+            </Link>
+          )}
+          {p.ctaSecondary.label && (
+            <Link
+              href={p.ctaSecondary.href}
+              className={buttonVariants({
+                variant: textoOscuro ? "outline" : "ghostLight",
+                size: "lg",
+                uppercase: true,
+              })}
+            >
+              {p.ctaSecondary.label}
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  if (varios) {
+    return (
+      <section
+        data-hero
+        ref={containerRef}
+        aria-roledescription="carrusel"
+        aria-label="Destacados"
+        className={cn("on-dark relative isolate w-full overflow-hidden bg-carbon-950")}
+      >
+        <div
+          ref={rielRef}
+          onPointerDown={alArrastrar}
+          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {pantallas.map((p, i) => (
+            <article
+              key={`${p.title}-${i}`}
+              aria-roledescription="pantalla"
+              aria-label={`${i + 1} de ${pantallas.length}`}
+              className={cn(
+                "relative isolate flex w-full shrink-0 snap-start flex-col overflow-hidden",
+                heights[data.height],
+                data.align === "center"
+                  ? "items-center justify-center text-center"
+                  : "items-start justify-end text-left",
+              )}
+            >
+              {(p.media.posterUrl || p.media.imageUrl) && (
+                <Image
+                  src={p.media.posterUrl || p.media.imageUrl}
+                  alt={p.media.imageAlt || ""}
+                  fill
+                  priority={priority && i === 0}
+                  /*
+                    Todas de entrada: la pantalla aparece sola por el avance
+                    automático, así que con carga diferida nadie provoca la
+                    descarga a tiempo y se ve una banda vacía.
+                  */
+                  loading={i === 0 ? undefined : "eager"}
+                  sizes="100vw"
+                  className="-z-10 object-cover object-[74%_center] md:object-center"
+                />
+              )}
+              <div className="absolute inset-0 -z-10">{velos}</div>
+              {contenido(p, i)}
+            </article>
+          ))}
+        </div>
+
+        {/* Puntos: indican en cuál va y sirven para saltar. */}
+        <div className="absolute inset-x-0 bottom-6 flex justify-center gap-2.5">
+          {pantallas.map((p, i) => (
+            <button
+              key={`punto-${i}`}
+              type="button"
+              aria-label={`Ir a la pantalla ${i + 1}: ${p.title}`}
+              aria-current={i === activo}
+              onClick={() => alElegir(i)}
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-300",
+                i === activo
+                  ? cn("w-7", textoOscuro ? "bg-carbon-800" : "bg-bone")
+                  : cn(
+                      "w-1.5",
+                      textoOscuro ? "bg-carbon-800/40 hover:bg-carbon-800/70" : "bg-bone/45 hover:bg-bone/75",
+                    ),
+              )}
+            />
+          ))}
         </div>
       </section>
     );

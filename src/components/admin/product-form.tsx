@@ -103,6 +103,11 @@ export function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
   const [gallery, setGallery] = useState(images);
+  /*
+    Archivos ya subidos al almacenamiento pero todavía sin fila en la base,
+    porque el producto no existe. Se convierten en filas al guardar.
+  */
+  const [pendientes, setPendientes] = useState<{ url: string; kind: "image" | "video" }[]>([]);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const set = <K extends keyof ProductFormData>(key: K, value: ProductFormData[K]) =>
@@ -120,6 +125,7 @@ export function ProductForm({
     startTransition(async () => {
       const result = await saveProduct({
         id: form.id,
+        pendingMedia: pendientes,
         kind: form.kind,
         status: form.status,
         name: form.name,
@@ -167,6 +173,8 @@ export function ProductForm({
 
       if (result.ok) {
         toast.success(result.message);
+        // Ya tienen fila propia: dejan de ser pendientes.
+        setPendientes([]);
         if (!form.id && result.productId) {
           router.push(`/admin/productos/${result.productId}`);
         } else {
@@ -178,23 +186,27 @@ export function ProductForm({
     });
 
   const upload = async (file: File, kind: "image" | "video") => {
-    if (!form.id) {
-      toast.error("Guardá el producto antes de subir archivos.");
-      return;
-    }
     setUploading(true);
     const data = new FormData();
-    data.set("productId", form.id);
+    /*
+      Sin producto todavía se manda vacío: el archivo se guarda igual y vuelve
+      la URL, que queda en pendientes hasta que se guarde el producto. Antes
+      esto obligaba a guardar un producto a medio llenar sólo para poder
+      elegir una foto.
+    */
+    data.set("productId", form.id ?? "");
     data.set("kind", kind);
     data.set("file", file);
     const result = await uploadProductMedia(data);
     setUploading(false);
-    if (result.ok) {
-      toast.success(result.message);
-      router.refresh();
-    } else {
+
+    if (!result.ok) {
       toast.error(result.error);
+      return;
     }
+    toast.success(result.message);
+    if (result.media) setPendientes((p) => [...p, result.media!]);
+    else router.refresh();
   };
 
   const packTotal = form.packItems.reduce((acc, item) => {
@@ -665,6 +677,43 @@ export function ProductForm({
           ) : (
             <>
               <ul className="space-y-2">
+                {pendientes.map((m, i) => (
+                  <li
+                    key={`pendiente-${i}`}
+                    className="flex items-center gap-3 border border-dashed border-clay-400 bg-warning-100/40 p-2"
+                  >
+                    {m.kind === "image" ? (
+                      <Image
+                        src={m.url}
+                        alt=""
+                        width={40}
+                        height={53}
+                        className="h-14 w-10 shrink-0 bg-linen-100 object-contain"
+                      />
+                    ) : (
+                      <span className="grid h-14 w-10 shrink-0 place-items-center bg-linen-100 text-[10px] text-stone-500">
+                        video
+                      </span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[12px] text-carbon-900">
+                        {m.kind === "image" ? "Imagen lista" : "Video listo"}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-stone-500">
+                        Se guarda con el producto. Todavía no está en la ficha.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Descartar"
+                      onClick={() => setPendientes((p) => p.filter((_, j) => j !== i))}
+                      className="rounded-sm p-2 text-stone-500 hover:text-danger-500"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </li>
+                ))}
+
                 {gallery.map((image, index) => (
                   <li key={image.id} className="flex items-center gap-3 border border-linen-200 p-2">
                     <Image

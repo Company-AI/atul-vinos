@@ -18,6 +18,26 @@ const media = z.object({
   posterUrl: z.string().default(""),
 });
 
+/**
+ * Una pantalla del hero. Sola es el hero de siempre; varias lo convierten en
+ * carrusel.
+ *
+ * Los ajustes de composición —alto, velo, alineación, escala, tono, logo— no
+ * viven acá sino en el bloque: son la caja del hero y no cambian entre
+ * pantallas. Si cambiaran, cada vuelta del carrusel sería un salto de diseño
+ * en vez de un cambio de mensaje.
+ */
+export const heroSlide = z.object({
+  eyebrow: z.string().default(""),
+  title: z.string().default(""),
+  /** Segunda línea del titular, en itálica. Se compone debajo de `title`. */
+  titleAccent: z.string().default(""),
+  subtitle: z.string().default(""),
+  ctaPrimary: link.prefault({}),
+  ctaSecondary: link.prefault({}),
+  media: media.prefault({}),
+});
+
 export const videoHeroBlock = z.object({
   eyebrow: z.string().default(""),
   title: z.string().default(""),
@@ -27,6 +47,13 @@ export const videoHeroBlock = z.object({
   ctaPrimary: link.prefault({}),
   ctaSecondary: link.prefault({}),
   media: media.prefault({}),
+  /**
+   * Pantallas del carrusel. Vacío deja el hero de una sola pantalla, con los
+   * campos de arriba: así los heroes de las páginas interiores no cambian.
+   */
+  slides: z.array(heroSlide).default([]),
+  /** Segundos por pantalla. Sólo aplica con más de una. */
+  autoplaySeconds: z.number().min(3).max(20).default(7),
   overlay: z.enum(["scrim-bottom", "scrim-full", "scrim-side", "none"]).default("scrim-bottom"),
   align: z.enum(["left", "center"]).default("center"),
   height: z.enum(["full", "tall", "medium", "short"]).default("full"),

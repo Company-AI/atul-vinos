@@ -37,6 +37,54 @@ export const CMS_SECTIONS = [
         videoMobileUrl: "",
         posterUrl: "/media/hero/atul-hero-encuentro.webp",
       },
+      /*
+        Pantallas del carrusel. La primera es el hero de siempre; las que
+        siguen son promociones y se cambian desde el admin.
+
+        Los campos sueltos de arriba quedan como estaban a propósito: son el
+        respaldo si algún día se vacía esta lista, y así el hero nunca se
+        queda sin contenido.
+
+        OJO con la promo del Día de la Madre: el 10% es un texto, no existe
+        todavía la mecánica que lo aplique en el checkout —igual que las otras
+        tres promesas del sitio—. Y hay sólo dos rosados cargados, así que la
+        oferta hoy alcanza a dos etiquetas. La foto es genérica; cuando tengan
+        una propia de la promo, se cambia acá.
+      */
+      slides: [
+        {
+          eyebrow: "Atul · Vinos seleccionados",
+          title: "No hacemos el vino.",
+          titleAccent: "Elegimos cuál vale la pena.",
+          subtitle:
+            "Probamos todo lo que vendemos. Vinos de todo el país, elegidos uno por uno.",
+          ctaPrimary: { label: "Ver los vinos", href: "/vinos" },
+          ctaSecondary: { label: "Ver los Box", href: "/box" },
+          media: {
+            imageUrl: "/media/hero/atul-hero-encuentro.webp",
+            imageAlt: "Dos personas brindando con copas de vino frente a la montaña",
+            videoDesktopUrl: "",
+            videoMobileUrl: "",
+            posterUrl: "/media/hero/atul-hero-encuentro.webp",
+          },
+        },
+        {
+          eyebrow: "Día de la Madre",
+          title: "10% en vinos rosados.",
+          titleAccent: "Para brindar con ella.",
+          subtitle: "El descuento se aplica sobre toda la selección de rosados.",
+          ctaPrimary: { label: "Ver los rosados", href: "/vinos?tipo=ROSADO" },
+          ctaSecondary: { label: "", href: "#" },
+          media: {
+            imageUrl: "/media/scenes/sparkling.jpg",
+            imageAlt: "Dos copas de vino claro brindando",
+            videoDesktopUrl: "",
+            videoMobileUrl: "",
+            posterUrl: "/media/scenes/sparkling.jpg",
+          },
+        },
+      ],
+      autoplaySeconds: 7,
       overlay: "scrim-side",
       align: "left",
       height: "short",
@@ -645,7 +693,7 @@ export const CMS_SECTIONS = [
         imageAlt: "Vino tinto sirviéndose en una copa",
         videoDesktopUrl: "/media/video/club-desktop.mp4",
         videoMobileUrl: "/media/video/club-mobile.mp4",
-        posterUrl: "/media/scenes/pouring.jpg",
+        posterUrl: "/media/scenes/sparkling.jpg",
       },
     },
   },

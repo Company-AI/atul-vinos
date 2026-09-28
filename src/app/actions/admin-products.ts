@@ -13,8 +13,14 @@ import {
 import { slugify, uniqueSlug } from "@/lib/slug";
 
 export type ProductActionResult =
-  | { ok: true; message: string; productId?: string }
+  | { ok: true; message: string; productId?: string; media?: MediaPendiente }
   | { ok: false; error: string };
+
+/**
+ * Archivo ya guardado en el almacenamiento pero todavía sin fila en la base,
+ * porque el producto que lo va a usar aún no existe.
+ */
+export type MediaPendiente = { url: string; kind: "image" | "video" };
 
 const WINE_TYPES = ["TINTO", "BLANCO", "ROSADO", "ESPUMANTE", "NARANJO", "DULCE"] as const;
 const INTENSITIES = ["LIGERO", "MEDIO", "INTENSO"] as const;
@@ -22,6 +28,13 @@ const STATUSES = ["DRAFT", "ACTIVE", "ARCHIVED"] as const;
 
 const productSchema = z.object({
   id: z.string().optional(),
+  /**
+   * Archivos subidos antes de que el producto existiera. Se convierten en
+   * filas recién acá, dentro de la misma transacción que lo crea.
+   */
+  pendingMedia: z
+    .array(z.object({ url: z.string(), kind: z.enum(["image", "video"]) }))
+    .default([]),
   kind: z.enum(["WINE", "PACK"]).default("WINE"),
   status: z.enum(STATUSES).default("DRAFT"),
   name: z.string().min(2, "Ingresá el nombre."),
@@ -182,6 +195,34 @@ export async function saveProduct(
         });
       }
 
+      /*
+        Archivos subidos antes de que el producto existiera. Se agregan al
+        final de la galería; la primera imagen de un producto sin fotos queda
+        como principal, igual que en la subida normal.
+      */
+      if (data.pendingMedia.length) {
+        const imagenes = data.pendingMedia.filter((m) => m.kind === "image");
+        const videos = data.pendingMedia.filter((m) => m.kind === "video");
+
+        if (imagenes.length) {
+          const desde = await tx.productImage.count({ where: { productId: product.id } });
+          await tx.productImage.createMany({
+            data: imagenes.map((m, i) => ({
+              productId: product.id,
+              url: m.url,
+              alt: null,
+              isPrimary: desde + i === 0,
+              sortOrder: desde + i,
+            })),
+          });
+        }
+        if (videos.length) {
+          await tx.productVideo.createMany({
+            data: videos.map((m) => ({ productId: product.id, url: m.url, label: null })),
+          });
+        }
+      }
+
       // Premios: se reemplazan por completo.
       await tx.award.deleteMany({ where: { productId: product.id } });
       if (data.awards.length) {
@@ -299,7 +340,9 @@ export async function uploadProductMedia(formData: FormData): Promise<ProductAct
   const kind = String(formData.get("kind") ?? "image");
   const file = formData.get("file");
 
-  if (!productId) return { ok: false, error: "Falta el producto." };
+  // Sin producto todavía: el archivo se guarda igual y se devuelve la URL.
+  // La fila en la base la crea saveProduct cuando el producto exista.
+  const borrador = productId === "";
   if (!(file instanceof File)) return { ok: false, error: "Elegí un archivo." };
 
   const isVideo = kind === "video";
@@ -323,11 +366,28 @@ export async function uploadProductMedia(formData: FormData): Promise<ProductAct
   const body = Buffer.from(await file.arrayBuffer());
 
   const stored = await storage.put({
-    folder: `productos/${productId}`,
+    folder: borrador ? "productos/borrador" : `productos/${productId}`,
     filename: `${nanoid(10)}.${extension}`,
     contentType: file.type,
     body,
   });
+
+  if (borrador) {
+    /*
+      No se registra en auditoría: todavía no hay entidad a la que atribuirlo.
+      Queda el rastro cuando el producto se guarda.
+
+      Si alguien sube y después abandona el formulario, el archivo queda en el
+      almacenamiento sin usar. Es basura barata —unos KB— y preferible a la
+      alternativa, que era obligar a guardar un producto a medio llenar sólo
+      para poder elegir una foto.
+    */
+    return {
+      ok: true,
+      message: isVideo ? "Video listo." : "Imagen lista.",
+      media: { url: stored.url, kind: isVideo ? "video" : "image" },
+    };
+  }
 
   if (isVideo) {
     await prisma.productVideo.create({
