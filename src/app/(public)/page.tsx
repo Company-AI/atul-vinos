@@ -114,7 +114,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-[1600px] px-gutter pt-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-display-sm font-medium text-carbon-900">
+            <h2 className="font-display text-display-sm font-bold uppercase tracking-[0.015em] text-carbon-900">
               Los seleccionados de la semana
             </h2>
             <p className="mt-1.5 text-[14px] text-stone-600">
@@ -166,7 +166,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-[1600px] px-gutter pt-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="font-display text-display-sm font-medium text-carbon-900">
+              <h2 className="font-display text-display-sm font-bold uppercase tracking-[0.015em] text-carbon-900">
                 Nuestros vinos
               </h2>
               <p className="mt-1.5 text-[14px] text-stone-600">
