@@ -97,6 +97,35 @@ export const CMS_SECTIONS = [
     },
   },
   {
+    key: "site.proximamente",
+    page: "site",
+    type: "coming_soon",
+    title: "Pantalla de próxima apertura",
+    sortOrder: 5,
+    data: {
+      eyebrow: "Atul · Vinos seleccionados",
+      title: "Cuánto hace que no nos",
+      titleAccent: "encontramos.",
+      body:
+        "Estamos terminando de armar la tienda. En unos días vas a poder pedir " +
+        "los vinos que probamos uno por uno, con envío a todo el país.",
+      /*
+        Instante fijo, no "dentro de dos días": una cuenta que se recalcula en
+        cada visita nunca baja. Cuando se corra la apertura, se cambia acá o
+        desde el admin, en Contenido.
+      */
+      targetAt: "2026-09-30T20:00:00-03:00",
+      finalText: "Ya estamos abiertos.",
+      media: {
+        imageUrl: "/media/scenes/cellar.jpg",
+        imageAlt: "",
+        videoDesktopUrl: "",
+        videoMobileUrl: "",
+        posterUrl: "/media/scenes/cellar.jpg",
+      },
+    },
+  },
+  {
     key: "site.beneficios",
     page: "site",
     type: "benefits_bar",

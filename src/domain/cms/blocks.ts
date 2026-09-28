@@ -349,6 +349,26 @@ export const benefitsBarBlock = z.object({
   speed: z.enum(["lenta", "normal", "rapida"]).default("normal"),
 });
 
+/**
+ * Pantalla de "en construcción" con cuenta regresiva.
+ *
+ * `targetAt` es un instante absoluto en ISO, no "dentro de dos días": una
+ * cuenta que se recalcula en cada visita nunca termina, y la persona que
+ * vuelve al día siguiente ve el mismo número. Con una fecha fija la cuenta
+ * baja de verdad, y cuando llega a cero la página lo dice.
+ */
+export const comingSoonBlock = z.object({
+  eyebrow: z.string().default(""),
+  title: z.string().default(""),
+  titleAccent: z.string().default(""),
+  body: z.string().default(""),
+  /** Fecha y hora de apertura, en ISO. Ej: 2026-09-30T20:00:00-03:00 */
+  targetAt: z.string().default(""),
+  /** Qué decir cuando la cuenta llega a cero. */
+  finalText: z.string().default("Ya estamos abiertos."),
+  media: media.prefault({}),
+});
+
 export const BLOCK_SCHEMAS = {
   video_hero: videoHeroBlock,
   editorial: editorialBlock,
@@ -367,6 +387,7 @@ export const BLOCK_SCHEMAS = {
   news_ticker: newsTickerBlock,
   promo_banner: promoBannerBlock,
   benefits_bar: benefitsBarBlock,
+  coming_soon: comingSoonBlock,
 } as const;
 
 export type BlockType = keyof typeof BLOCK_SCHEMAS;
@@ -389,6 +410,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   news_ticker: "Renglón de novedades (se desplaza)",
   promo_banner: "Banda promocional con foto",
   benefits_bar: "Franja de beneficios (todas las páginas)",
+  coming_soon: "Pantalla de próxima apertura",
 };
 
 export type BlockData<T extends BlockType> = z.infer<(typeof BLOCK_SCHEMAS)[T]>;

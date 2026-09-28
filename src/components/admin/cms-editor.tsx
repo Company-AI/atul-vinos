@@ -120,6 +120,19 @@ const FIELDS: Record<BlockType, { key: string; label: string; kind: "text" | "te
     { key: "title", label: "Título", kind: "textarea" },
     { key: "tone", label: "Fondo", kind: "select", options: ["linen", "light", "dark"] },
   ],
+  coming_soon: [
+    { key: "eyebrow", label: "Volanta", kind: "text" },
+    { key: "title", label: "Título", kind: "textarea" },
+    { key: "titleAccent", label: "Segunda línea (itálica)", kind: "text" },
+    { key: "body", label: "Texto", kind: "textarea" },
+    {
+      key: "targetAt",
+      label: "Fecha y hora de apertura",
+      kind: "text",
+      hint: "En formato ISO con huso horario. Ej: 2026-09-30T20:00:00-03:00",
+    },
+    { key: "finalText", label: "Texto al llegar a cero", kind: "text" },
+  ],
   benefits_bar: [
     {
       key: "remate",

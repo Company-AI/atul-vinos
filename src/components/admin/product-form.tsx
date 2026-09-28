@@ -670,12 +670,13 @@ export function ProductForm({
           title="Imágenes"
           description="La primera es la principal. Arrastrá el orden con las flechas."
         >
-          {!form.id ? (
-            <p className="text-[13px] text-stone-500">
-              Guardá el producto para poder subir imágenes.
-            </p>
-          ) : (
-            <>
+          {/*
+            El bloque se muestra siempre, también en productos nuevos: la
+            subida ya no necesita que el producto exista. Lo que sí espera al
+            guardado es reordenar y marcar la principal, porque eso opera
+            sobre filas de la base que todavía no hay.
+          */}
+          <>
               <ul className="space-y-2">
                 {pendientes.map((m, i) => (
                   <li
@@ -855,7 +856,6 @@ export function ProductForm({
                 Se sirven optimizadas en WebP/AVIF y en varios tamaños automáticamente.
               </p>
             </>
-          )}
         </AdminCard>
 
         {videos.length > 0 && (
