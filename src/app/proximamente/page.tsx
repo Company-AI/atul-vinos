@@ -52,19 +52,47 @@ export default async function ProximamentePage() {
       )}
 
       {/*
-        Dos capas sobre la foto: una base pareja que garantiza el contraste del
+        Dos capas sobre la foto: una base pareja que sostiene el contraste del
         texto centrado, y un degradado desde los bordes que devuelve
         profundidad. Con una sola capa la foto queda plana y parece un color.
+
+        La base quedó en 45%: con 58 más el degradado de bordes, el viñedo
+        desaparecía igual. Hay margen de sobra —el titular es grande y crema—,
+        así que conviene gastar contraste en que la foto se vea.
+
+        La base está calibrada para que el viñedo se siga viendo. Con una sala
+        de barricas —de por sí muy oscura— más un velo del 72% la pantalla
+        quedaba negra y la foto no aportaba nada.
+
+        La foto tiene que ser apaisada. Con una vertical, en una pantalla
+        ancha el recorte de object-cover toma una franja del centro y cae
+        sobre el cielo: se veía un degradado gris y ni rastro del viñedo.
       */}
-      <span aria-hidden className="absolute inset-0 -z-10 bg-carbon-950/72" />
+      <span aria-hidden className="absolute inset-0 -z-10 bg-carbon-950/45" />
       <span
         aria-hidden
         className="absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(ellipse at center, rgb(13 11 10 / 0) 35%, rgb(13 11 10 / 0.65) 100%)",
+            "radial-gradient(ellipse at center, rgb(13 11 10 / 0) 40%, rgb(13 11 10 / 0.45) 100%)",
         }}
       />
+      {/*
+        Velo que sube desde abajo. La parte baja de la foto es el viñedo
+        iluminado, y ahí caen el mail y la firma, que son texto chico: medido,
+        quedaban en 4,05 de contraste contra un mínimo de 4,5. Oscurecer sólo
+        esa franja los salva sin aplanar el resto de la foto, que es lo que
+        pasaba subiendo el velo general.
+      */}
+      <span
+        aria-hidden
+        className="absolute inset-0 -z-10"
+        style={{
+          background:
+            "linear-gradient(to top, rgb(13 11 10 / 0.62) 0%, rgb(13 11 10 / 0.25) 32%, rgb(13 11 10 / 0) 55%)",
+        }}
+      />
+
       <span aria-hidden className="grain absolute inset-0 -z-10" />
 
       <div className="flex w-full max-w-[720px] flex-col items-center text-center">

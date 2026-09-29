@@ -117,11 +117,11 @@ export const CMS_SECTIONS = [
       targetAt: "2026-09-30T20:00:00-03:00",
       finalText: "Ya estamos abiertos.",
       media: {
-        imageUrl: "/media/scenes/cellar.jpg",
+        imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
         imageAlt: "",
         videoDesktopUrl: "",
         videoMobileUrl: "",
-        posterUrl: "/media/scenes/cellar.jpg",
+        posterUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
       },
     },
   },
@@ -361,9 +361,9 @@ export const CMS_SECTIONS = [
       quote: "Si no lo abriríamos en casa, no lo vendemos.",
       cta: { label: "Ver la selección", href: "/vinos" },
       media: {
-        imageUrl: "/media/scenes/mendoza-vineyard-andes.jpg",
+        imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
         imageAlt: "Viñedos de Tunuyán con los Andes de fondo",
-        posterUrl: "/media/scenes/mendoza-vineyard-andes.jpg",
+        posterUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
       },
       mediaSide: "right",
       tone: "light",
@@ -538,7 +538,7 @@ export const CMS_SECTIONS = [
       tone: "dark",
       items: [
         {
-          imageUrl: "/media/scenes/mendoza-vineyard-andes.jpg",
+          imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
           imageAlt: "Hileras de viñedo con los Andes de fondo",
           caption: "Tunuyán, Valle de Uco",
           size: "tall",
