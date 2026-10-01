@@ -12,6 +12,7 @@ import { TAXONOMIES, type TaxonomyKind } from "@/domain/catalog/taxonomy-kinds";
 import { cn } from "@/lib/cn";
 import { formatARS } from "@/lib/money";
 import { AdminCard } from "./admin-ui";
+import { BuscadorDeVinos } from "./buscador-de-vinos";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Checkbox, Field, Input, Label, Select, Textarea } from "@/ui/field";
@@ -322,23 +323,24 @@ export function ProductForm({
             <ul className="space-y-2">
               {form.packItems.map((item, index) => (
                 <li key={`${item.componentId}-${index}`} className="flex items-center gap-2">
-                  <Select
-                    value={item.componentId}
-                    onChange={(e) => {
+                  <BuscadorDeVinos
+                    vinos={wines}
+                    valor={item.componentId}
+                    /*
+                      Los vinos que ya están en otra fila no se vuelven a
+                      ofrecer: dos filas del mismo vino rompen el guardado,
+                      porque un box no puede tener dos veces el mismo
+                      componente. Para llevar dos botellas está la cantidad.
+                    */
+                    excluidos={form.packItems
+                      .filter((_, i) => i !== index)
+                      .map((otro) => otro.componentId)}
+                    onElegir={(id) => {
                       const next = [...form.packItems];
-                      next[index] = { ...item, componentId: e.target.value };
+                      next[index] = { ...item, componentId: id };
                       set("packItems", next);
                     }}
-                    className="flex-1"
-                    aria-label="Vino del pack"
-                  >
-                    <option value="">Elegí un vino</option>
-                    {wines.map((wine) => (
-                      <option key={wine.id} value={wine.id}>
-                        {wine.name} — {wine.sku} (disp. {wine.available})
-                      </option>
-                    ))}
-                  </Select>
+                  />
                   <Input
                     type="number"
                     min={1}
