@@ -3,13 +3,11 @@ import Link from "next/link";
 import { AlertTriangle, ArrowRight, Package } from "lucide-react";
 import { requireStaff } from "@/infra/auth/guards";
 import {
-  getDailySales, getDashboardMetrics, getMonthlySales, getSubscriptionFlow, getTopProducts,
+  getDailySales, getDashboardMetrics, getMonthlySales, getTopProducts,
 } from "@/domain/reports/dashboard";
 import { formatARS } from "@/lib/money";
 import { currentPeriod, periodLabel } from "@/lib/dates";
-import {
-  DailySalesChart, MonthlySalesChart, RecurringRevenueChart, SubscriptionFlowChart,
-} from "@/components/admin/charts";
+import { DailySalesChart, MonthlySalesChart } from "@/components/admin/charts";
 import { AdminCard, AdminPageHeader, AdminTable, MetricCard, Td } from "@/components/admin/admin-ui";
 import { Badge } from "@/ui/badge";
 
@@ -18,11 +16,15 @@ export const metadata: Metadata = { title: "Dashboard" };
 export default async function AdminDashboardPage() {
   await requireStaff();
 
-  const [metrics, daily, monthly, flow, topProducts] = await Promise.all([
+  /*
+    Sin los gráficos del Club ya no hace falta getSubscriptionFlow, que era
+    tres consultas —altas, bajas y ciclos cobrados de los últimos doce meses—
+    sólo para dibujarlos.
+  */
+  const [metrics, daily, monthly, topProducts] = await Promise.all([
     getDashboardMetrics(),
     getDailySales(30),
     getMonthlySales(12),
-    getSubscriptionFlow(12),
     getTopProducts(8),
   ]);
 
@@ -99,21 +101,23 @@ export default async function AdminDashboardPage() {
       {/*
         Métricas.
 
-        Las del Club quedaron fuera a pedido del cliente: suscriptores
-        activos, próximos envíos, pagos fallidos, altas y bajas del mes y
-        venta de suscripciones. El Club todavía no se lanzó, así que esos
-        números salían de datos de prueba y ocupaban media pantalla del
-        panel sin decir nada de la operación real.
+        Todo lo del Club quedó fuera a pedido del cliente: las tarjetas de
+        suscriptores activos, próximos envíos, pagos fallidos, altas y bajas
+        del mes, venta de suscripciones e ingreso recurrente, y los dos
+        gráficos —altas y bajas, e ingreso recurrente cobrado—.
 
-        El cálculo sigue en getDashboardMetrics: lo consume el gráfico de
-        altas y bajas, y failedPayments alimenta el contador del menú.
+        El Club todavía no se lanzó, así que esos números salían de datos de
+        prueba y ocupaban media pantalla sin decir nada de la operación real.
+
+        El cálculo sigue en getDashboardMetrics porque failedPayments alimenta
+        el contador del menú lateral. Si algún día se lanza el Club, volver a
+        mostrarlo es reponer estas tarjetas, no recalcular nada.
       */}
       {/* Métricas */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard label="Ventas hoy" value={formatARS(metrics.salesToday)} hint={`${metrics.ordersToday} pedidos`} />
         <MetricCard label="Ventas del mes" value={formatARS(metrics.salesMonth)} />
         <MetricCard label="Ticket promedio" value={formatARS(metrics.averageTicket)} hint="del mes" />
-        <MetricCard label="Ingreso recurrente" value={formatARS(metrics.mrr)} hint="suscripciones activas" tone="info" />
 
         <MetricCard label="Pendientes de pago" value={metrics.pendingPayment} href="/admin/pedidos?estado=PAYMENT_PENDING" tone={metrics.pendingPayment > 0 ? "warning" : "neutral"} />
         <MetricCard label="A preparar" value={metrics.toPrepare} href="/admin/picking" tone={metrics.toPrepare > 0 ? "warning" : "neutral"} />
@@ -126,17 +130,11 @@ export default async function AdminDashboardPage() {
 
       {/* Gráficos */}
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <AdminCard title="Ventas diarias" description="Últimos 30 días, tienda vs Club">
+        <AdminCard title="Ventas diarias" description="Últimos 30 días">
           <DailySalesChart data={daily} />
         </AdminCard>
         <AdminCard title="Ventas mensuales" description="Últimos 12 meses">
           <MonthlySalesChart data={monthly} />
-        </AdminCard>
-        <AdminCard title="Altas y bajas del Club" description="Últimos 12 meses">
-          <SubscriptionFlowChart data={flow} />
-        </AdminCard>
-        <AdminCard title="Ingreso recurrente cobrado" description="Ciclos pagados por mes">
-          <RecurringRevenueChart data={flow} />
         </AdminCard>
       </div>
 
