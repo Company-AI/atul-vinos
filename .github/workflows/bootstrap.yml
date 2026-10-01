@@ -1,0 +1,50 @@
+# Inicializa una base vacía: permisos, roles, configuración, taxonomías,
+# catálogo, logística y contenido. No carga clientes ni pedidos de demostración.
+#
+# Se dispara a mano, nunca solo. Es idempotente por omisión: el modo bootstrap
+# no borra nada, así que correrlo dos veces falla por claves duplicadas en lugar
+# de pisar datos reales.
+
+name: Inicializar base
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmacion:
+        description: 'Escribí "inicializar" para confirmar'
+        required: true
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Confirmar
+        run: |
+          [ "${{ inputs.confirmacion }}" = "inicializar" ] || {
+            echo "Confirmación incorrecta. No se hizo nada."; exit 1; }
+
+      - name: Exigir una contraseña de admin propia
+        run: |
+          # Sin esto el seed cae en la clave de ejemplo, que está en un repo
+          # público: sería un admin abierto a cualquiera.
+          [ -n "${{ secrets.SEED_ADMIN_PASSWORD }}" ] || {
+            echo "Falta el secret SEED_ADMIN_PASSWORD."; exit 1; }
+
+      - name: Abrir sesión SSH con el servidor
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # La clave viaja dentro de .env.production, que el deploy ya dejó escrito.
+      # Pasarla por -e la dejaría visible en el `ps` del servidor.
+      - name: Cargar datos iniciales
+        run: |
+          ssh -o BatchMode=yes "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s <<'REMOTE'
+          set -euo pipefail
+          cd /opt/atul-vinos/deploy
+          docker compose --env-file .env.production run --rm \
+            -e SEED_SCOPE=bootstrap migrate npx tsx prisma/seed.ts
+          REMOTE
