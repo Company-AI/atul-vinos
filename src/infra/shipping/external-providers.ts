@@ -3,6 +3,7 @@ import type {
   ShippingProvider, ShippingQuote, TrackingStatus,
 } from "@/domain/shipping/ports";
 import { prisma } from "@/infra/db/prisma";
+import { cotizarAndreani, leerConfigAndreani } from "./andreani";
 
 /**
  * Adapters de transportistas externos.
@@ -55,31 +56,31 @@ abstract class ExternalShippingProvider implements ShippingProvider {
 /**
  * Andreani.
  *
- * Todavía sin implementar, y a propósito: su documentación está detrás del
- * portal de desarrolladores, que sólo se abre para clientes con contrato. Lo
- * que circula en librerías de la comunidad no coincide entre sí —unas mandan
- * sólo el CP de destino y el contrato, otras agregan peso y medidas, y hay dos
- * versiones de la API dando vueltas—, así que codear contra eso sería inventar
- * una integración que después falla con plata de por medio.
- *
- * Para completarlo hacen falta, de la cuenta de Andreani:
- *   - las credenciales de sandbox y de producción (usuario y clave de la API);
- *   - el número de contrato, que viaja en cada cotización;
- *   - el código de la sucursal de origen desde donde se despacha;
- *   - la documentación del endpoint de tarifas de la versión contratada.
- *
- * Con eso, lo único que hay que escribir es `quote`, `createShipment`,
- * `getTracking` y `cancelShipment` acá adentro, y que `isConfigured` devuelva
- * true cuando las credenciales estén cargadas en Carrier.config. El resto del
- * sistema —la calculadora de la ficha, el checkout, las etiquetas— ya habla
- * contra la interface y no se entera de quién está del otro lado.
- *
- * Mientras tanto el registry cae en el proveedor interno, que cotiza con las
- * zonas y tarifas cargadas en el admin.
+ * El cotizador está implementado contra la documentación oficial; el detalle
+ * de la llamada vive en ./andreani.ts. Se activa solo cuando hay credenciales
+ * en el entorno, y mientras no las haya el registry cae en el proveedor
+ * interno y la tienda cotiza con las zonas del admin.
  */
 export class AndreaniProvider extends ExternalShippingProvider {
   readonly code = "andreani";
   readonly name = "Andreani";
+
+  isConfigured(): boolean {
+    return leerConfigAndreani() !== null;
+  }
+
+  async quote(destination: ShippingDestination, parcel: ShippingParcel): Promise<ShippingQuote[]> {
+    const config = leerConfigAndreani();
+    if (!config) return [];
+    return cotizarAndreani(config, destination, parcel);
+  }
+
+  /*
+    Crear el envío y seguirlo son otras dos APIs del mismo catálogo, cada una
+    con su planilla de campos. Se implementan cuando haya credenciales para
+    probarlas: generar una orden de envío de verdad no es algo que convenga
+    escribir a ciegas.
+  */
 }
 
 export class OcaProvider extends ExternalShippingProvider {

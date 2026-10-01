@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import {
-  deleteShippingZone, saveShippingZone, toggleCarrier,
+  deleteShippingZone, saveShippingZone, probarTransportista, toggleCarrier,
 } from "@/app/actions/admin-shipping";
 import { AR_PROVINCES } from "@/lib/ar";
 import { formatARS } from "@/lib/money";
@@ -121,6 +121,24 @@ export function ShippingManager({
                 </Badge>
               </Td>
               <Td align="right">
+                <div className="flex justify-end gap-3">
+                {canEdit && carrier.code !== "mock" && (
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() =>
+                      startTransition(async () => {
+                        /* Cotiza una botella a un CP real: dice si la llamada entra. */
+                        const result = await probarTransportista(carrier.code);
+                        if (result.ok) toast.success(result.message);
+                        else toast.error(result.error);
+                      })
+                    }
+                    className="text-[12px] underline underline-offset-2 hover:text-accent-700"
+                  >
+                    Probar conexión
+                  </button>
+                )}
                 {canEdit && (
                   <button
                     type="button"
@@ -139,6 +157,7 @@ export function ShippingManager({
                     {carrier.isActive ? "Desactivar" : "Activar"}
                   </button>
                 )}
+                </div>
               </Td>
             </tr>
           ))}

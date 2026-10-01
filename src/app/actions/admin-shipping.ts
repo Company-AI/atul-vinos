@@ -6,6 +6,7 @@ import { prisma } from "@/infra/db/prisma";
 import { assertPermission } from "@/infra/auth/guards";
 import { recordAudit } from "@/domain/audit/service";
 import { postalCodeNumber } from "@/lib/ar";
+import { listShippingProviders } from "@/infra/shipping/registry";
 
 export type ShippingActionResult = { ok: true; message: string } | { ok: false; error: string };
 
@@ -156,4 +157,55 @@ export async function toggleCarrier(carrierCode: string): Promise<ShippingAction
     ok: true,
     message: carrier.isActive ? `${carrier.name} desactivado.` : `${carrier.name} activado.`,
   };
+}
+
+/**
+ * Prueba la conexión con un transportista externo.
+ *
+ * Existe porque la integración se escribió sin poder ejecutarla: las
+ * credenciales de Andreani sólo se generan teniendo cuenta. El día que estén
+ * cargadas, esto dice en un clic si la llamada entra o qué devolvió, en vez de
+ * descubrirlo cuando un cliente intenta comprar.
+ *
+ * Cotiza contra un código postal real y una botella, que es el pedido más
+ * chico posible. No crea nada: sólo pregunta un precio.
+ */
+export async function probarTransportista(
+  code: string,
+  postalCode = "1425",
+): Promise<ShippingActionResult> {
+  try {
+    await assertPermission("settings.edit");
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "Sin permiso." };
+  }
+
+  const provider = listShippingProviders().find((p) => p.code === code);
+  if (!provider) return { ok: false, error: "No conocemos ese transportista." };
+
+  if (!provider.isConfigured()) {
+    return {
+      ok: false,
+      error: `${provider.name} no tiene credenciales cargadas en el entorno del servidor.`,
+    };
+  }
+
+  try {
+    const quotes = await provider.quote(
+      { postalCode, city: "", province: "" },
+      { bottles: 1, weightGrams: 1500, declaredValue: 0 },
+    );
+    if (quotes.length === 0) {
+      return { ok: false, error: `${provider.name} respondió, pero sin ninguna tarifa.` };
+    }
+    return {
+      ok: true,
+      message: `${provider.name} respondió: ${quotes[0].serviceName}, ${quotes[0].price}.`,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : `Falló la llamada a ${provider.name}.`,
+    };
+  }
 }
