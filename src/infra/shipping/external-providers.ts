@@ -4,6 +4,7 @@ import type {
 } from "@/domain/shipping/ports";
 import { prisma } from "@/infra/db/prisma";
 import { cotizarAndreani, leerConfigAndreani } from "./andreani";
+import { cotizarEnviopack, leerConfigEnviopack } from "./enviopack";
 
 /**
  * Adapters de transportistas externos.
@@ -91,4 +92,27 @@ export class OcaProvider extends ExternalShippingProvider {
 export class CorreoArgentinoProvider extends ExternalShippingProvider {
   readonly code = "correo_argentino";
   readonly name = "Correo Argentino";
+}
+
+/**
+ * Envíopack.
+ *
+ * Intermediario: una sola cuenta y devuelve precios de varios correos. No hace
+ * falta contrato propio con cada uno, que es lo que lo vuelve el camino corto
+ * para una tienda que recién arranca. El detalle de la llamada está en
+ * ./enviopack.ts.
+ */
+export class EnviopackProvider extends ExternalShippingProvider {
+  readonly code = "enviopack";
+  readonly name = "Envíopack";
+
+  isConfigured(): boolean {
+    return leerConfigEnviopack() !== null;
+  }
+
+  async quote(destination: ShippingDestination, parcel: ShippingParcel): Promise<ShippingQuote[]> {
+    const config = leerConfigEnviopack();
+    if (!config) return [];
+    return cotizarEnviopack(config, destination, parcel);
+  }
 }

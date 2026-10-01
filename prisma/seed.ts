@@ -443,6 +443,8 @@ async function main() {
   const carrierData = [
     { code: "mock", name: "Logística Atul (interno)", sortOrder: 10,
       trackingUrlTemplate: "/seguimiento/{tracking}" },
+    { code: "enviopack", name: "Envíopack", sortOrder: 15,
+      trackingUrlTemplate: "https://seguimiento.enviopack.com/?id={tracking}" },
     { code: "andreani", name: "Andreani", sortOrder: 20,
       trackingUrlTemplate: "https://www.andreani.com/#!/informacionEnvio/{tracking}" },
     { code: "correo_argentino", name: "Correo Argentino", sortOrder: 30,

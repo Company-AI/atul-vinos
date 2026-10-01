@@ -33,3 +33,56 @@ export function postalCodeNumber(value: string): number | null {
   const n = Number(digits[0]);
   return Number.isFinite(n) ? n : null;
 }
+
+/**
+ * Código ISO 3166-2 de cada provincia: la letra, sin el "AR-" adelante.
+ *
+ * Es el formato que piden las APIs de logística para identificar la provincia,
+ * y es también la primera letra del CPA: X5800ABC es Córdoba. Por eso, cuando
+ * alguien escribe el código postal completo, la provincia ya viene adentro.
+ */
+export const AR_PROVINCE_CODES: Record<ArProvince, string> = {
+  "Buenos Aires": "B",
+  Catamarca: "K",
+  Chaco: "H",
+  Chubut: "U",
+  CABA: "C",
+  Córdoba: "X",
+  Corrientes: "W",
+  "Entre Ríos": "E",
+  Formosa: "P",
+  Jujuy: "Y",
+  "La Pampa": "L",
+  "La Rioja": "F",
+  Mendoza: "M",
+  Misiones: "N",
+  Neuquén: "Q",
+  "Río Negro": "R",
+  Salta: "A",
+  "San Juan": "J",
+  "San Luis": "D",
+  "Santa Cruz": "Z",
+  "Santa Fe": "S",
+  "Santiago del Estero": "G",
+  "Tierra del Fuego": "V",
+  Tucumán: "T",
+};
+
+/**
+ * La letra de provincia, de donde se pueda sacar.
+ *
+ * Primero del nombre, que es lo que elige la persona en el formulario. Si no
+ * coincide, del CPA: quien escribe "X5800ABC" ya dijo Córdoba aunque no haya
+ * tocado el desplegable.
+ */
+export function provinceCode(province: string, postalCode?: string): string | null {
+  const porNombre = AR_PROVINCE_CODES[province.trim() as ArProvince];
+  if (porNombre) return porNombre;
+
+  const cpa = postalCode?.trim().match(/^([A-Za-z])\d{4}[A-Za-z]{3}$/);
+  if (cpa) {
+    const letra = cpa[1].toUpperCase();
+    if (Object.values(AR_PROVINCE_CODES).includes(letra)) return letra;
+  }
+  return null;
+}
