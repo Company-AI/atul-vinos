@@ -279,11 +279,17 @@ export function ProductForm({
             <Field label="Nombre" htmlFor="name" required className="sm:col-span-2">
               <Input id="name" value={form.name} onChange={(e) => set("name", e.target.value)} />
             </Field>
-            <Field label="SKU" htmlFor="sku" required>
+            {/*
+              El slug no se edita acá. Se genera del nombre al crear el
+              producto y después se conserva: cambiarlo rompe la dirección
+              pública del vino, los enlaces que ya se compartieron y lo que
+              Google tenga indexado. Sigue viajando en el formulario —por eso
+              está en el estado— justamente para que editar un producto no lo
+              recalcule.
+            */}
+            <Field label="SKU" htmlFor="sku" required className="sm:col-span-2"
+              hint="El código con el que lo buscan en el depósito. Sale impreso en el remito.">
               <Input id="sku" value={form.sku} onChange={(e) => set("sku", e.target.value)} />
-            </Field>
-            <Field label="Slug" htmlFor="slug" hint="Se genera solo si lo dejás vacío.">
-              <Input id="slug" value={form.slug} onChange={(e) => set("slug", e.target.value)} />
             </Field>
             <Field label="Descripción corta" htmlFor="shortDescription" className="sm:col-span-2"
               hint="Una línea. Se usa en las cards y en los metadatos.">
