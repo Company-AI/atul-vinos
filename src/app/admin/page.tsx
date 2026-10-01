@@ -96,6 +96,18 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
+      {/*
+        Métricas.
+
+        Las del Club quedaron fuera a pedido del cliente: suscriptores
+        activos, próximos envíos, pagos fallidos, altas y bajas del mes y
+        venta de suscripciones. El Club todavía no se lanzó, así que esos
+        números salían de datos de prueba y ocupaban media pantalla del
+        panel sin decir nada de la operación real.
+
+        El cálculo sigue en getDashboardMetrics: lo consume el gráfico de
+        altas y bajas, y failedPayments alimenta el contador del menú.
+      */}
       {/* Métricas */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard label="Ventas hoy" value={formatARS(metrics.salesToday)} hint={`${metrics.ordersToday} pedidos`} />
@@ -106,15 +118,8 @@ export default async function AdminDashboardPage() {
         <MetricCard label="Pendientes de pago" value={metrics.pendingPayment} href="/admin/pedidos?estado=PAYMENT_PENDING" tone={metrics.pendingPayment > 0 ? "warning" : "neutral"} />
         <MetricCard label="A preparar" value={metrics.toPrepare} href="/admin/picking" tone={metrics.toPrepare > 0 ? "warning" : "neutral"} />
         <MetricCard label="Enviados" value={metrics.shipped} href="/admin/pedidos?estado=SHIPPED" />
-        <MetricCard label="Próximos envíos del Club" value={metrics.upcomingShipments} href="/admin/pedidos?tipo=SUBSCRIPTION" />
-
-        <MetricCard label="Suscriptores activos" value={metrics.activeSubscribers} href="/admin/suscripciones" tone="success" />
-        <MetricCard label="Altas del mes" value={metrics.newSubscribers} tone="success" />
-        <MetricCard label="Bajas del mes" value={metrics.cancellations} tone={metrics.cancellations > 0 ? "danger" : "neutral"} />
-        <MetricCard label="Pagos del Club fallidos" value={metrics.failedPayments} href="/admin/pagos?estado=fallidos" tone={metrics.failedPayments > 0 ? "danger" : "neutral"} />
 
         <MetricCard label="Venta e-commerce" value={formatARS(metrics.storeSales)} hint="del mes" />
-        <MetricCard label="Venta suscripciones" value={formatARS(metrics.subscriptionSales)} hint="del mes" />
         <MetricCard label="Stock bajo" value={metrics.lowStockCount} href="/admin/stock?filtro=bajo" tone={metrics.lowStockCount > 0 ? "warning" : "neutral"} />
         <MetricCard label="Pedidos hoy" value={metrics.ordersToday} href="/admin/pedidos" />
       </div>
