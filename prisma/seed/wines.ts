@@ -648,6 +648,13 @@ export type PackSeed = {
  * Los packs son nuestros: elegimos las botellas y armamos la caja. La foto es
  * una imagen de estilo hasta que fotografiemos los estuches propios.
  */
+/*
+  Los cuatro box comparten la misma foto: la caja de cartón con el sello, que
+  es la que pasó el cliente. Es a propósito —lo que diferencia a cada uno es
+  la descripción, no la imagen— y además es honesto: hoy todos se despachan
+  en la misma caja. Cuando tengan una propia fotografiada, se cambia este
+  archivo y cambian los cuatro de una.
+*/
 export const PACKS: PackSeed[] = [
   /*
     La línea es de 2, 4 y 6 botellas.
@@ -678,7 +685,7 @@ export const PACKS: PackSeed[] = [
       { slug: "blend-of-terroirs-malbec", quantity: 1 },
       { slug: "rutini-single-vineyard-gualtallary-malbec", quantity: 1 },
     ],
-    image: "pack-malbec",
+    image: "box-atul",
     featured: true,
     bestSeller: true,
   },
@@ -700,7 +707,7 @@ export const PACKS: PackSeed[] = [
       { slug: "rutini-coleccion-chardonnay", quantity: 1 },
       { slug: "rutini-coleccion-rose-de-malbec", quantity: 1 },
     ],
-    image: "pack-uco",
+    image: "box-atul",
   },
   {
     name: "Para el asado x4",
@@ -720,7 +727,7 @@ export const PACKS: PackSeed[] = [
       { slug: "rutini-coleccion-cabernet-malbec", quantity: 1 },
       { slug: "norton-perdriel-malbec", quantity: 1 },
     ],
-    image: "pack-asado",
+    image: "box-atul",
     bestSeller: true,
   },
   {
@@ -739,6 +746,6 @@ export const PACKS: PackSeed[] = [
       { slug: "rutini-finca-centenaria-la-consulta-malbec", quantity: 1 },
       { slug: "rutini-single-vineyard-gualtallary-malbec", quantity: 1 },
     ],
-    image: "pack-regalo",
+    image: "box-atul",
   },
 ];
