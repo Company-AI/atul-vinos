@@ -224,48 +224,67 @@ export default async function HomePage() {
       <LogoStrip bodegas={BODEGAS} />
 
       {/*
-        Quiénes somos, a sangre.
+        Quiénes somos.
 
-        Antes era una caja con la foto a la izquierda y el texto a la derecha,
-        las dos mitades iguales y un borde alrededor: se leía como un banner
-        más. Ahora la foto ocupa la banda entera y el texto va en una tarjeta
-        crema que se le monta encima, corrida hacia la derecha. La tarjeta
-        arranca dentro de la foto, así que hay una sola pieza y no dos mitades
-        pegadas.
+        Pasó de una tarjeta sobre foto a sangre a dos columnas. No es gusto:
+        el texto que mandó el cliente son cuatro párrafos, y en la tarjeta
+        anterior —560px de ancho montada sobre la foto— entraba uno. Con la
+        foto al lado, el texto tiene su propia columna y respira.
+
+        La foto es provisoria: va una de Marian y Maxi, que ellos van a pasar.
       */}
-      <section className="relative mt-20 overflow-hidden">
-        <div className="relative min-h-[520px] lg:min-h-[560px]">
-          <Image
-            src="/media/scenes/cellar.jpg"
-            alt="Sala de crianza con barricas de roble"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <span
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-r from-carbon-950/70 via-carbon-950/30 to-carbon-950/10"
-          />
+      <section className="mt-20 border-t border-linen-200 bg-bone-pure">
+        <div className="mx-auto grid max-w-[1600px] items-center gap-10 px-gutter py-16 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-16 lg:py-24">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-linen-100 lg:aspect-[4/4.6]">
+            <Image
+              src="/media/scenes/mendoza-vineyard-house.jpg"
+              alt="Casa entre viñedos en Mendoza"
+              fill
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              className="object-cover"
+            />
+          </div>
 
-          <div className="relative mx-auto flex h-full max-w-[1600px] items-center px-gutter py-16">
-            <div className="ml-auto w-full max-w-[560px] rounded-md bg-bone-pure/95 p-9 backdrop-blur-sm lg:p-12">
-              <p className="eyebrow text-accent-700">Quiénes somos</p>
-              <h2 className="mt-5 font-display text-display-md font-light text-carbon-900">
-                No vendemos nada que no probemos.
-              </h2>
-              <p className="mt-6 text-[15px] leading-[1.85] text-stone-600">
-                Somos distribuidores: vamos a la bodega, probamos la añada que se va a vender y
-                recién ahí compramos. Por eso el catálogo es corto y podemos defender cada
-                botella que está en esta página.
+          <div className="min-w-0">
+            <h2 className="font-display text-display-lg font-light text-carbon-900">
+              Quiénes somos
+            </h2>
+
+            <div className="mt-7 space-y-5 text-[15px] leading-[1.85] text-stone-600">
+              <p>
+                Detrás de Atul estamos nosotros: Marian y Maxi. Ambos trabajamos en relación de
+                dependencia, pero desde hace tiempo sentíamos las ganas de construir algo propio,
+                un proyecto familiar que crezca con el tiempo y que de verdad nos apasionara.
               </p>
-              <Link
-                href="/quienes-somos"
-                className="mt-8 inline-flex items-center gap-2 text-[13px] font-medium text-accent-700 transition-colors hover:text-accent-600"
-              >
-                Conocé cómo elegimos
-                <ArrowRight className="size-4" aria-hidden />
-              </Link>
+              <p>
+                ¿Por qué vino? Porque fue una pasión que descubrimos juntos. Con los años, Mendoza
+                se convirtió en nuestro lugar en el mundo. Viaje tras viaje, bodega tras bodega,
+                nos enamoramos del ritual de buscar etiquetas nuevas, probar varietales distintos
+                y aprender de cada añada.
+              </p>
+              <p>
+                Atul nace de esas ganas de emprender juntos fuera del horario laboral, de hacer lo
+                que nos motiva y de traer a Río Cuarto esa misma curiosidad por descubrir bodegas
+                boutique y proyectos pequeños que no se consiguen en cualquier lado.
+              </p>
             </div>
+
+            {/*
+              El cierre va aparte y con otro peso: es la firma del texto, no un
+              párrafo más, y en el original del cliente también está separado.
+            */}
+            <p className="mt-7 font-display text-[21px] font-light leading-snug text-carbon-900">
+              Somos Marian, Maxi y nuestro hijo Felipe —el responsable del nombre de este sueño—.
+              <span className="accent-italic"> ¡Bienvenidos a Atul!</span>
+            </p>
+
+            <Link
+              href="/quienes-somos"
+              className="mt-8 inline-flex items-center gap-2 text-[13px] font-medium text-accent-700 transition-colors hover:text-accent-600"
+            >
+              Conocé cómo elegimos
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
           </div>
         </div>
       </section>

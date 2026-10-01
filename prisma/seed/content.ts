@@ -330,19 +330,9 @@ export const CMS_SECTIONS = [
           detail: "De la Quebrada de Humahuaca a los valles patagónicos.",
         },
         {
-          value: "3",
-          label: "Bodegas representadas",
-          detail: "Compra directa, sin intermediarios en el medio.",
-        },
-        {
-          value: "22",
-          label: "Etiquetas en lista",
-          detail: "Corto a propósito: podemos defender cada una.",
-        },
-        {
           value: "100%",
           label: "Probado antes de comprar",
-          detail: "La añada que se vende, no la del año pasado.",
+          detail: "Cada botella, probada antes de entrar al catálogo.",
         },
       ],
     },
@@ -357,7 +347,7 @@ export const CMS_SECTIONS = [
       eyebrow: "Cómo elegimos",
       title: "Probamos todo lo que vendemos.",
       body:
-        "No compramos por catálogo ni por puntaje. Vamos a la bodega, hablamos con el enólogo y probamos la añada que se va a vender, no la anterior. Si una etiqueta bajó respecto del año pasado, la sacamos de la lista aunque se venda bien.\n\nPor eso el catálogo es corto. Preferimos veinte botellas que podemos defender una por una antes que doscientas que no probamos nunca.",
+        "No compramos por catálogo ni por puntaje. Vamos a la bodega, conocemos y probamos el producto que luego vamos a vender.\n\nPor eso el catálogo es corto. Preferimos veinte botellas que podemos defender una por una antes que doscientas que no probamos nunca.",
       quote: "Si no lo abriríamos en casa, no lo vendemos.",
       cta: { label: "Ver la selección", href: "/vinos" },
       media: {
@@ -380,7 +370,7 @@ export const CMS_SECTIONS = [
       eyebrow: "El país",
       title: "Argentina se toma de punta a punta.",
       body:
-        "Arriba, la Quebrada de Humahuaca y los valles de Salta: viñedos de mucha altura, sol fuerte y noches frías, donde el Torrontés y el Malbec salen tensos y perfumados. En el medio, San Juan y Mendoza, con la cordillera marcando cada valle. Abajo, el Alto Valle de Río Negro y la Patagonia: menos altura, más viento y vinos de acidez filosa.\n\nNo es lo mismo un Malbec de Cafayate que uno de Gualtallary o uno de Neuquén. Esa diferencia es exactamente lo que te contamos cuando comprás: está en cada ficha y en la tarjeta que va dentro de la caja.",
+        "Arriba, la Quebrada de Humahuaca y los Valles Calchaquíes: viñedos de mucha altura, sol fuerte y noches frías, donde el Torrontés y el Malbec salen tensos y perfumados. En el medio, San Juan y Mendoza, con la cordillera marcando cada valle. Abajo, el Alto Valle de Río Negro y la Patagonia: menos altura, más viento y vinos de acidez filosa.\n\nNo es lo mismo un Malbec de Cafayate que uno de Gualtallary o uno de Neuquén, ni un Pinot Noir de la Patagonia que uno de la región de Cuyo. Esa diferencia es exactamente lo que te contamos cuando comprás: está en cada ficha y en la tarjeta que va dentro de la caja.",
       cta: { label: "Ver las regiones", href: "/vinos" },
       media: {
         imageUrl: "/media/scenes/potrerillos-andes.jpg",
@@ -400,6 +390,13 @@ export const CMS_SECTIONS = [
     type: "showcase",
     title: "Niveles de selección",
     sortOrder: 45,
+    /*
+      Oculta a pedido del cliente ("sacar lo de los 4 niveles"). Se deja
+      cargada en vez de borrarla: las líneas Cotidiana, Reserva, Alta gama e
+      Ícono siguen existiendo en el catálogo y en los filtros, así que si
+      más adelante quieren volver a explicarlas, está acá.
+    */
+    isActive: false,
     data: {
       eyebrow: "Cómo está ordenada la lista",
       title: "Cuatro niveles, según para qué la vayas a abrir.",
@@ -510,16 +507,12 @@ export const CMS_SECTIONS = [
           body: "No compramos por catálogo ni por lista de precios. Vamos, recorremos el viñedo y hablamos con quien hace el vino.",
         },
         {
-          title: "Probamos la añada que se vende",
-          body: "La que va a entrar al depósito, no la del año pasado. Si bajó respecto de la anterior, se cae de la lista aunque venga vendiéndose bien.",
+          title: "Probamos la añada",
+          body: "Cada botella que vendemos fue seleccionada y probada antes de agregarla al catálogo.",
         },
         {
           title: "Negociamos directo",
           body: "Sin intermediarios. Es lo que nos deja sostener el precio y, sobre todo, la disponibilidad: si te gustó, el mes que viene sigue estando.",
-        },
-        {
-          title: "La escribimos nosotros",
-          body: "La ficha no es el texto de la bodega. Es por qué la elegimos, con qué la tomaríamos y qué esperar al abrirla.",
         },
       ],
       cta: { label: "Ver la selección", href: "/vinos" },
