@@ -1,4 +1,5 @@
 import type {
+  CarrierLabel, CreateShipmentInput, CreateShipmentResult,
   ShippingDestination, ShippingParcel, ShippingQuote,
 } from "@/domain/shipping/ports";
 import { provinceCode } from "@/lib/ar";
@@ -178,4 +179,200 @@ export function mapearCotizaciones(data: unknown): ShippingQuote[] {
   }
 
   return [...porCorreo.values()].sort((a, b) => a.price - b.price);
+}
+
+/* ── Despacho: crear el envío y traer la etiqueta ──────────────────────────── */
+
+/**
+ * Envíopack maneja dos entidades: el pedido, que representa la orden de tu
+ * tienda, y el envío, que es el paquete físico. Todo envío cuelga de un
+ * pedido, así que despachar son dos llamadas.
+ *
+ * El envío se crea confirmado, que es lo que lo informa al correo y le da
+ * estado "En Proceso". Recién cuando el correo contesta pasa a "Procesado" y
+ * ahí aparecen el número de seguimiento y la etiqueta: por eso crear un envío
+ * no devuelve tracking todavía.
+ */
+
+async function pedir<T>(
+  config: EnviopackConfig,
+  ruta: string,
+  init: RequestInit & { query?: Record<string, string> } = {},
+): Promise<T> {
+  const token = await obtenerToken(config);
+  const query = new URLSearchParams({ access_token: token, ...(init.query ?? {}) });
+  const res = await fetch(`${BASE}${ruta}?${query}`, {
+    ...init,
+    headers: { "Content-Type": "application/json", ...(init.headers ?? {}) },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) olvidarTokenEnviopack();
+    /* El cuerpo del error suele decir qué campo está mal: se arrastra entero. */
+    const detalle = await res.text().catch(() => "");
+    throw new Error(
+      `Envíopack devolvió HTTP ${res.status} en ${ruta}${detalle ? `: ${detalle.slice(0, 300)}` : ""}`,
+    );
+  }
+
+  return (await res.json()) as T;
+}
+
+/** Fecha en el formato que pide Envíopack: 2016-04-26 13:52:00 */
+function fechaEnviopack(d: Date): string {
+  return d.toISOString().slice(0, 19).replace("T", " ");
+}
+
+/**
+ * El código de servicio que armó el cotizador, de vuelta en sus partes.
+ *
+ * Se guardó como "correo-servicio-modalidad" al cotizar justamente para poder
+ * despachar con el mismo correo que se le prometió a la persona, y no con
+ * cualquiera.
+ */
+export function partirServiceCode(serviceCode: string) {
+  const [correo, servicio, modalidad] = serviceCode.split("-");
+  return {
+    correo: correo && correo !== "correo" ? correo : null,
+    servicio: servicio || "N",
+    modalidad: modalidad === "S" ? "S" : "D",
+  };
+}
+
+export async function crearEnvioEnviopack(
+  config: EnviopackConfig,
+  input: CreateShipmentInput,
+): Promise<CreateShipmentResult> {
+  const deposito = process.env.ENVIOPACK_DIRECCION_ENVIO?.trim();
+  if (!deposito) {
+    throw new Error(
+      "Falta ENVIOPACK_DIRECCION_ENVIO: es el depósito desde donde retiran, " +
+        "y se saca de Configuración / Depósitos en el panel de Envíopack.",
+    );
+  }
+
+  const provincia = provinceCode(input.destination.province, input.destination.postalCode);
+  if (!provincia) {
+    throw new Error(`No pudimos determinar la provincia de "${input.destination.province}".`);
+  }
+
+  const { correo, servicio, modalidad } = partirServiceCode(input.serviceCode);
+  if (!correo) {
+    throw new Error(
+      "El pedido no tiene guardado con qué correo se cotizó. " +
+        "Volvé a cotizar el envío antes de despacharlo.",
+    );
+  }
+
+  const [nombre, ...resto] = input.recipient.name.trim().split(/\s+/);
+
+  const pedido = await pedir<{ id: number }>(config, "/pedidos", {
+    method: "POST",
+    body: JSON.stringify({
+      id_externo: String(input.orderNumber).slice(0, 30),
+      nombre: (nombre || "Cliente").slice(0, 30),
+      apellido: (resto.join(" ") || "-").slice(0, 30),
+      email: (input.recipient.email ?? "").slice(0, 100),
+      telefono: (input.recipient.phone ?? "").slice(0, 30),
+      monto: Number(input.parcel.declaredValue.toFixed(2)),
+      fecha_alta: fechaEnviopack(new Date()),
+      pagado: true,
+      provincia,
+      localidad: input.destination.city.slice(0, 50),
+    }),
+  });
+
+  const envio = await pedir<{ id: number; tracking_number: string | null; estado?: string; costo?: number }>(
+    config,
+    "/envios",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        pedido: pedido.id,
+        direccion_envio: deposito,
+        destinatario: input.recipient.name.slice(0, 50),
+        confirmado: true,
+        modalidad,
+        servicio,
+        despacho: process.env.ENVIOPACK_DESPACHO?.trim().toUpperCase() === "S" ? "S" : "D",
+        correo,
+        calle: (input.destination.street ?? "").slice(0, 50),
+        numero: (input.destination.number ?? "").slice(0, 5),
+        piso: (input.destination.apartment ?? "").slice(0, 6),
+        referencia_domicilio: (input.destination.reference ?? "").slice(0, 30),
+        codigo_postal: Number(input.destination.postalCode.replace(/\D/g, "").slice(0, 4)),
+        provincia,
+        localidad: input.destination.city.slice(0, 50),
+        /*
+          Se manda un solo bulto con el peso real. Las medidas son las del
+          paquete armado; si cambian, el correo recalcula al recibirlo.
+        */
+        paquetes: [
+          {
+            alto: 32,
+            ancho: Math.max(10, Math.ceil(Math.sqrt(input.parcel.bottles)) * 9),
+            largo: Math.max(10, Math.ceil(input.parcel.bottles / 2) * 9),
+            peso: Number((input.parcel.weightGrams / 1000).toFixed(2)),
+            descripcion_primera_linea: `Pedido #${input.orderNumber}`,
+            descripcion_segunda_linea: `${input.parcel.bottles} botellas`,
+          },
+        ],
+      }),
+    },
+  );
+
+  return {
+    externalId: String(envio.id),
+    /*
+      Todavía no hay número de seguimiento: aparece cuando el correo confirma y
+      el envío pasa a "Procesado". Queda vacío a propósito en vez de inventar
+      uno, y se completa al sincronizar.
+    */
+    trackingNumber: envio.tracking_number ?? "",
+    trackingUrl: null,
+    cost: typeof envio.costo === "number" ? envio.costo : null,
+    labelPayload: {
+      proveedor: "enviopack",
+      envioId: envio.id,
+      pedidoId: pedido.id,
+      correo,
+      servicio,
+      modalidad,
+      estado: envio.estado ?? null,
+    },
+  };
+}
+
+export async function etiquetaEnviopack(
+  config: EnviopackConfig,
+  externalId: string,
+): Promise<CarrierLabel | null> {
+  const token = await obtenerToken(config);
+  const query = new URLSearchParams({ access_token: token, formato: "pdf" });
+
+  const res = await fetch(`${BASE}/envios/${externalId}/etiqueta?${query}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) olvidarTokenEnviopack();
+    /*
+      La etiqueta sólo existe cuando el envío está "Procesado", o sea cuando el
+      correo ya lo confirmó. Antes de eso Envíopack rechaza el pedido, y el
+      mensaje tiene que decir eso y no un número de error.
+    */
+    throw new Error(
+      `Todavía no hay etiqueta para este envío (HTTP ${res.status}). ` +
+        "Suele significar que el correo no lo confirmó todavía.",
+    );
+  }
+
+  return {
+    contentType: res.headers.get("content-type") ?? "application/pdf",
+    filename: `etiqueta-${externalId}.pdf`,
+    data: await res.arrayBuffer(),
+  };
 }

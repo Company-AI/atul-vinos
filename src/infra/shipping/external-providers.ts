@@ -1,10 +1,12 @@
 import type {
-  CreateShipmentInput, CreateShipmentResult, ShippingDestination, ShippingParcel,
-  ShippingProvider, ShippingQuote, TrackingStatus,
+  CarrierLabel, CreateShipmentInput, CreateShipmentResult, ShippingDestination,
+  ShippingParcel, ShippingProvider, ShippingQuote, TrackingStatus,
 } from "@/domain/shipping/ports";
 import { prisma } from "@/infra/db/prisma";
 import { cotizarAndreani, leerConfigAndreani } from "./andreani";
-import { cotizarEnviopack, leerConfigEnviopack } from "./enviopack";
+import {
+  cotizarEnviopack, crearEnvioEnviopack, etiquetaEnviopack, leerConfigEnviopack,
+} from "./enviopack";
 
 /**
  * Adapters de transportistas externos.
@@ -114,5 +116,17 @@ export class EnviopackProvider extends ExternalShippingProvider {
     const config = leerConfigEnviopack();
     if (!config) return [];
     return cotizarEnviopack(config, destination, parcel);
+  }
+
+  async createShipment(input: CreateShipmentInput): Promise<CreateShipmentResult> {
+    const config = leerConfigEnviopack();
+    if (!config) this.notImplemented("createShipment");
+    return crearEnvioEnviopack(config, input);
+  }
+
+  async getLabel(externalId: string): Promise<CarrierLabel | null> {
+    const config = leerConfigEnviopack();
+    if (!config) return null;
+    return etiquetaEnviopack(config, externalId);
   }
 }

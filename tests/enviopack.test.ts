@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mapearCotizaciones } from "@/infra/shipping/enviopack";
+import { mapearCotizaciones, partirServiceCode } from "@/infra/shipping/enviopack";
 import { provinceCode } from "@/lib/ar";
 
 /*
@@ -66,5 +66,34 @@ describe("cotizaciones de Envíopack", () => {
   it("no inventa plazo cuando no viene", () => {
     const [q] = mapearCotizaciones([{ correo: { nombre: "OCA" }, valor: 5000 }]);
     expect(q.etaMinDays).toBeNull();
+  });
+});
+
+describe("código de servicio al despachar", () => {
+  it("recupera el correo con el que se cotizó, para despachar con ese y no con otro", () => {
+    expect(partirServiceCode("andreani-N-D")).toEqual({
+      correo: "andreani",
+      servicio: "N",
+      modalidad: "D",
+    });
+  });
+
+  it("reconoce la entrega a sucursal", () => {
+    expect(partirServiceCode("oca-X-S").modalidad).toBe("S");
+  });
+
+  it("devuelve correo nulo cuando el pedido no guardó con cuál se cotizó", () => {
+    // Es lo que hace fallar el despacho con un mensaje claro en vez de elegir
+    // un correo al azar y cobrarle al cliente otra tarifa.
+    expect(partirServiceCode("correo-N-D").correo).toBeNull();
+    expect(partirServiceCode("Envío estándar").correo).toBe("Envío estándar");
+  });
+
+  it("asume servicio estándar a domicilio si falta el detalle", () => {
+    expect(partirServiceCode("andreani")).toEqual({
+      correo: "andreani",
+      servicio: "N",
+      modalidad: "D",
+    });
   });
 });

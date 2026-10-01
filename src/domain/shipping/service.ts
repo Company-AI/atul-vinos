@@ -100,7 +100,7 @@ export async function createShipmentForOrder(orderId: string, serviceCode?: stri
   const input: CreateShipmentInput = {
     orderId: order.id,
     orderNumber: order.number,
-    serviceCode: serviceCode ?? order.shippingMethod ?? "standard",
+    serviceCode: serviceCode ?? snapshot.serviceCode ?? order.shippingMethod ?? "standard",
     destination: {
       postalCode: snapshot.postalCode ?? "",
       city: snapshot.city ?? "",

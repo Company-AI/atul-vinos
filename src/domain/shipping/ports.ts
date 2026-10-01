@@ -68,6 +68,14 @@ export type TrackingStatus = {
   deliveredAt: Date | null;
 };
 
+/** La etiqueta tal como la emite el correo: un archivo, no datos para dibujar. */
+export type CarrierLabel = {
+  contentType: string;
+  /** Nombre sugerido al descargar. */
+  filename: string;
+  data: ArrayBuffer;
+};
+
 export interface ShippingProvider {
   readonly code: string;
   readonly name: string;
@@ -77,4 +85,13 @@ export interface ShippingProvider {
   createShipment(input: CreateShipmentInput): Promise<CreateShipmentResult>;
   getTracking(trackingNumber: string): Promise<TrackingStatus>;
   cancelShipment(externalId: string): Promise<void>;
+  /**
+   * Trae la etiqueta que emitió el correo.
+   *
+   * Opcional porque la logística propia no tiene una: ahí la etiqueta la
+   * dibuja el sistema con los datos del envío. Cuando despacha un correo, en
+   * cambio, la etiqueta la emite él —lleva su numeración y su código de
+   * ruteo— y lo único que se puede hacer es pedirla e imprimirla.
+   */
+  getLabel?(externalId: string): Promise<CarrierLabel | null>;
 }

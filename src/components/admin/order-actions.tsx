@@ -84,6 +84,24 @@ export function OrderActions({
           {shipment ? "Reimprimir etiqueta" : "Generar etiqueta"}
         </Button>
 
+        {/*
+          La etiqueta del correo es otra cosa que la hoja propia: la emite él,
+          con su numeración, y es la única que acepta al pasar a retirar. Sólo
+          aparece cuando el envío se generó con un correo externo —el interno
+          no emite ninguna— y la ruta avisa si todavía no está lista.
+        */}
+        {shipment && shipment.carrierCode && shipment.carrierCode !== "mock" && (
+          <Button
+            size="sm"
+            variant="subtle"
+            disabled={pending}
+            onClick={() => window.open(`/admin/envios/${shipment.id}/etiqueta`, "_blank")}
+          >
+            <Printer className="size-3.5" />
+            Etiqueta del correo
+          </Button>
+        )}
+
         {shipment && (
           <Button size="sm" variant="subtle" disabled={pending} onClick={() => setTrackingModal(true)}>
             Editar tracking
