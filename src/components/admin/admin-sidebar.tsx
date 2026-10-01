@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
   BarChart3, Box, ClipboardList, FileText, Landmark, LayoutDashboard, LogOut,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { cn } from "@/lib/cn";
+import { CargandoOverlay } from "./cargando-overlay";
 import type { PermissionCode } from "@/infra/auth/permissions";
 
 type Item = {
@@ -19,6 +20,14 @@ type Item = {
   Icon: typeof LayoutDashboard;
   permission?: PermissionCode;
   badge?: number;
+  /**
+   * Fuera del menú, pero la pantalla sigue existiendo y se llega por URL.
+   *
+   * El panel lo usa gente que no trabaja con sistemas, y cada ítem de más es
+   * una decisión de más. Esconder no es borrar: quien sabe la dirección entra
+   * igual, y los permisos siguen controlando quién puede.
+   */
+  oculto?: boolean;
 };
 
 type Group = { title: string; items: Item[] };
@@ -41,6 +50,25 @@ export function AdminSidebar({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  /*
+    Transición aparte de la del logout: si compartieran una, cerrar sesión
+    levantaría el velo de carga y navegar deshabilitaría el botón de salir.
+  */
+  const [navegando, startNav] = useTransition();
+  const router = useRouter();
+
+  /*
+    Se intercepta sólo el clic izquierdo sin modificadores. Con ctrl, cmd,
+    shift o el botón del medio la persona está pidiendo abrir en otra pestaña,
+    y ahí hay que dejar que el navegador haga lo suyo.
+  */
+  const irA = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (e.defaultPrevented || e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    setMobileOpen(false);
+    startNav(() => router.push(href));
+  };
 
   const can = (permission?: PermissionCode) =>
     !permission || isSuperAdmin || permissions.includes(permission);
@@ -67,8 +95,8 @@ export function AdminSidebar({
     {
       title: "Club",
       items: [
-        { href: "/admin/suscripciones", label: "Suscriptores", Icon: Users, permission: "subscriptions.view" },
-        { href: "/admin/suscripciones/planes", label: "Planes", Icon: FileText, permission: "subscriptions.plans" },
+        { href: "/admin/suscripciones", label: "Suscriptores", Icon: Users, permission: "subscriptions.view", oculto: true },
+        { href: "/admin/suscripciones/planes", label: "Planes", Icon: FileText, permission: "subscriptions.plans", oculto: true },
         { href: "/admin/suscripciones/box", label: "Box del mes", Icon: Package, permission: "subscriptions.box" },
       ],
     },
@@ -77,7 +105,7 @@ export function AdminSidebar({
       items: [
         { href: "/admin/clientes", label: "Clientes", Icon: Users, permission: "customers.view" },
         { href: "/admin/cupones", label: "Cupones", Icon: Percent, permission: "coupons.view" },
-        { href: "/admin/contenido", label: "Contenido", Icon: Megaphone, permission: "cms.edit" },
+        { href: "/admin/contenido", label: "Contenido", Icon: Megaphone, permission: "cms.edit", oculto: true },
       ],
     },
     {
@@ -86,7 +114,7 @@ export function AdminSidebar({
         { href: "/admin/pagos", label: "Pagos y webhooks", Icon: ScrollText, permission: "payments.view", badge: counters.failedPayments },
         { href: "/admin/reportes", label: "Reportes", Icon: BarChart3, permission: "reports.view" },
         { href: "/admin/auditoria", label: "Auditoría", Icon: ShieldCheck, permission: "audit.view" },
-        { href: "/admin/usuarios", label: "Usuarios y roles", Icon: Users, permission: "users.manage" },
+        { href: "/admin/usuarios", label: "Usuarios y roles", Icon: Users, permission: "users.manage", oculto: true },
         { href: "/admin/configuracion", label: "Configuración", Icon: Settings, permission: "settings.view" },
       ],
     },
@@ -110,7 +138,7 @@ export function AdminSidebar({
 
       <div className="min-h-0 flex-1 overflow-y-auto px-2 py-3">
         {groups.map((group) => {
-          const visible = group.items.filter((item) => can(item.permission));
+          const visible = group.items.filter((item) => !item.oculto && can(item.permission));
           if (visible.length === 0) return null;
 
           return (
@@ -127,7 +155,7 @@ export function AdminSidebar({
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        onClick={() => setMobileOpen(false)}
+                        onClick={(e) => irA(e, item.href)}
                         aria-current={active ? "page" : undefined}
                         className={cn(
                           "flex items-center gap-2.5 rounded-sm px-2 py-1.5 text-[13px] transition-colors",
@@ -193,6 +221,8 @@ export function AdminSidebar({
       >
         <Menu className="size-5" />
       </button>
+
+      <CargandoOverlay visible={navegando} />
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
