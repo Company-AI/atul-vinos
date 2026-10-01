@@ -6,6 +6,7 @@ import { requireStaff } from "@/infra/auth/guards";
 import { prisma } from "@/infra/db/prisma";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { WINE_TYPE_LABELS } from "@/domain/catalog/types";
+import { TAXONOMIES, taxonomyPorUrl } from "@/domain/catalog/taxonomy-kinds";
 import { formatARS } from "@/lib/money";
 import { AdminCard, AdminPageHeader, AdminTable, Td } from "@/components/admin/admin-ui";
 import { Badge } from "@/ui/badge";
@@ -15,12 +16,41 @@ import { Input, Select } from "@/ui/field";
 export const metadata: Metadata = { title: "Productos" };
 
 type PageProps = {
-  searchParams: Promise<{ q?: string; estado?: string; tipo?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    estado?: string;
+    tipo?: string;
+    clasificacion?: string;
+    valor?: string;
+  }>;
 };
+
+/**
+ * Traduce ?clasificacion=varietales&valor=malbec a una condición de Prisma.
+ *
+ * Es el enlace que sale de la pantalla de Clasificación, donde cada valor
+ * muestra cuántos productos lo usan: el número tiene que llevar a esos
+ * productos y no a la lista entera.
+ */
+function filtroClasificacion(clasificacion?: string, valor?: string) {
+  const kind = taxonomyPorUrl(clasificacion);
+  if (!kind || !valor) return {};
+
+  switch (kind) {
+    case "category": return { category: { slug: valor } };
+    case "winery": return { winery: { slug: valor } };
+    case "region": return { region: { slug: valor } };
+    case "line": return { line: { slug: valor } };
+    case "grape": return { grapes: { some: { grape: { slug: valor } } } };
+    case "pairing": return { pairings: { some: { pairing: { slug: valor } } } };
+    case "tag": return { tags: { some: { tag: { slug: valor } } } };
+  }
+}
 
 export default async function AdminProductsPage({ searchParams }: PageProps) {
   const user = await requireStaff("products.view");
-  const { q, estado, tipo } = await searchParams;
+  const { q, estado, tipo, clasificacion, valor } = await searchParams;
+  const kindFiltrado = taxonomyPorUrl(clasificacion);
 
   const products = await prisma.product.findMany({
     where: {
@@ -34,6 +64,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
         : {}),
       ...(estado ? { status: estado as "DRAFT" | "ACTIVE" | "ARCHIVED" } : {}),
       ...(tipo ? { kind: tipo as "WINE" | "PACK" } : {}),
+      ...filtroClasificacion(clasificacion, valor),
     },
     orderBy: [{ status: "asc" }, { name: "asc" }],
     include: {
@@ -67,6 +98,12 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
       />
 
       <form className="mb-4 flex flex-wrap items-end gap-2">
+        {kindFiltrado && valor && (
+          <>
+            <input type="hidden" name="clasificacion" value={clasificacion} />
+            <input type="hidden" name="valor" value={valor} />
+          </>
+        )}
         <label className="flex flex-col gap-1">
           <span className="text-[11px] uppercase tracking-wider text-stone-500">Buscar</span>
           <Input name="q" defaultValue={q ?? ""} placeholder="Nombre o SKU" className="h-8 w-52 text-[13px]" />
@@ -95,6 +132,19 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
           Filtrar
         </button>
       </form>
+
+      {kindFiltrado && valor && (
+        <p className="mb-4 flex flex-wrap items-center gap-2 border border-linen-300 bg-linen-100 px-3 py-2 text-[13px] text-carbon-800">
+          Sólo {TAXONOMIES[kindFiltrado].singular}{" "}
+          <code className="text-[12px] text-stone-500">{valor}</code>
+          <Link
+            href="/admin/productos"
+            className="underline underline-offset-4 hover:text-accent-700"
+          >
+            Ver todos
+          </Link>
+        </p>
+      )}
 
       <AdminCard padded={false}>
         <AdminTable

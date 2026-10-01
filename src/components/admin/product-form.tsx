@@ -4,10 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
-import { Plus, Star, Trash2, Upload } from "lucide-react";
+import { Check, Plus, Star, Trash2, Upload, X } from "lucide-react";
 import {
   archiveProduct, deleteProductImage, saveProduct, updateProductImages, uploadProductMedia,
 } from "@/app/actions/admin-products";
+import { saveTaxonomy } from "@/app/actions/admin-taxonomies";
+import { TAXONOMIES, type TaxonomyKind } from "@/domain/catalog/taxonomy-kinds";
 import { cn } from "@/lib/cn";
 import { formatARS } from "@/lib/money";
 import { AdminCard } from "./admin-ui";
@@ -18,6 +20,17 @@ import { ConfirmationModal } from "@/ui/modal";
 import { toast } from "@/ui/toaster";
 
 export type TaxonomyOption = { id: string; name: string };
+
+/** Las siete listas con las que se clasifica un producto. */
+export type TaxonomyLists = {
+  categories: TaxonomyOption[];
+  wineries: TaxonomyOption[];
+  regions: TaxonomyOption[];
+  lines: TaxonomyOption[];
+  grapes: TaxonomyOption[];
+  pairings: TaxonomyOption[];
+  tags: TaxonomyOption[];
+};
 
 export type WineTypeValue = "" | "TINTO" | "BLANCO" | "ROSADO" | "ESPUMANTE" | "NARANJO" | "DULCE";
 export type IntensityValue = "" | "LIGERO" | "MEDIO" | "INTENSO";
@@ -78,27 +91,28 @@ export function ProductForm({
   wines,
   canEditPrice,
   canArchive,
+  canEditTaxonomies,
   inventory,
 }: {
   initial: ProductFormData;
-  taxonomies: {
-    categories: TaxonomyOption[];
-    wineries: TaxonomyOption[];
-    regions: TaxonomyOption[];
-    lines: TaxonomyOption[];
-    grapes: TaxonomyOption[];
-    pairings: TaxonomyOption[];
-    tags: TaxonomyOption[];
-  };
+  taxonomies: TaxonomyLists;
   images: ProductImageData[];
   videos: { id: string; url: string; label: string | null }[];
   wines: { id: string; name: string; sku: string; price: number; available: number }[];
   canEditPrice: boolean;
   canArchive: boolean;
+  /** Habilita crear valores de clasificación sin salir del formulario. */
+  canEditTaxonomies: boolean;
   inventory: { onHand: number; reserved: number; available: number } | null;
 }) {
   const router = useRouter();
   const [form, setForm] = useState(initial);
+  /*
+    Las listas de clasificación son estado y no sólo un prop: se pueden crear
+    valores desde acá mismo, y hasta que la página no se recargue el valor
+    recién hecho tiene que aparecer en el desplegable.
+  */
+  const [listas, setListas] = useState<TaxonomyLists>(taxonomies);
   const [pending, startTransition] = useTransition();
   const [uploading, setUploading] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
@@ -117,6 +131,13 @@ export function ProductForm({
     setForm((f) => ({
       ...f,
       [key]: f[key].includes(id) ? f[key].filter((v) => v !== id) : [...f[key], id],
+    }));
+
+  /** Suma el valor recién creado y lo deja ordenado como viene del servidor. */
+  const sumarOpcion = (lista: keyof TaxonomyLists, opcion: TaxonomyOption) =>
+    setListas((l) => ({
+      ...l,
+      [lista]: [...l[lista], opcion].sort((a, b) => a.name.localeCompare(b.name, "es")),
     }));
 
   const numberOrNull = (value: string) => (value.trim() === "" ? null : Number(value));
@@ -431,39 +452,58 @@ export function ProductForm({
           </AdminCard>
         )}
 
-        <AdminCard title="Clasificación">
+        <AdminCard
+          title="Clasificación"
+          action={
+            <Link
+              href="/admin/clasificacion"
+              target="_blank"
+              className="text-[12px] underline underline-offset-2 hover:text-accent-700"
+            >
+              Administrar listas
+            </Link>
+          }
+        >
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Categoría" htmlFor="categoryId">
-              <Select id="categoryId" value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)}>
-                <option value="">—</option>
-                {taxonomies.categories.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </Select>
-            </Field>
-            <Field label="Bodega / productor" htmlFor="wineryId">
-              <Select id="wineryId" value={form.wineryId} onChange={(e) => set("wineryId", e.target.value)}>
-                <option value="">—</option>
-                {taxonomies.wineries.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </Select>
-            </Field>
-            <Field label="Región" htmlFor="regionId">
-              <Select id="regionId" value={form.regionId} onChange={(e) => set("regionId", e.target.value)}>
-                <option value="">—</option>
-                {taxonomies.regions.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </Select>
-            </Field>
-            <Field label="Línea" htmlFor="lineId">
-              <Select id="lineId" value={form.lineId} onChange={(e) => set("lineId", e.target.value)}>
-                <option value="">—</option>
-                {taxonomies.lines.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </Select>
-            </Field>
+            {(
+              [
+                { campo: "categoryId", lista: "categories", kind: "category", label: "Categoría" },
+                { campo: "wineryId", lista: "wineries", kind: "winery", label: "Bodega / productor" },
+                { campo: "regionId", lista: "regions", kind: "region", label: "Región" },
+                { campo: "lineId", lista: "lines", kind: "line", label: "Línea" },
+              ] as const
+            ).map((grupo) => (
+              <div key={grupo.campo}>
+                <Field label={grupo.label} htmlFor={grupo.campo}>
+                  <Select
+                    id={grupo.campo}
+                    value={form[grupo.campo]}
+                    onChange={(e) => set(grupo.campo, e.target.value)}
+                  >
+                    <option value="">—</option>
+                    {listas[grupo.lista].map((o) => (
+                      <option key={o.id} value={o.id}>{o.name}</option>
+                    ))}
+                  </Select>
+                </Field>
+                {canEditTaxonomies && (
+                  <AgregarValor
+                    kind={grupo.kind}
+                    onCreado={(opcion) => {
+                      sumarOpcion(grupo.lista, opcion);
+                      set(grupo.campo, opcion.id);
+                    }}
+                  />
+                )}
+              </div>
+            ))}
           </div>
 
           {(
             [
-              { key: "grapeIds", label: "Varietales", options: taxonomies.grapes },
-              { key: "pairingIds", label: "Maridajes", options: taxonomies.pairings },
-              { key: "tagIds", label: "Etiquetas", options: taxonomies.tags },
+              { key: "grapeIds", lista: "grapes", kind: "grape", label: "Varietales" },
+              { key: "pairingIds", lista: "pairings", kind: "pairing", label: "Maridajes" },
+              { key: "tagIds", lista: "tags", kind: "tag", label: "Etiquetas" },
             ] as const
           ).map((group) => (
             <fieldset key={group.key} className="mt-5">
@@ -471,7 +511,7 @@ export function ProductForm({
                 {group.label}
               </legend>
               <div className="flex flex-wrap gap-1.5">
-                {group.options.map((option) => {
+                {listas[group.lista].map((option) => {
                   const active = form[group.key].includes(option.id);
                   return (
                     <button
@@ -490,7 +530,22 @@ export function ProductForm({
                     </button>
                   );
                 })}
+                {listas[group.lista].length === 0 && (
+                  <p className="text-[12px] text-stone-500">
+                    Todavía no hay {group.label.toLowerCase()}{" "}
+                    {TAXONOMIES[group.kind].articulo === "la" ? "cargadas" : "cargados"}.
+                  </p>
+                )}
               </div>
+              {canEditTaxonomies && (
+                <AgregarValor
+                  kind={group.kind}
+                  onCreado={(opcion) => {
+                    sumarOpcion(group.lista, opcion);
+                    toggleMulti(group.key, opcion.id);
+                  }}
+                />
+              )}
             </fieldset>
           ))}
         </AdminCard>
@@ -894,6 +949,102 @@ export function ProductForm({
           });
         }}
       />
+    </div>
+  );
+}
+
+/**
+ * Crear un valor de clasificación sin salir del formulario.
+ *
+ * Es el motivo por el que las listas son estado y no un prop. Si falta un
+ * varietal en el desplegable, la alternativa era irse a Clasificación, crearlo
+ * y volver: con el producto a medio cargar, eso significaba perder todo lo
+ * escrito. Acá se crea, se agrega al desplegable y queda elegido.
+ *
+ * Sólo pide el nombre. El resto de los campos —descripción, foto, orden— se
+ * completan después en Clasificación, que para eso existe; pedirlos acá
+ * convertiría un atajo en un segundo formulario.
+ */
+function AgregarValor({
+  kind,
+  onCreado,
+}: {
+  kind: TaxonomyKind;
+  onCreado: (opcion: TaxonomyOption) => void;
+}) {
+  const config = TAXONOMIES[kind];
+  const [abierto, setAbierto] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [guardando, start] = useTransition();
+
+  const cerrar = () => {
+    setAbierto(false);
+    setNombre("");
+  };
+
+  const crear = () => {
+    const name = nombre.trim();
+    if (name.length < 2) {
+      toast.error("El nombre necesita al menos dos letras.");
+      return;
+    }
+    start(async () => {
+      const result = await saveTaxonomy({ kind, name });
+      if (result.ok && result.id) {
+        toast.success(result.message);
+        onCreado({ id: result.id, name: result.name ?? name });
+        cerrar();
+      } else if (!result.ok) {
+        toast.error(result.error);
+      }
+    });
+  };
+
+  if (!abierto) {
+    return (
+      <button
+        type="button"
+        onClick={() => setAbierto(true)}
+        className="mt-1.5 flex items-center gap-1 text-[12px] text-stone-500 underline underline-offset-2 hover:text-accent-700"
+      >
+        <Plus className="size-3" aria-hidden />
+        {config.articulo === "la" ? "Nueva" : "Nuevo"} {config.singular}
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-1.5 flex items-center gap-1.5">
+      <Input
+        autoFocus
+        value={nombre}
+        onChange={(e) => setNombre(e.target.value)}
+        onKeyDown={(e) => {
+          /* Enter guarda y Escape cierra: el campo aparece y desaparece solo. */
+          if (e.key === "Enter") { e.preventDefault(); crear(); }
+          if (e.key === "Escape") cerrar();
+        }}
+        placeholder={config.ejemplo}
+        aria-label={`Nombre ${config.articulo === "la" ? "de la" : "del"} ${config.singular}`}
+        className="h-8 text-[13px]"
+      />
+      <button
+        type="button"
+        onClick={crear}
+        disabled={guardando}
+        aria-label="Guardar"
+        className="grid size-8 shrink-0 place-items-center rounded-sm bg-carbon-900 text-bone disabled:opacity-40"
+      >
+        <Check className="size-3.5" aria-hidden />
+      </button>
+      <button
+        type="button"
+        onClick={cerrar}
+        aria-label="Cancelar"
+        className="grid size-8 shrink-0 place-items-center rounded-sm border border-linen-300 text-stone-500"
+      >
+        <X className="size-3.5" aria-hidden />
+      </button>
     </div>
   );
 }

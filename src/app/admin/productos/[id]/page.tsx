@@ -105,6 +105,7 @@ export default async function EditProductPage({ params }: PageProps) {
         videos={product.videos.map((v) => ({ id: v.id, url: v.url, label: v.label }))}
         canEditPrice={user.isSuperAdmin || user.permissions.has("products.price")}
         canArchive={user.isSuperAdmin || user.permissions.has("products.delete")}
+        canEditTaxonomies={user.isSuperAdmin || user.permissions.has("products.edit")}
         inventory={
           stock && product.kind === "WINE"
             ? { onHand: stock.onHand, reserved: stock.reserved, available: stock.available }
