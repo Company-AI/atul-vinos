@@ -19,7 +19,6 @@ type PageProps = {
   searchParams: Promise<{
     q?: string;
     estado?: string;
-    tipo?: string;
     clasificacion?: string;
     valor?: string;
   }>;
@@ -49,7 +48,7 @@ function filtroClasificacion(clasificacion?: string, valor?: string) {
 
 export default async function AdminProductsPage({ searchParams }: PageProps) {
   const user = await requireStaff("products.view");
-  const { q, estado, tipo, clasificacion, valor } = await searchParams;
+  const { q, estado, clasificacion, valor } = await searchParams;
   const kindFiltrado = taxonomyPorUrl(clasificacion);
 
   const products = await prisma.product.findMany({
@@ -63,7 +62,8 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
           }
         : {}),
       ...(estado ? { status: estado as "DRAFT" | "ACTIVE" | "ARCHIVED" } : {}),
-      ...(tipo ? { kind: tipo as "WINE" | "PACK" } : {}),
+      // Los box tienen su propia sección: acá sólo vinos.
+      kind: "WINE",
       ...filtroClasificacion(clasificacion, valor),
     },
     orderBy: [{ status: "asc" }, { name: "asc" }],
@@ -72,7 +72,6 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
       line: { select: { name: true } },
       region: { select: { name: true } },
       inventory: true,
-      packItems: { select: { id: true } },
     },
   });
 
@@ -83,7 +82,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
     <>
       <AdminPageHeader
         title="Productos"
-        description={`${products.length} productos en el catálogo`}
+        description={`${products.length} vinos en el catálogo`}
         actions={
           user.isSuperAdmin || user.permissions.has("products.edit") ? (
             <Link
@@ -91,7 +90,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
               className={buttonVariants({ variant: "dark", size: "sm" })}
             >
               <Plus className="size-3.5" />
-              Nuevo producto
+              Nuevo vino
             </Link>
           ) : null
         }
@@ -115,14 +114,6 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
             <option value="ACTIVE">Publicado</option>
             <option value="DRAFT">Borrador</option>
             <option value="ARCHIVED">Archivado</option>
-          </Select>
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-[11px] uppercase tracking-wider text-stone-500">Tipo</span>
-          <Select name="tipo" defaultValue={tipo ?? ""} className="h-8 w-auto text-[13px]">
-            <option value="">Todos</option>
-            <option value="WINE">Vinos</option>
-            <option value="PACK">Packs</option>
           </Select>
         </label>
         <button
@@ -179,13 +170,9 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
                 </Td>
                 <Td className="text-stone-500">{product.sku}</Td>
                 <Td>
-                  {product.kind === "PACK" ? (
-                    <Badge tone="gold">Pack · {product.packItems.length}</Badge>
-                  ) : (
-                    <span className="text-stone-600">
-                      {product.wineType ? WINE_TYPE_LABELS[product.wineType] : "—"}
-                    </span>
-                  )}
+                  <span className="text-stone-600">
+                    {product.wineType ? WINE_TYPE_LABELS[product.wineType] : "—"}
+                  </span>
                 </Td>
                 <Td className="text-stone-500">{product.line?.name ?? "—"}</Td>
                 <Td className="text-stone-500">{product.region?.name ?? "—"}</Td>
@@ -199,13 +186,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
                     )}
                   </Td>
                 )}
-                <Td align="right" className="tabular">
-                  {product.kind === "PACK" ? (
-                    <span className="text-stone-500">{available} (derivado)</span>
-                  ) : (
-                    available
-                  )}
-                </Td>
+                <Td align="right" className="tabular">{available}</Td>
                 <Td>
                   <Badge
                     tone={

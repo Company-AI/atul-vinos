@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
-  BarChart3, Box, ClipboardList, FileText, LayoutDashboard, LogOut, Megaphone,
+  BarChart3, Box, Boxes, ClipboardList, FileText, LayoutDashboard, LogOut, Megaphone,
   Menu, Package, Percent, ScrollText, Settings, ShieldCheck, ShoppingCart, Tags,
   Truck, Users, Wine, X,
 } from "lucide-react";
@@ -86,7 +86,8 @@ export function AdminSidebar({
     {
       title: "Catálogo",
       items: [
-        { href: "/admin/productos", label: "Productos", Icon: Wine, permission: "products.view" },
+        { href: "/admin/productos", label: "Vinos", Icon: Wine, permission: "products.view" },
+        { href: "/admin/box", label: "Box", Icon: Boxes, permission: "products.view" },
         { href: "/admin/clasificacion", label: "Clasificación", Icon: Tags, permission: "products.view" },
         { href: "/admin/stock", label: "Stock", Icon: Box, permission: "stock.view", badge: counters.lowStock },
       ],

@@ -182,7 +182,9 @@ export function ProductForm({
         // Ya tienen fila propia: dejan de ser pendientes.
         setPendientes([]);
         if (!form.id && result.productId) {
-          router.push(`/admin/productos/${result.productId}`);
+          // Recién creado: se sigue editando, y en la sección por la que entró.
+          const seccion = form.kind === "PACK" ? "box" : "productos";
+          router.push(`/admin/${seccion}/${result.productId}`);
         } else {
           router.refresh();
         }
@@ -240,6 +242,11 @@ export function ProductForm({
     return acc + (wine ? wine.price * item.quantity : 0);
   }, 0);
 
+  const packBotellas = form.packItems.reduce((acc, item) => acc + item.quantity, 0);
+  /* Cuánto más barato sale el box que comprar los mismos vinos sueltos. */
+  const packPrecio = Number(form.price) || 0;
+  const packAhorro = packTotal > packPrecio && packPrecio > 0 ? packTotal - packPrecio : 0;
+
   const packAvailable = form.packItems.length
     ? Math.min(
         ...form.packItems.map((item) => {
@@ -254,16 +261,15 @@ export function ProductForm({
       <div className="space-y-4">
         <AdminCard title="Datos básicos">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Tipo de producto" htmlFor="kind">
-              <Select
-                id="kind"
-                value={form.kind}
-                onChange={(e) => set("kind", e.target.value as "WINE" | "PACK")}
-                disabled={Boolean(form.id)}
-              >
-                <option value="WINE">Vino</option>
-                <option value="PACK">Pack</option>
-              </Select>
+            {/*
+              No hay selector de tipo. Vino o box lo decide por dónde entraste
+              —Productos o Box—, que es lo que ya sabías cuando hiciste clic.
+              Antes había que acordarse de cambiarlo, y si no te acordabas
+              cargabas medio box como si fuera un vino. El encabezado de la
+              página dice cuál es.
+            */}
+            <Field label="Nombre" htmlFor="name" required className="sm:col-span-2">
+              <Input id="name" value={form.name} onChange={(e) => set("name", e.target.value)} />
             </Field>
             <Field label="Estado" htmlFor="status">
               <Select
@@ -276,9 +282,6 @@ export function ProductForm({
                 <option value="ARCHIVED">Archivado</option>
               </Select>
             </Field>
-            <Field label="Nombre" htmlFor="name" required className="sm:col-span-2">
-              <Input id="name" value={form.name} onChange={(e) => set("name", e.target.value)} />
-            </Field>
             {/*
               El slug no se edita acá. Se genera del nombre al crear el
               producto y después se conserva: cambiarlo rompe la dirección
@@ -287,7 +290,7 @@ export function ProductForm({
               está en el estado— justamente para que editar un producto no lo
               recalcule.
             */}
-            <Field label="SKU" htmlFor="sku" required className="sm:col-span-2"
+            <Field label="SKU" htmlFor="sku" required
               hint="El código con el que lo buscan en el depósito. Sale impreso en el remito.">
               <Input id="sku" value={form.sku} onChange={(e) => set("sku", e.target.value)} />
             </Field>
@@ -310,6 +313,111 @@ export function ProductForm({
             </Field>
           </div>
         </AdminCard>
+
+        {form.kind === "PACK" && (
+          <AdminCard
+            title="Qué vinos lleva el box"
+            description="Se arma con vinos que ya están cargados. Es lo primero que hay que definir: el precio se decide mirando cuánto valen sueltos."
+          >
+            <ul className="space-y-2">
+              {form.packItems.map((item, index) => (
+                <li key={`${item.componentId}-${index}`} className="flex items-center gap-2">
+                  <Select
+                    value={item.componentId}
+                    onChange={(e) => {
+                      const next = [...form.packItems];
+                      next[index] = { ...item, componentId: e.target.value };
+                      set("packItems", next);
+                    }}
+                    className="flex-1"
+                    aria-label="Vino del pack"
+                  >
+                    <option value="">Elegí un vino</option>
+                    {wines.map((wine) => (
+                      <option key={wine.id} value={wine.id}>
+                        {wine.name} — {wine.sku} (disp. {wine.available})
+                      </option>
+                    ))}
+                  </Select>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={item.quantity}
+                    aria-label="Cantidad"
+                    className="w-20"
+                    onChange={(e) => {
+                      const next = [...form.packItems];
+                      next[index] = { ...item, quantity: Number(e.target.value) || 1 };
+                      set("packItems", next);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    aria-label="Quitar del pack"
+                    onClick={() => set("packItems", form.packItems.filter((_, i) => i !== index))}
+                    className="rounded-sm p-2 text-stone-500 hover:text-danger-500"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {form.packItems.length === 0 && (
+              <p className="border border-dashed border-linen-300 px-4 py-6 text-center text-[13px] leading-relaxed text-stone-500">
+                El box todavía está vacío.
+                <br />
+                Agregá los vinos que lo componen; sin al menos uno no se puede guardar.
+              </p>
+            )}
+
+            <Button
+              size="sm"
+              variant="subtle"
+              className="mt-3"
+              onClick={() => set("packItems", [...form.packItems, { componentId: "", quantity: 1 }])}
+            >
+              <Plus className="size-3.5" />
+              Agregar vino
+            </Button>
+
+            {form.packItems.length > 0 && (
+              <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-linen-200 pt-4 sm:grid-cols-4">
+                <div>
+                  <dt className="text-[12px] uppercase tracking-wider text-stone-500">Botellas</dt>
+                  <dd className="mt-0.5 text-[20px] tabular">{packBotellas}</dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] uppercase tracking-wider text-stone-500">
+                    Sueltos valen
+                  </dt>
+                  <dd className="mt-0.5 text-[20px] tabular">{formatARS(packTotal)}</dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] uppercase tracking-wider text-stone-500">Ahorro</dt>
+                  <dd className="mt-0.5 text-[20px] tabular">
+                    {packAhorro > 0 ? (
+                      <span className="text-success-500">{formatARS(packAhorro)}</span>
+                    ) : (
+                      <span className="text-stone-400">—</span>
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] uppercase tracking-wider text-stone-500">
+                    Se pueden armar
+                  </dt>
+                  <dd className="mt-0.5 text-[20px] tabular font-medium">{packAvailable}</dd>
+                </div>
+              </dl>
+            )}
+
+            <p className="mt-4 text-[13px] leading-relaxed text-stone-500">
+              El box no tiene stock propio: cuántos se pueden armar sale del vino más escaso de los
+              que lo componen. Si se acaba uno, el box deja de venderse solo.
+            </p>
+          </AdminCard>
+        )}
 
         <AdminCard title="Precios">
           <div className="grid gap-4 sm:grid-cols-3">
@@ -397,71 +505,6 @@ export function ProductForm({
           </AdminCard>
         )}
 
-        {form.kind === "PACK" && (
-          <AdminCard
-            title="Composición del pack"
-            description={`Disponibilidad derivada: ${packAvailable} packs · valor individual ${formatARS(packTotal)}`}
-          >
-            <ul className="space-y-2">
-              {form.packItems.map((item, index) => (
-                <li key={`${item.componentId}-${index}`} className="flex items-center gap-2">
-                  <Select
-                    value={item.componentId}
-                    onChange={(e) => {
-                      const next = [...form.packItems];
-                      next[index] = { ...item, componentId: e.target.value };
-                      set("packItems", next);
-                    }}
-                    className="flex-1"
-                    aria-label="Vino del pack"
-                  >
-                    <option value="">Elegí un vino</option>
-                    {wines.map((wine) => (
-                      <option key={wine.id} value={wine.id}>
-                        {wine.name} — {wine.sku} (disp. {wine.available})
-                      </option>
-                    ))}
-                  </Select>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={item.quantity}
-                    aria-label="Cantidad"
-                    className="w-20"
-                    onChange={(e) => {
-                      const next = [...form.packItems];
-                      next[index] = { ...item, quantity: Number(e.target.value) || 1 };
-                      set("packItems", next);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    aria-label="Quitar del pack"
-                    onClick={() => set("packItems", form.packItems.filter((_, i) => i !== index))}
-                    className="rounded-sm p-2 text-stone-500 hover:text-danger-500"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-
-            <Button
-              size="sm"
-              variant="subtle"
-              className="mt-3"
-              onClick={() => set("packItems", [...form.packItems, { componentId: "", quantity: 1 }])}
-            >
-              <Plus className="size-3.5" />
-              Agregar vino
-            </Button>
-
-            <p className="mt-4 text-[13px] leading-relaxed text-stone-500">
-              El pack no tiene stock propio: su disponibilidad se calcula con el stock real de cada
-              vino que lo compone. Si falta uno, el pack deja de venderse automáticamente.
-            </p>
-          </AdminCard>
-        )}
 
         <AdminCard
           title="Clasificación"

@@ -86,9 +86,13 @@ export default async function EditProductPage({ params }: PageProps) {
   return (
     <>
       <AdminPageHeader
-        breadcrumb={[{ label: "Productos", href: "/admin/productos" }]}
+        breadcrumb={[
+          product.kind === "PACK"
+            ? { label: "Box", href: "/admin/box" }
+            : { label: "Productos", href: "/admin/productos" },
+        ]}
         title={product.name}
-        description={`${product.sku} · ${product.kind === "PACK" ? "Pack" : "Vino"}`}
+        description={`${product.sku} · ${product.kind === "PACK" ? "Box" : "Vino"}`}
       />
 
       <ProductForm
