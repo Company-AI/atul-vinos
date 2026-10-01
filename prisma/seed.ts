@@ -464,6 +464,7 @@ async function main() {
     await prisma.shippingZone.create({
       data: {
         name: z.name, sortOrder: z.sortOrder, provinces: z.provinces, cities: z.cities,
+        postalCodeFrom: z.postalCodeFrom ?? null, postalCodeTo: z.postalCodeTo ?? null,
         rates: {
           create: z.rates.map((r, i) => ({
             name: r.name, price: r.price, freeFrom: r.freeFrom ?? null,

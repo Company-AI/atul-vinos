@@ -31,6 +31,8 @@ export type ZoneRow = {
   name: string;
   provinces: string[];
   cities: string[];
+  postalCodeFrom: string | null;
+  postalCodeTo: string | null;
   isActive: boolean;
   sortOrder: number;
   rates: RateRow[];
@@ -49,6 +51,8 @@ const EMPTY_ZONE = {
   name: "",
   provinces: [] as string[],
   cities: "",
+  postalCodeFrom: "",
+  postalCodeTo: "",
   isActive: true,
   sortOrder: "0",
   rates: [
@@ -76,6 +80,8 @@ export function ShippingManager({
       name: zone.name,
       provinces: zone.provinces,
       cities: zone.cities.join(", "),
+      postalCodeFrom: zone.postalCodeFrom ?? "",
+      postalCodeTo: zone.postalCodeTo ?? "",
       isActive: zone.isActive,
       sortOrder: String(zone.sortOrder),
       rates: zone.rates.map((rate) => ({
@@ -244,6 +250,8 @@ export function ShippingManager({
                     name: form.name,
                     provinces: form.provinces,
                     cities: form.cities.split(",").map((c) => c.trim()).filter(Boolean),
+                    postalCodeFrom: form.postalCodeFrom.trim() || null,
+                    postalCodeTo: form.postalCodeTo.trim() || null,
                     isActive: form.isActive,
                     sortOrder: Number(form.sortOrder || 0),
                     rates: form.rates.map((rate) => ({
@@ -285,6 +293,23 @@ export function ShippingManager({
                 hint="Separadas por coma. Vacío = aplica a toda la provincia.">
                 <Input id="z-cities" value={form.cities}
                   onChange={(e) => setForm({ ...form, cities: e.target.value })} />
+              </Field>
+              {/*
+                El rango de CP es lo que hace que la calculadora de la ficha del
+                vino acierte: ahí el cliente sólo pone el código postal. Si la
+                zona no tiene rango, se sigue resolviendo por provincia.
+              */}
+              <Field label="Código postal desde" htmlFor="z-cp-from"
+                hint="Opcional. Se evalúa antes que localidad y provincia.">
+                <Input id="z-cp-from" inputMode="numeric" placeholder="5800"
+                  value={form.postalCodeFrom}
+                  onChange={(e) => setForm({ ...form, postalCodeFrom: e.target.value })} />
+              </Field>
+              <Field label="Código postal hasta" htmlFor="z-cp-to"
+                hint="Vacío = sólo el código de arriba.">
+                <Input id="z-cp-to" inputMode="numeric" placeholder="5809"
+                  value={form.postalCodeTo}
+                  onChange={(e) => setForm({ ...form, postalCodeTo: e.target.value })} />
               </Field>
             </div>
 

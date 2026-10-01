@@ -10,6 +10,14 @@ export type ZoneSeed = {
   sortOrder: number;
   provinces: string[];
   cities: string[];
+  /*
+    Rango de códigos postales de la zona. Es lo que permite cotizar con sólo el
+    CP, que es el único dato de su dirección que la gente sabe de memoria.
+    Se cargan únicamente los que son inequívocos; el resto se resuelve por
+    provincia y se completa desde el admin cuando haga falta.
+  */
+  postalCodeFrom?: string;
+  postalCodeTo?: string;
   rates: {
     name: string;
     price: number;
@@ -23,6 +31,8 @@ export const SHIPPING_ZONES: ZoneSeed[] = [
     {
       name: "Río Cuarto y alrededores", sortOrder: 10,
       provinces: ["Córdoba"], cities: ["Río Cuarto", "Las Higueras", "Holmberg"],
+      // 5800 es Río Cuarto; las localidades pegadas caen en los que siguen.
+      postalCodeFrom: "5800", postalCodeTo: "5809",
       rates: [
         // Gratis siempre, sin monto mínimo: es la promesa que publica la home
         // y la franja superior. Si algún día vuelve a tener costo, este 0 y
@@ -34,6 +44,7 @@ export const SHIPPING_ZONES: ZoneSeed[] = [
     {
       name: "Provincia de Córdoba", sortOrder: 20,
       provinces: ["Córdoba"], cities: [],
+      postalCodeFrom: "5000", postalCodeTo: "5999",
       rates: [{ name: "Envío estándar", price: 6900, freeFrom: 100000, etaMinDays: 2, etaMaxDays: 4 }],
     },
     {

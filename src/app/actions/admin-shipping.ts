@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/infra/db/prisma";
 import { assertPermission } from "@/infra/auth/guards";
 import { recordAudit } from "@/domain/audit/service";
+import { postalCodeNumber } from "@/lib/ar";
 
 export type ShippingActionResult = { ok: true; message: string } | { ok: false; error: string };
 
@@ -13,6 +14,9 @@ const zoneSchema = z.object({
   name: z.string().min(2, "Ingresá el nombre de la zona."),
   provinces: z.array(z.string()).default([]),
   cities: z.array(z.string()).default([]),
+  /* Rango de códigos postales: cuatro dígitos o un CPA, del que se usa el número. */
+  postalCodeFrom: z.string().nullable().optional(),
+  postalCodeTo: z.string().nullable().optional(),
   isActive: z.boolean().default(true),
   sortOrder: z.number().int().default(0),
   rates: z
@@ -59,6 +63,13 @@ export async function saveShippingZone(
       name: data.name.trim(),
       provinces: data.provinces.map((p) => p.trim()).filter(Boolean),
       cities: data.cities.map((c) => c.trim()).filter(Boolean),
+      /*
+        Se guarda normalizado a cuatro dígitos: si alguien pega un CPA entero
+        el rango igual tiene que poder compararse contra el CP que escriba un
+        cliente, que casi siempre son cuatro números pelados.
+      */
+      postalCodeFrom: data.postalCodeFrom ? String(postalCodeNumber(data.postalCodeFrom) ?? "") || null : null,
+      postalCodeTo: data.postalCodeTo ? String(postalCodeNumber(data.postalCodeTo) ?? "") || null : null,
       isActive: data.isActive,
       sortOrder: data.sortOrder,
     };

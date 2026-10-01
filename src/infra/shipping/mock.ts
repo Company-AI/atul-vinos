@@ -4,6 +4,9 @@ import type {
 } from "@/domain/shipping/ports";
 import { prisma } from "@/infra/db/prisma";
 import { toNumber } from "@/lib/money";
+import { postalCodeNumber } from "@/lib/ar";
+import { IS_DEMO } from "@/infra/demo/mode";
+import { demoShippingZones } from "@/infra/demo/content";
 
 /**
  * Proveedor interno funcional: cotiza con las zonas y tarifas configuradas en
@@ -19,13 +22,42 @@ export class MockShippingProvider implements ShippingProvider {
   }
 
   async quote(destination: ShippingDestination, parcel: ShippingParcel): Promise<ShippingQuote[]> {
-    const zones = await prisma.shippingZone.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: "asc" },
-      include: { rates: { where: { isActive: true }, orderBy: { sortOrder: "asc" } } },
-    });
+    /*
+      Sin base, las zonas salen de la misma fuente que las publica en /envios.
+      Cotizar es la única parte del checkout que se puede mostrar de verdad en
+      la vista de demostración, y es justo la que el cliente quiere probar.
+    */
+    const zones = IS_DEMO
+      ? demoShippingZones()
+      : await prisma.shippingZone.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          include: { rates: { where: { isActive: true }, orderBy: { sortOrder: "asc" } } },
+        });
+
+    /*
+      El código postal manda, porque es lo más preciso que tenemos y lo único
+      que el cliente conoce de memoria. Recién si ninguna zona declara un rango
+      que lo contenga se cae en localidad y provincia, que es como venía
+      funcionando: las zonas sin rango se comportan igual que antes.
+
+      Importa para la promesa comercial: "Río Cuarto y alrededores" es gratis y
+      se distingue del resto de Córdoba por la localidad. Pidiéndole la ciudad
+      escrita a mano, un "rio cuarto" sin tilde ya no coincidía; el 5800 sí.
+    */
+    const cp = postalCodeNumber(destination.postalCode);
+
+    const enRango = (zone: (typeof zones)[number]) => {
+      if (cp === null) return false;
+      const desde = zone.postalCodeFrom ? postalCodeNumber(zone.postalCodeFrom) : null;
+      const hasta = zone.postalCodeTo ? postalCodeNumber(zone.postalCodeTo) : null;
+      if (desde === null && hasta === null) return false;
+      // Con una sola punta cargada el rango es ese código postal y nada más.
+      return cp >= (desde ?? hasta!) && cp <= (hasta ?? desde!);
+    };
 
     const matched =
+      zones.find(enRango) ??
       zones.find((zone) => {
         const cityMatch =
           zone.cities.length > 0 &&
@@ -39,8 +71,11 @@ export class MockShippingProvider implements ShippingProvider {
         if (zone.provinces.length > 0) return provinceMatch;
         return false;
       }) ??
-      // Zona sin provincias ni ciudades = "resto del país"
-      zones.find((z) => z.provinces.length === 0 && z.cities.length === 0);
+      // Zona sin reglas de ningún tipo = "resto del país"
+      zones.find(
+        (z) =>
+          z.provinces.length === 0 && z.cities.length === 0 && !z.postalCodeFrom && !z.postalCodeTo,
+      );
 
     if (!matched) return [];
 

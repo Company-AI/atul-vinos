@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { coincideBusqueda, normalizarBusqueda } from "@/lib/buscar";
+import { postalCodeNumber } from "@/lib/ar";
 
 describe("búsqueda del panel", () => {
   it("ignora las tildes en los dos lados", () => {
@@ -26,5 +27,20 @@ describe("búsqueda del panel", () => {
 
   it("conserva guiones y espacios, que slugify se llevaría puestos", () => {
     expect(normalizarBusqueda("NOR-DOC MLB")).toBe("nor-doc mlb");
+  });
+});
+
+describe("código postal argentino", () => {
+  it("lee el número tanto del formato viejo como del CPA", () => {
+    expect(postalCodeNumber("5800")).toBe(5800);
+    expect(postalCodeNumber("X5800ABC")).toBe(5800);
+    expect(postalCodeNumber("x5800abc")).toBe(5800);
+    expect(postalCodeNumber("  1425 ")).toBe(1425);
+  });
+
+  it("devuelve null cuando no hay número, para no confundirlo con cero", () => {
+    expect(postalCodeNumber("")).toBeNull();
+    expect(postalCodeNumber("abc")).toBeNull();
+    expect(postalCodeNumber("123")).toBeNull();
   });
 });
