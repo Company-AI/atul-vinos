@@ -6,6 +6,7 @@ import { prisma } from "@/infra/db/prisma";
 import { cotizarAndreani, leerConfigAndreani } from "./andreani";
 import {
   cotizarEnviopack, crearEnvioEnviopack, etiquetaEnviopack, leerConfigEnviopack,
+  trackingEnviopack,
 } from "./enviopack";
 
 /**
@@ -128,5 +129,15 @@ export class EnviopackProvider extends ExternalShippingProvider {
     const config = leerConfigEnviopack();
     if (!config) return null;
     return etiquetaEnviopack(config, externalId);
+  }
+
+  /*
+    Envíopack identifica el envío por su id, no por el número de seguimiento,
+    así que acá llega el externalId que guardamos al despachar.
+  */
+  async getTracking(externalId: string): Promise<TrackingStatus> {
+    const config = leerConfigEnviopack();
+    if (!config) this.notImplemented("getTracking");
+    return trackingEnviopack(config, externalId);
   }
 }

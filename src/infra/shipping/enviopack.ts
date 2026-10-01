@@ -1,8 +1,9 @@
 import type {
-  CarrierLabel, CreateShipmentInput, CreateShipmentResult,
-  ShippingDestination, ShippingParcel, ShippingQuote,
+  CarrierLabel, CreateShipmentInput, CreateShipmentResult, ShippingDestination,
+  ShippingParcel, ShippingQuote, TrackingEvent, TrackingStatus, TrackingStatusCode,
 } from "@/domain/shipping/ports";
 import { provinceCode } from "@/lib/ar";
+import { normalizarBusqueda } from "@/lib/buscar";
 
 /**
  * Envíopack: autenticación y cotizador.
@@ -374,5 +375,98 @@ export async function etiquetaEnviopack(
     contentType: res.headers.get("content-type") ?? "application/pdf",
     filename: `etiqueta-${externalId}.pdf`,
     data: await res.arrayBuffer(),
+  };
+}
+
+/* ── Seguimiento ───────────────────────────────────────────────────────────── */
+
+/**
+ * Traduce la condición que informa el correo a uno de nuestros estados.
+ *
+ * Envíopack publica el árbol de condiciones en GET /envios/condiciones, que
+ * necesita credenciales, así que todavía no sabemos los identificadores
+ * exactos. Mientras tanto se reconoce el texto, con dos reglas que importan:
+ *
+ *   - lo que no se reconoce NO cambia el estado. Se guarda el evento con las
+ *     palabras del correo y listo. Un estado inventado en la página de
+ *     seguimiento es peor que un estado viejo.
+ *   - las negaciones se evalúan primero. "No entregado" no puede caer en la
+ *     regla de "entregado": sería avisarle a alguien que su vino llegó cuando
+ *     justamente no llegó.
+ */
+const CONDICIONES: { patron: RegExp; estado: TrackingStatusCode }[] = [
+  { patron: /no\s*se?\s*entreg|no\s*entregad|fallid|rechaz|ausente|domicilio\s*cerrado/, estado: "FAILED" },
+  { patron: /devoluc|devuelt|retorn/, estado: "RETURNED" },
+  { patron: /anulad|cancelad/, estado: "CANCELLED" },
+  { patron: /entregad/, estado: "DELIVERED" },
+  { patron: /repart|distribuc|salio\s*a\s*entregar/, estado: "OUT_FOR_DELIVERY" },
+  { patron: /transito|en\s*camino|arribo|despacho|manifiest/, estado: "IN_TRANSIT" },
+  { patron: /guia\s*emitida|etiqueta|pre.?ingreso|procesad/, estado: "LABEL_CREATED" },
+];
+
+export function estadoDesdeCondicion(texto: string): TrackingStatusCode | null {
+  const limpio = normalizarBusqueda(texto);
+  for (const { patron, estado } of CONDICIONES) {
+    if (patron.test(limpio)) return estado;
+  }
+  return null;
+}
+
+type EnvioEnviopack = {
+  id?: number;
+  estado?: string;
+  tracking_number?: string | null;
+  condicion?: string | null;
+};
+
+export async function consultarEnvio(config: EnviopackConfig, externalId: string) {
+  return pedir<EnvioEnviopack>(config, `/envios/${externalId}`);
+}
+
+export async function trackingEnviopack(
+  config: EnviopackConfig,
+  externalId: string,
+): Promise<TrackingStatus> {
+  const [envio, eventos] = await Promise.all([
+    consultarEnvio(config, externalId),
+    pedir<{ fecha?: string; mensaje?: string }[]>(config, `/envios/${externalId}/tracking`, {
+      query: { formato: "ISO" },
+    }).catch(() => [] as { fecha?: string; mensaje?: string }[]),
+  ]);
+
+  const events: TrackingEvent[] = (Array.isArray(eventos) ? eventos : [])
+    .filter((e) => e.mensaje)
+    .map((e) => ({
+      status: estadoDesdeCondicion(e.mensaje!) ?? "IN_TRANSIT",
+      description: e.mensaje!,
+      occurredAt: e.fecha ? new Date(e.fecha.replace(" ", "T")) : new Date(),
+    }))
+    .filter((e) => !Number.isNaN(e.occurredAt.getTime()));
+
+  /*
+    El estado final sale del último evento reconocible, no del último evento a
+    secas: si el correo manda algo que no entendemos, se conserva el último que
+    sí entendimos en vez de retroceder a un genérico.
+  */
+  const ultimoConocido = [...events]
+    .reverse()
+    .find((e) => estadoDesdeCondicion(e.description) !== null);
+
+  const porCondicion = envio.condicion ? estadoDesdeCondicion(envio.condicion) : null;
+  const status =
+    porCondicion ??
+    (ultimoConocido ? estadoDesdeCondicion(ultimoConocido.description)! : null) ??
+    (envio.tracking_number ? "LABEL_CREATED" : "PENDING");
+
+  return {
+    status,
+    trackingUrl: envio.tracking_number
+      ? `https://seguimiento.enviopack.com/?id=${envio.tracking_number}`
+      : null,
+    events,
+    deliveredAt:
+      status === "DELIVERED"
+        ? (events.findLast((e) => e.status === "DELIVERED")?.occurredAt ?? new Date())
+        : null,
   };
 }

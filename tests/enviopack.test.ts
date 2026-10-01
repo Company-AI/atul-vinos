@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { mapearCotizaciones, partirServiceCode } from "@/infra/shipping/enviopack";
+import {
+  estadoDesdeCondicion, mapearCotizaciones, partirServiceCode,
+} from "@/infra/shipping/enviopack";
 import { provinceCode } from "@/lib/ar";
 
 /*
@@ -95,5 +97,31 @@ describe("código de servicio al despachar", () => {
       servicio: "N",
       modalidad: "D",
     });
+  });
+});
+
+describe("condición del correo a estado nuestro", () => {
+  it("reconoce las que cambian lo que ve el cliente", () => {
+    expect(estadoDesdeCondicion("Entregado")).toBe("DELIVERED");
+    expect(estadoDesdeCondicion("En tránsito")).toBe("IN_TRANSIT");
+    expect(estadoDesdeCondicion("Salió a repartir")).toBe("OUT_FOR_DELIVERY");
+    expect(estadoDesdeCondicion("Guia emitida")).toBe("LABEL_CREATED");
+  });
+
+  it("no confunde una negación con una entrega", () => {
+    // La regla que más importa: avisar "llegó" cuando no llegó es el peor error.
+    expect(estadoDesdeCondicion("No entregado")).toBe("FAILED");
+    expect(estadoDesdeCondicion("No se entregó: domicilio cerrado")).toBe("FAILED");
+    expect(estadoDesdeCondicion("Visita fallida")).toBe("FAILED");
+  });
+
+  it("entiende sin tildes, porque el correo escribe como quiere", () => {
+    expect(estadoDesdeCondicion("EN TRANSITO")).toBe("IN_TRANSIT");
+    expect(estadoDesdeCondicion("devolucion al remitente")).toBe("RETURNED");
+  });
+
+  it("devuelve null ante algo que no conoce, en vez de inventar un estado", () => {
+    expect(estadoDesdeCondicion("Zarandeo logístico nivel 4")).toBeNull();
+    expect(estadoDesdeCondicion("")).toBeNull();
   });
 });
