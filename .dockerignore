@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+public/uploads
+docs
+tests
+coverage
+*.log
+.DS_Store

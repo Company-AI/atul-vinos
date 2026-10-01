@@ -1,0 +1,77 @@
+# Stack de producción en el VPS. Caddy termina TLS y hace de proxy; Next escucha
+# en 3000 sólo dentro de la red de Docker; Postgres nunca sale del host.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atul
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: atul
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atul -d atul"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: aplica las migraciones y termina. Usa la etapa `builder`, que es la
+  # única con el node_modules completo que el CLI de Prisma necesita.
+  migrate:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: builder
+    env_file: .env.production
+    command: npx prisma migrate deploy
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+    restart: unless-stopped
+    env_file: .env.production
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      # El driver de storage es `local`: en un VPS el disco persiste, así que
+      # las fotos que suba el admin sobreviven al redeploy.
+      - uploads:/app/public/uploads
+    # El CI espera a que esto dé `healthy`. No depende del DNS ni del
+    # certificado: prueba la app real, no el proxy.
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 40s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:

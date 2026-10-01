@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // El deploy es una imagen Docker en VPS: `standalone` empaqueta el server
+  // con sólo las dependencias que el trace encuentra, sin node_modules entero.
+  output: "standalone",
+
   // Imágenes propias en /public y, en producción, el bucket S3 configurado.
   images: {
     formats: ["image/avif", "image/webp"],

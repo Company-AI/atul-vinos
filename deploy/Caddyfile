@@ -1,0 +1,7 @@
+# Caddy pide y renueva el certificado de Let's Encrypt solo. Para que funcione,
+# atulvinos.com tiene que resolver a este servidor ANTES de levantar el stack.
+
+atulvinos.com, www.atulvinos.com {
+	encode zstd gzip
+	reverse_proxy app:3000
+}
