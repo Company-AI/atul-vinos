@@ -42,7 +42,6 @@ export default async function NewProductPage() {
         videos={[]}
         canEditPrice={user.isSuperAdmin || user.permissions.has("products.price")}
         canArchive={false}
-        canEditTaxonomies={user.isSuperAdmin || user.permissions.has("products.edit")}
         inventory={null}
       />
     </>

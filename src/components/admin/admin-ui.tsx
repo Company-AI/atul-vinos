@@ -117,8 +117,8 @@ export function AdminCard({
       {(title || action) && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-linen-200 px-4 py-3">
           <div>
-            {title && <h2 className="text-[13px] font-medium text-carbon-900">{title}</h2>}
-            {description && <p className="mt-0.5 text-[12px] text-stone-500">{description}</p>}
+            {title && <h2 className="text-[15px] font-medium text-carbon-900">{title}</h2>}
+            {description && <p className="mt-1 text-[13px] leading-relaxed text-stone-500">{description}</p>}
           </div>
           {action}
         </div>
