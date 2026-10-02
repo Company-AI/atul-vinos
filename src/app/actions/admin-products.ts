@@ -100,8 +100,28 @@ export async function saveProduct(
   }
   const data = parsed.data;
 
-  if (data.kind === "PACK" && data.packItems.length === 0) {
-    return { ok: false, error: "Un pack necesita al menos un vino que lo componga." };
+  /*
+    La composición del box se normaliza antes de tocar la base.
+
+    Una fila a la que no se le eligió vino llega con el id vacío y rompería la
+    clave foránea; dos filas del mismo vino rompen la restricción de unicidad
+    de PackItem. Las dos cosas son fáciles de hacer sin querer en el formulario
+    y terminaban en un error crudo. Se descartan las vacías y se suman las
+    repetidas, que es lo que la persona quiso decir: dos botellas de ese vino.
+  */
+  const componentes = new Map<string, number>();
+  for (const item of data.packItems) {
+    const id = item.componentId.trim();
+    if (id === "") continue;
+    componentes.set(id, (componentes.get(id) ?? 0) + item.quantity);
+  }
+  const packItems = [...componentes].map(([componentId, quantity]) => ({
+    componentId,
+    quantity,
+  }));
+
+  if (data.kind === "PACK" && packItems.length === 0) {
+    return { ok: false, error: "El box necesita al menos un vino que lo componga." };
   }
 
   // Cambiar precios exige un permiso propio (spec §55).
@@ -255,7 +275,7 @@ export async function saveProduct(
       if (data.kind === "PACK") {
         await tx.packItem.deleteMany({ where: { packId: product.id } });
         await tx.packItem.createMany({
-          data: data.packItems.map((item) => ({
+          data: packItems.map((item) => ({
             packId: product.id,
             componentId: item.componentId,
             quantity: item.quantity,

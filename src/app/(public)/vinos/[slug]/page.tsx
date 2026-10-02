@@ -8,6 +8,7 @@ import { getFavoriteIds } from "@/app/actions/favorites";
 import { getSettings } from "@/domain/settings/service";
 import { formatARS } from "@/lib/money";
 import { AddToCartPanel } from "@/components/shop/add-to-cart";
+import { CalculadorEnvio } from "@/components/shop/calculador-envio";
 import { FavoriteButton } from "@/components/shop/favorite-button";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { WineGrid } from "@/components/shop/wine-grid";
@@ -213,6 +214,19 @@ export default async function ProductPage({ params }: PageProps) {
             <div className="mt-8">
               <AddToCartPanel productId={product.id} available={available} />
             </div>
+
+            {/*
+              El costo de envío decide la compra y se pregunta acá, no en el
+              checkout. Un box cotiza por las botellas que lleva adentro, que
+              es lo que define el bulto.
+            */}
+            <CalculadorEnvio
+              bottles={
+                isPack
+                  ? product.packItems.reduce((acc, item) => acc + item.quantity, 0) || 1
+                  : 1
+              }
+            />
 
             <ul className="mt-8 space-y-2 border-t border-linen-200 pt-6 text-[13px] text-stone-600">
               <li className="flex items-center gap-2">

@@ -175,6 +175,13 @@ export async function createOrderFromCart(
     reference: input.address.reference ?? "",
     method: input.shipping.methodName,
     carrierCode: input.shipping.carrierCode,
+    /*
+      El código del servicio elegido, tal cual lo devolvió el transportista al
+      cotizar. Sin esto, al despachar no se sabe con qué correo ni con qué
+      servicio se le prometió el envío a la persona, y había que adivinarlo
+      del nombre que se mostró en pantalla.
+    */
+    serviceCode: input.shipping.serviceCode ?? "",
   };
 
   try {

@@ -49,6 +49,8 @@ export default async function AdminShippingPage({ searchParams }: PageProps) {
     name: zone.name,
     provinces: zone.provinces,
     cities: zone.cities,
+    postalCodeFrom: zone.postalCodeFrom,
+    postalCodeTo: zone.postalCodeTo,
     isActive: zone.isActive,
     sortOrder: zone.sortOrder,
     rates: zone.rates.map((rate) => ({

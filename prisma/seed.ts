@@ -456,6 +456,8 @@ async function main() {
   const carrierData = [
     { code: "mock", name: "Logística Atul (interno)", sortOrder: 10,
       trackingUrlTemplate: "/seguimiento/{tracking}" },
+    { code: "enviopack", name: "Envíopack", sortOrder: 15,
+      trackingUrlTemplate: "https://seguimiento.enviopack.com/?id={tracking}" },
     { code: "andreani", name: "Andreani", sortOrder: 20,
       trackingUrlTemplate: "https://www.andreani.com/#!/informacionEnvio/{tracking}" },
     { code: "correo_argentino", name: "Correo Argentino", sortOrder: 30,
@@ -477,6 +479,7 @@ async function main() {
     await prisma.shippingZone.create({
       data: {
         name: z.name, sortOrder: z.sortOrder, provinces: z.provinces, cities: z.cities,
+        postalCodeFrom: z.postalCodeFrom ?? null, postalCodeTo: z.postalCodeTo ?? null,
         rates: {
           create: z.rates.map((r, i) => ({
             name: r.name, price: r.price, freeFrom: r.freeFrom ?? null,

@@ -1,7 +1,13 @@
 # Deploy
 
-Probado contra Netlify con `@netlify/plugin-nextjs`. Sirve igual para Vercel:
-lo único que cambia es dónde se cargan las variables.
+> **El deploy real es el VPS con Docker**, en `deploy/` y en los workflows de
+> `.github/workflows`. Un merge a `main` construye la imagen y la publica solo.
+> Eso resuelve por sí solo los dos problemas que este archivo marca como
+> pendientes: las fotos subidas desde el admin y el cupo de conexiones a la
+> base.
+>
+> Lo que sigue quedó de cuando el destino era serverless. Se conserva por si
+> alguna vez vuelve a hacer falta.
 
 ## 1. Base de datos
 

@@ -25,16 +25,18 @@ const NAV: SidebarItem[] = [
       cliente: quien entra por el menú suele estar buscando un tipo concreto,
       y mandarlo a las 22 etiquetas lo obliga a filtrar después.
 
-      Sólo van los tipos que tienen vinos cargados: 18 tintos, 2 blancos, 2
-      rosados y 1 dulce. Espumantes no hay —el cliente los mencionó como
-      ejemplo— y mandar a alguien a un filtro vacío es peor que no ofrecer la
-      opción. Cuando entren, se agregan acá.
+      Espumantes va aunque hoy no haya ninguno cargado: lo pidió el cliente
+      para que la categoría esté a la vista desde ya. Quien entre ahí no se
+      queda colgado —la página muestra "No encontramos vinos con esos
+      filtros" y un botón para volver al catálogo—, pero conviene cargar
+      alguno antes de abrir la tienda al público.
     */
     hijos: [
       { label: "Todos los vinos", href: "/vinos" },
       { label: "Tintos", href: "/vinos?tipo=TINTO" },
       { label: "Blancos", href: "/vinos?tipo=BLANCO" },
       { label: "Rosados", href: "/vinos?tipo=ROSADO" },
+      { label: "Espumantes", href: "/vinos?tipo=ESPUMANTE" },
       { label: "Dulces", href: "/vinos?tipo=DULCE" },
     ],
   },

@@ -1,6 +1,8 @@
 import type { ShippingProvider } from "@/domain/shipping/ports";
 import { MockShippingProvider } from "./mock";
-import { AndreaniProvider, CorreoArgentinoProvider, OcaProvider } from "./external-providers";
+import {
+  AndreaniProvider, CorreoArgentinoProvider, EnviopackProvider, OcaProvider,
+} from "./external-providers";
 
 const providers = new Map<string, ShippingProvider>();
 
@@ -9,6 +11,7 @@ function register(provider: ShippingProvider) {
 }
 
 register(new MockShippingProvider());
+register(new EnviopackProvider());
 register(new AndreaniProvider());
 register(new OcaProvider());
 register(new CorreoArgentinoProvider());

@@ -1,6 +1,11 @@
 # Deploy automático al VPS. Corre sólo cuando un commit llega a main, que es lo
 # que pasa al mergear un PR. Las credenciales viven en los secrets del repo y se
 # reescriben en el servidor en cada deploy: no hay copia manual que se desincronice.
+#
+# Lo que no es secreto va en "variables" del repo y no en "secrets", para poder
+# leerlo: MODO_APERTURA cierra la tienda al público mientras valga "1", y
+# APERTURA_EN es la fecha de la cuenta regresiva. Cambiar cualquiera de las dos
+# y volver a desplegar alcanza; no hace falta tocar el servidor.
 
 name: Deploy
 
@@ -55,6 +60,12 @@ jobs:
             SMTP_PASS=${{ secrets.SMTP_PASS }}
             SEED_ADMIN_PASSWORD=${{ secrets.SEED_ADMIN_PASSWORD }}
             STORAGE_DRIVER=local
+            MODO_APERTURA=${{ vars.MODO_APERTURA }}
+            APERTURA_EN=${{ vars.APERTURA_EN }}
+            ENVIOPACK_API_KEY=${{ secrets.ENVIOPACK_API_KEY }}
+            ENVIOPACK_SECRET_KEY=${{ secrets.ENVIOPACK_SECRET_KEY }}
+            ENVIOPACK_DIRECCION_ENVIO=${{ vars.ENVIOPACK_DIRECCION_ENVIO }}
+            ENVIOPACK_WEBHOOK_SECRET=${{ secrets.ENVIOPACK_WEBHOOK_SECRET }}
         run: |
           printf '%s' "$DEPLOY_ENV" | ssh servidor \
             "umask 077 && mkdir -p '$APP_DIR/deploy' && cat > '$APP_DIR/deploy/.env.production'"
