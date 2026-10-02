@@ -1,0 +1,102 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Todo el sitio en un servidor propio: base, aplicación y un proxy que resuelve
+# el HTTPS solo.
+#
+#   docker compose up -d --build        levanta todo
+#   docker compose logs -f app          ver qué hace
+#   docker compose --profile setup run --rm seed    carga el catálogo inicial
+#
+# Las variables salen del archivo .env que está al lado de este, copiado de
+# .env.server.example.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-atul}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:-atul}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # No se publica ningún puerto: la base sólo se habla desde adentro de la
+    # red de compose. Para entrar con un cliente, ver AUTOHOSPEDAJE.md.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-atul} -d ${POSTGRES_DB:-atul}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Aplica las migraciones y termina. Corre antes que la aplicación en cada
+  # `docker compose up`, así que no hay forma de servir el sitio contra una
+  # base con el esquema viejo por haberse olvidado de un paso.
+  migrate:
+    build:
+      context: .
+      target: builder
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-atul}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-atul}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npx", "prisma", "migrate", "deploy"]
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        # Tiene que ser la dirección pública final: queda escrita dentro del
+        # JavaScript que se le manda al navegador.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?falta NEXT_PUBLIC_SITE_URL en .env}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-atul}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-atul}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      # Las fotos que se suben desde el admin viven acá. Sin este volumen se
+      # borrarían en cada despliegue, que es exactamente lo que pasa en los
+      # hosts serverless y por lo que allá hace falta un bucket aparte.
+      - uploads:/app/public/uploads
+
+  proxy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMINIO: ${DOMINIO:?falta DOMINIO en .env}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+  # Carga inicial del catálogo. No corre sola: se pide a mano, una vez.
+  seed:
+    profiles: ["setup"]
+    build:
+      context: .
+      target: builder
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-atul}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-atul}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npx", "tsx", "prisma/seed.ts"]
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:

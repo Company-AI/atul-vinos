@@ -1,7 +1,13 @@
 # Deploy
 
-Probado contra Netlify con `@netlify/plugin-nextjs`. Sirve igual para Vercel:
-lo único que cambia es dónde se cargan las variables.
+> **Si vas a hospedarlo en un servidor propio, el documento es
+> [AUTOHOSPEDAJE.md](AUTOHOSPEDAJE.md).** Es el camino recomendado y resuelve
+> por sí solo los dos problemas que este archivo marca como pendientes: las
+> fotos subidas desde el admin y el cupo de conexiones a la base.
+
+Lo que sigue es el deploy serverless. Probado contra Netlify con
+`@netlify/plugin-nextjs`. Sirve igual para Vercel: lo único que cambia es dónde
+se cargan las variables.
 
 ## 1. Base de datos
 
