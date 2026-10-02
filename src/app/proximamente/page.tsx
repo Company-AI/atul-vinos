@@ -38,6 +38,13 @@ export default async function ProximamentePage() {
   const { company } = settings;
   const foto = contenido.media.imageUrl || contenido.media.posterUrl;
 
+  /*
+    La fecha de apertura puede venir del entorno. Es para poder correrla sin
+    tocar la base ni reconstruir: cuando la tienda está cerrada, mover la fecha
+    es lo más probable que haya que hacer, y suele hacerse con apuro.
+  */
+  const apertura = process.env.APERTURA_EN?.trim() || contenido.targetAt;
+
   return (
     <main className="on-dark relative isolate grid min-h-dvh place-items-center overflow-hidden bg-carbon-950 px-gutter py-12">
       {foto && (
@@ -124,7 +131,7 @@ export default async function ProximamentePage() {
         )}
 
         <div className="mt-10 w-full">
-          <CuentaRegresiva targetAt={contenido.targetAt} finalText={contenido.finalText} />
+          <CuentaRegresiva targetAt={apertura} finalText={contenido.finalText} />
         </div>
 
         {contenido.body && (
