@@ -148,9 +148,22 @@ async function move(
   });
 }
 
+/*
+  `bootstrap` inicializa un sitio real: no borra nada y corta antes de los datos
+  de demostración. Sin la variable, el seed se comporta como siempre.
+*/
+const BOOTSTRAP = process.env.SEED_SCOPE === "bootstrap";
+
+const claveMostrada = () =>
+  process.env.SEED_ADMIN_PASSWORD ? "(la de SEED_ADMIN_PASSWORD)" : "Aurora2026!";
+
 async function main() {
-  console.log("Limpiando base…");
-  await reset();
+  if (BOOTSTRAP) {
+    console.log("Modo bootstrap: no se borra nada.");
+  } else {
+    console.log("Limpiando base…");
+    await reset();
+  }
 
   // ═══════════════════════ Permisos, roles y staff ═══════════════════════════
   const { PERMISSIONS, ROLE_PRESETS } = await import("../src/infra/auth/permissions");
@@ -569,6 +582,55 @@ async function main() {
   }
   console.log(`✓ ${boxes.size} boxes del mes (actual y próximo) con costo y valor comercial`);
 
+  // ═══════════════════════ Contenido, FAQ, blog, banners ═════════════════════
+  for (const s of CMS_SECTIONS) {
+    await prisma.cmsSection.create({
+      data: {
+        key: s.key, page: s.page, type: s.type, title: s.title,
+        sortOrder: s.sortOrder, data: s.data as object, updatedBy: superAdmin.email,
+        // Sin la marca, visible: es lo que vale para casi todas las secciones.
+        isActive: (s as { isActive?: boolean }).isActive ?? true,
+      },
+    });
+  }
+  await prisma.faq.createMany({ data: FAQS });
+  await prisma.banner.createMany({ data: BANNERS });
+  await prisma.notificationTemplate.createMany({
+    data: NOTIFICATION_TEMPLATES.map((t) => ({ ...t, channel: "EMAIL" as const })),
+  });
+
+  const postCategories = new Map<string, string>();
+  for (const name of ["Vinos", "Maridajes", "Cosechas", "Bodega"]) {
+    const c = await prisma.postCategory.create({ data: { name, slug: slugify(name) } });
+    postCategories.set(name, c.id);
+  }
+  for (const p of POSTS) {
+    await prisma.post.create({
+      data: {
+        title: p.title, slug: p.slug, excerpt: p.excerpt, coverUrl: p.coverUrl,
+        content: p.content, author: p.author, categoryId: postCategories.get(p.category)!,
+        seoTitle: p.title, seoDescription: p.excerpt,
+        isPublished: true, publishedAt: p.publishedAt, createdAt: p.publishedAt,
+      },
+    });
+  }
+  console.log(`✓ ${CMS_SECTIONS.length} secciones de contenido, ${FAQS.length} FAQ, ${POSTS.length} artículos, ${BANNERS.length} banners`);
+
+  /*
+    Producción se inicializa con SEED_SCOPE=bootstrap: permisos, roles,
+    configuración, taxonomías, catálogo, logística y contenido. Lo que sigue
+    son datos de demostración (clientes, cupones, pedidos, suscripciones) y no
+    tienen por qué existir en un sitio real.
+  */
+  if (BOOTSTRAP) {
+    const productos = await prisma.product.count();
+    console.log("\n─────────────────────────────────────────────");
+    console.log(`Productos: ${productos}. Sin datos de demostración.`);
+    console.log(`Acceso admin: admin@atulwines.com / ${claveMostrada()}`);
+    console.log("─────────────────────────────────────────────\n");
+    return;
+  }
+
   // ══════════════════════════════ Clientes ═══════════════════════════════════
   const customerData = [
     ["Juan", "Pérez", "juan.perez@example.com", "Córdoba", "Río Cuarto", "5800", "Av. España", "1240"],
@@ -625,45 +687,12 @@ async function main() {
   });
   console.log("✓ 5 cupones");
 
-  // ═══════════════════════ Contenido, FAQ, blog, banners ═════════════════════
-  for (const s of CMS_SECTIONS) {
-    await prisma.cmsSection.create({
-      data: {
-        key: s.key, page: s.page, type: s.type, title: s.title,
-        sortOrder: s.sortOrder, data: s.data as object, updatedBy: superAdmin.email,
-        // Sin la marca, visible: es lo que vale para casi todas las secciones.
-        isActive: (s as { isActive?: boolean }).isActive ?? true,
-      },
-    });
-  }
-  await prisma.faq.createMany({ data: FAQS });
-  await prisma.banner.createMany({ data: BANNERS });
-  await prisma.notificationTemplate.createMany({
-    data: NOTIFICATION_TEMPLATES.map((t) => ({ ...t, channel: "EMAIL" as const })),
-  });
-
-  const postCategories = new Map<string, string>();
-  for (const name of ["Vinos", "Maridajes", "Cosechas", "Bodega"]) {
-    const c = await prisma.postCategory.create({ data: { name, slug: slugify(name) } });
-    postCategories.set(name, c.id);
-  }
-  for (const p of POSTS) {
-    await prisma.post.create({
-      data: {
-        title: p.title, slug: p.slug, excerpt: p.excerpt, coverUrl: p.coverUrl,
-        content: p.content, author: p.author, categoryId: postCategories.get(p.category)!,
-        seoTitle: p.title, seoDescription: p.excerpt,
-        isPublished: true, publishedAt: p.publishedAt, createdAt: p.publishedAt,
-      },
-    });
-  }
   await prisma.newsletterSubscriber.createMany({
     data: customers.slice(0, 6).map((c, i) => ({
       email: c.email, name: `${c.firstName} ${c.lastName}`,
       source: i % 2 === 0 ? "footer" : "checkout", consentAt: daysAgo(60 - i * 4),
     })),
   });
-  console.log(`✓ ${CMS_SECTIONS.length} secciones de contenido, ${FAQS.length} FAQ, ${POSTS.length} artículos, ${BANNERS.length} banners`);
 
   // ══════════════════════════════ Favoritos ══════════════════════════════════
   const wineIds = WINES.map((w) => productIdBySlug.get(w.slug)!);
@@ -1115,11 +1144,8 @@ async function main() {
 
   console.log("\n─────────────────────────────────────────────");
   console.log(`Productos: ${productCount}   Pedidos: ${orderCount}   Alertas de stock: ${invAlerts[0].count}`);
-  const claveMostrada = process.env.SEED_ADMIN_PASSWORD
-    ? "(la de SEED_ADMIN_PASSWORD)"
-    : staffPlainPassword;
-  console.log(`\nAcceso admin:    admin@atulwines.com / ${claveMostrada}`);
-  console.log(`Acceso depósito: deposito@atulwines.com / ${claveMostrada}`);
+  console.log(`\nAcceso admin:    admin@atulwines.com / ${claveMostrada()}`);
+  console.log(`Acceso depósito: deposito@atulwines.com / ${claveMostrada()}`);
   console.log("Acceso cliente:  juan.perez@example.com / Cliente2026!");
   console.log("─────────────────────────────────────────────\n");
 }

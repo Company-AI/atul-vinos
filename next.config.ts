@@ -3,12 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  /*
-    Build autocontenido: deja en .next/standalone un server.js con sólo las
-    dependencias que el código realmente usa. Es lo que permite empaquetar el
-    sitio en una imagen chica sin arrastrar node_modules entero, y no cambia
-    nada para `next dev` ni para los hosts serverless.
-  */
+  // El deploy es una imagen Docker en VPS: `standalone` empaqueta el server
+  // con sólo las dependencias que el trace encuentra, sin node_modules entero.
   output: "standalone",
 
   // Imágenes propias en /public y, en producción, el bucket S3 configurado.

@@ -5,7 +5,8 @@ node_modules
 .env.*
 !.env.example
 public/uploads
-*.md
+docs
 tests
-.vscode
-.claude
+coverage
+*.log
+.DS_Store

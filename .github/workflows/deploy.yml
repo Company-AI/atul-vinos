@@ -1,0 +1,109 @@
+# Deploy automático al VPS. Corre sólo cuando un commit llega a main, que es lo
+# que pasa al mergear un PR. Las credenciales viven en los secrets del repo y se
+# reescriben en el servidor en cada deploy: no hay copia manual que se desincronice.
+#
+# Lo que no es secreto va en "variables" del repo y no en "secrets", para poder
+# leerlo: MODO_APERTURA cierra la tienda al público mientras valga "1", y
+# APERTURA_EN es la fecha de la cuenta regresiva. Cambiar cualquiera de las dos
+# y volver a desplegar alcanza; no hace falta tocar el servidor.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Un deploy a la vez. Si entran dos merges seguidos, el segundo espera en lugar
+# de pisar el build del primero a mitad de camino.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  APP_DIR: /opt/atul-vinos
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Abrir sesión SSH con el servidor
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          cat >> ~/.ssh/config <<CFG
+          Host servidor
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            IdentityFile ~/.ssh/id_ed25519
+            BatchMode yes
+          CFG
+
+      # Va por stdin y no por la línea de comandos: los argumentos de ssh quedan
+      # visibles en el `ps` del servidor mientras dura la conexión.
+      - name: Escribir credenciales en el servidor
+        env:
+          DEPLOY_ENV: |
+            DATABASE_URL=postgresql://atul:${{ secrets.POSTGRES_PASSWORD }}@db:5432/atul?schema=public
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+            NEXT_PUBLIC_SITE_URL=${{ vars.SITE_URL }}
+            MP_ACCESS_TOKEN=${{ secrets.MP_ACCESS_TOKEN }}
+            MP_PUBLIC_KEY=${{ secrets.MP_PUBLIC_KEY }}
+            MP_WEBHOOK_SECRET=${{ secrets.MP_WEBHOOK_SECRET }}
+            SMTP_HOST=${{ secrets.SMTP_HOST }}
+            SMTP_PORT=${{ secrets.SMTP_PORT }}
+            SMTP_USER=${{ secrets.SMTP_USER }}
+            SMTP_PASS=${{ secrets.SMTP_PASS }}
+            SEED_ADMIN_PASSWORD=${{ secrets.SEED_ADMIN_PASSWORD }}
+            STORAGE_DRIVER=local
+            MODO_APERTURA=${{ vars.MODO_APERTURA }}
+            APERTURA_EN=${{ vars.APERTURA_EN }}
+            ENVIOPACK_API_KEY=${{ secrets.ENVIOPACK_API_KEY }}
+            ENVIOPACK_SECRET_KEY=${{ secrets.ENVIOPACK_SECRET_KEY }}
+            ENVIOPACK_DIRECCION_ENVIO=${{ vars.ENVIOPACK_DIRECCION_ENVIO }}
+            ENVIOPACK_WEBHOOK_SECRET=${{ secrets.ENVIOPACK_WEBHOOK_SECRET }}
+        run: |
+          printf '%s' "$DEPLOY_ENV" | ssh servidor \
+            "umask 077 && mkdir -p '$APP_DIR/deploy' && cat > '$APP_DIR/deploy/.env.production'"
+
+      - name: Desplegar
+        run: |
+          ssh servidor "APP_DIR='$APP_DIR' GIT_SHA='${{ github.sha }}' bash -s" <<'REMOTE'
+          set -euo pipefail
+          cd "$APP_DIR"
+          git fetch --quiet origin main
+          git reset --hard --quiet "$GIT_SHA"
+
+          cd deploy
+          # --build reconstruye la imagen; el contenedor viejo sigue sirviendo
+          # hasta que el nuevo está listo. `migrate` corre antes que `app`.
+          docker compose --env-file .env.production up -d --build --remove-orphans
+          docker image prune -f >/dev/null
+
+          echo "--- estado ---"
+          docker compose ps
+          REMOTE
+
+      # Se mira la salud del contenedor y no la URL pública: el chequeo tiene que
+      # valer aunque el DNS o el certificado todavía no estén listos.
+      - name: Verificar que la app quedó sana
+        run: |
+          ssh servidor "APP_DIR='$APP_DIR' bash -s" <<'REMOTE'
+          set -euo pipefail
+          cd "$APP_DIR/deploy"
+          for i in $(seq 1 24); do
+            estado=$(docker compose ps app --format '{{.Health}}' 2>/dev/null || echo desconocido)
+            case "$estado" in
+              healthy) echo "app healthy"; exit 0 ;;
+              unhealthy) echo "app unhealthy"; docker compose logs --tail 60 app; exit 1 ;;
+            esac
+            echo "intento $i: $estado"; sleep 5
+          done
+          echo "La app nunca llegó a healthy"
+          docker compose logs --tail 60 app
+          exit 1
+          REMOTE
