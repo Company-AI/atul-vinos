@@ -59,6 +59,7 @@ jobs:
             SMTP_USER=${{ secrets.SMTP_USER }}
             SMTP_PASS=${{ secrets.SMTP_PASS }}
             SEED_ADMIN_PASSWORD=${{ secrets.SEED_ADMIN_PASSWORD }}
+            SEED_ADMIN_EMAIL=${{ vars.SEED_ADMIN_EMAIL }}
             STORAGE_DRIVER=local
             MODO_APERTURA=${{ vars.MODO_APERTURA }}
             APERTURA_EN=${{ vars.APERTURA_EN }}
