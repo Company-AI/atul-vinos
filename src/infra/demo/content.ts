@@ -164,6 +164,8 @@ export function demoShippingZones() {
     sortOrder: z.sortOrder,
     provinces: z.provinces,
     cities: z.cities,
+    postalCodeFrom: z.postalCodeFrom ?? null,
+    postalCodeTo: z.postalCodeTo ?? null,
     isActive: true,
     rates: z.rates.map((r, i) => ({
       id: `demo-rate-${zi}-${i}`,

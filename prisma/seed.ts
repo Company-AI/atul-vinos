@@ -7,6 +7,7 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { WINES, PACKS } from "./seed/wines";
+import { BODEGA_EJEMPLO, VINO_EJEMPLO } from "./seed/ejemplo";
 import {
   CMS_SECTIONS, FAQS, POSTS, BANNERS, NOTIFICATION_TEMPLATES,
 } from "./seed/content";
@@ -154,6 +155,13 @@ async function move(
 */
 const BOOTSTRAP = process.env.SEED_SCOPE === "bootstrap";
 
+/*
+  En un sitio real se carga una bodega y un vino de ejemplo, para copiar. El
+  catálogo de demostración —veintidós vinos de marcas que no vendemos— sólo
+  tiene sentido para desarrollar.
+*/
+const CATALOGO = BOOTSTRAP ? [VINO_EJEMPLO] : WINES;
+
 const claveMostrada = () =>
   process.env.SEED_ADMIN_PASSWORD ? "(la de SEED_ADMIN_PASSWORD)" : "Aurora2026!";
 
@@ -266,8 +274,8 @@ async function main() {
   };
 
   const wineries = new Map<string, string>();
-  for (const name of unique(WINES.map((w) => w.winery))) {
-    const info = WINERY_INFO[name];
+  for (const name of unique(CATALOGO.map((w) => w.winery))) {
+    const info = WINERY_INFO[name] ?? (name === BODEGA_EJEMPLO.name ? BODEGA_EJEMPLO : undefined);
     const w = await prisma.winery.create({
       data: {
         name,
@@ -384,7 +392,7 @@ async function main() {
   // ══════════════════════════════ Productos ══════════════════════════════════
   const productIdBySlug = new Map<string, string>();
 
-  for (const w of WINES) {
+  for (const w of CATALOGO) {
     const product = await prisma.product.create({
       data: {
         kind: "WINE", status: "ACTIVE",
@@ -403,7 +411,7 @@ async function main() {
         lineId: lines.get(w.line)!,
         images: {
           create: [{
-            url: `/media/wines/${w.image}.png`,
+            url: w.image.includes("/") ? w.image : `/media/wines/${w.image}.png`,
             alt: `Botella de ${w.name}`,
             isPrimary: true, sortOrder: 0, width: 1000, height: 1000,
           }],
@@ -424,7 +432,7 @@ async function main() {
     });
   }
 
-  for (const p of PACKS) {
+  for (const p of BOOTSTRAP ? [] : PACKS) {
     const pack = await prisma.product.create({
       data: {
         kind: "PACK", status: "ACTIVE",
@@ -450,12 +458,18 @@ async function main() {
     });
     productIdBySlug.set(p.slug, pack.id);
   }
-  console.log(`✓ ${WINES.length} vinos y ${PACKS.length} packs con stock, imágenes y fichas`);
+  console.log(
+    BOOTSTRAP
+      ? `✓ ${CATALOGO.length} vino de ejemplo con stock, imagen y ficha`
+      : `✓ ${WINES.length} vinos y ${PACKS.length} packs con stock, imágenes y fichas`,
+  );
 
   // ══════════════════════ Logística: carriers y tarifas ══════════════════════
   const carrierData = [
     { code: "mock", name: "Logística Atul (interno)", sortOrder: 10,
       trackingUrlTemplate: "/seguimiento/{tracking}" },
+    { code: "enviopack", name: "Envíopack", sortOrder: 15,
+      trackingUrlTemplate: "https://seguimiento.enviopack.com/?id={tracking}" },
     { code: "andreani", name: "Andreani", sortOrder: 20,
       trackingUrlTemplate: "https://www.andreani.com/#!/informacionEnvio/{tracking}" },
     { code: "correo_argentino", name: "Correo Argentino", sortOrder: 30,
@@ -477,6 +491,7 @@ async function main() {
     await prisma.shippingZone.create({
       data: {
         name: z.name, sortOrder: z.sortOrder, provinces: z.provinces, cities: z.cities,
+        postalCodeFrom: z.postalCodeFrom ?? null, postalCodeTo: z.postalCodeTo ?? null,
         rates: {
           create: z.rates.map((r, i) => ({
             name: r.name, price: r.price, freeFrom: r.freeFrom ?? null,
@@ -551,7 +566,11 @@ async function main() {
   };
 
   const boxes = new Map<string, string>(); // `${planSlug}:${year}-${month}`
-  for (const [planSlug, months] of Object.entries(boxComposition)) {
+  /*
+    El box del mes es del Club, que no se lanzó, y se arma con vinos del
+    catálogo de demostración. En un sitio real no hay con qué llenarlo.
+  */
+  for (const [planSlug, months] of Object.entries(BOOTSTRAP ? {} : boxComposition)) {
     for (const [idx, slugs] of months.entries()) {
       const period = idx === 0 ? PERIOD : NEXT_PERIOD;
       const plan = plans.get(planSlug)!;
@@ -601,7 +620,13 @@ async function main() {
     const c = await prisma.postCategory.create({ data: { name, slug: slugify(name) } });
     postCategories.set(name, c.id);
   }
-  for (const p of POSTS) {
+  /*
+    Las notas del blog no van a un sitio real. Están bien escritas, pero
+    afirman cosas sobre cómo trabaja la bodega —recorridas, catas a ciegas,
+    criterios de selección— que las escribimos nosotros y saldrían publicadas
+    con la firma del cliente. Que las escriba él, o que las apruebe antes.
+  */
+  for (const p of BOOTSTRAP ? [] : POSTS) {
     await prisma.post.create({
       data: {
         title: p.title, slug: p.slug, excerpt: p.excerpt, coverUrl: p.coverUrl,
@@ -611,7 +636,10 @@ async function main() {
       },
     });
   }
-  console.log(`✓ ${CMS_SECTIONS.length} secciones de contenido, ${FAQS.length} FAQ, ${POSTS.length} artículos, ${BANNERS.length} banners`);
+  console.log(
+    `✓ ${CMS_SECTIONS.length} secciones de contenido, ${FAQS.length} FAQ, ` +
+      `${BOOTSTRAP ? 0 : POSTS.length} artículos, ${BANNERS.length} banners`,
+  );
 
   /*
     Producción se inicializa con SEED_SCOPE=bootstrap: permisos, roles,

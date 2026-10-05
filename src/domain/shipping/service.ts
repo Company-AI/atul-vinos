@@ -1,5 +1,5 @@
 import { prisma } from "@/infra/db/prisma";
-import { getShippingProvider } from "@/infra/shipping/registry";
+import { FALLBACK_PROVIDER_CODE, getShippingProvider } from "@/infra/shipping/registry";
 import { getSettings } from "@/domain/settings/service";
 import { toCents, toNumber } from "@/lib/money";
 import type {
@@ -33,7 +33,25 @@ export async function quoteShipping(ctx: QuoteContext): Promise<ShippingQuote[]>
   ]);
 
   const parcel = await buildParcel(ctx.bottles, ctx.netAmount);
-  let quotes = await provider.quote(ctx.destination, parcel);
+
+  /*
+    Si el transportista externo se cae, se cotiza con las zonas propias en vez
+    de dejar a alguien sin poder comprar. Un precio de la tabla del admin es
+    peor que el real, pero infinitamente mejor que un checkout roto: el pedido
+    entra y la diferencia se arregla después, que es lo que ya se hace cuando
+    un envío sale distinto de lo cotizado.
+  */
+  let quotes: ShippingQuote[];
+  try {
+    quotes = await provider.quote(ctx.destination, parcel);
+  } catch (error) {
+    console.error(`[envios] ${provider.code} falló al cotizar`, error);
+    quotes = [];
+  }
+
+  if (quotes.length === 0 && provider.code !== FALLBACK_PROVIDER_CODE) {
+    quotes = await getShippingProvider(FALLBACK_PROVIDER_CODE).quote(ctx.destination, parcel);
+  }
 
   // Umbral global de envío gratis, además del que pueda tener cada tarifa.
   const threshold = settings.shipping.freeShippingFrom;
@@ -82,7 +100,7 @@ export async function createShipmentForOrder(orderId: string, serviceCode?: stri
   const input: CreateShipmentInput = {
     orderId: order.id,
     orderNumber: order.number,
-    serviceCode: serviceCode ?? order.shippingMethod ?? "standard",
+    serviceCode: serviceCode ?? snapshot.serviceCode ?? order.shippingMethod ?? "standard",
     destination: {
       postalCode: snapshot.postalCode ?? "",
       city: snapshot.city ?? "",

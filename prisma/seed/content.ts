@@ -110,11 +110,12 @@ export const CMS_SECTIONS = [
         "Estamos terminando de armar la tienda. En unos días vas a poder pedir " +
         "los vinos que probamos uno por uno, con envío a todo el país.",
       /*
-        Instante fijo, no "dentro de dos días": una cuenta que se recalcula en
-        cada visita nunca baja. Cuando se corra la apertura, se cambia acá o
-        desde el admin, en Contenido.
+        Instante fijo, no "dentro de quince días": una cuenta que se recalcula
+        en cada visita nunca baja. Se corre desde el admin, en Contenido, o con
+        la variable APERTURA_EN, que gana por encima de esto y evita tocar la
+        base para mover la fecha.
       */
-      targetAt: "2026-09-30T20:00:00-03:00",
+      targetAt: "2026-10-17T20:00:00-03:00",
       finalText: "Ya estamos abiertos.",
       media: {
         imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",

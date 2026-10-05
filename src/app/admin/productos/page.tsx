@@ -6,6 +6,7 @@ import { requireStaff } from "@/infra/auth/guards";
 import { prisma } from "@/infra/db/prisma";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { WINE_TYPE_LABELS } from "@/domain/catalog/types";
+import { TAXONOMIES, taxonomyPorUrl } from "@/domain/catalog/taxonomy-kinds";
 import { formatARS } from "@/lib/money";
 import { AdminCard, AdminPageHeader, AdminTable, Td } from "@/components/admin/admin-ui";
 import { Badge } from "@/ui/badge";
@@ -15,12 +16,40 @@ import { Input, Select } from "@/ui/field";
 export const metadata: Metadata = { title: "Productos" };
 
 type PageProps = {
-  searchParams: Promise<{ q?: string; estado?: string; tipo?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    estado?: string;
+    clasificacion?: string;
+    valor?: string;
+  }>;
 };
+
+/**
+ * Traduce ?clasificacion=varietales&valor=malbec a una condición de Prisma.
+ *
+ * Es el enlace que sale de la pantalla de Clasificación, donde cada valor
+ * muestra cuántos productos lo usan: el número tiene que llevar a esos
+ * productos y no a la lista entera.
+ */
+function filtroClasificacion(clasificacion?: string, valor?: string) {
+  const kind = taxonomyPorUrl(clasificacion);
+  if (!kind || !valor) return {};
+
+  switch (kind) {
+    case "category": return { category: { slug: valor } };
+    case "winery": return { winery: { slug: valor } };
+    case "region": return { region: { slug: valor } };
+    case "line": return { line: { slug: valor } };
+    case "grape": return { grapes: { some: { grape: { slug: valor } } } };
+    case "pairing": return { pairings: { some: { pairing: { slug: valor } } } };
+    case "tag": return { tags: { some: { tag: { slug: valor } } } };
+  }
+}
 
 export default async function AdminProductsPage({ searchParams }: PageProps) {
   const user = await requireStaff("products.view");
-  const { q, estado, tipo } = await searchParams;
+  const { q, estado, clasificacion, valor } = await searchParams;
+  const kindFiltrado = taxonomyPorUrl(clasificacion);
 
   const products = await prisma.product.findMany({
     where: {
@@ -33,7 +62,9 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
           }
         : {}),
       ...(estado ? { status: estado as "DRAFT" | "ACTIVE" | "ARCHIVED" } : {}),
-      ...(tipo ? { kind: tipo as "WINE" | "PACK" } : {}),
+      // Los box tienen su propia sección: acá sólo vinos.
+      kind: "WINE",
+      ...filtroClasificacion(clasificacion, valor),
     },
     orderBy: [{ status: "asc" }, { name: "asc" }],
     include: {
@@ -41,7 +72,6 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
       line: { select: { name: true } },
       region: { select: { name: true } },
       inventory: true,
-      packItems: { select: { id: true } },
     },
   });
 
@@ -52,7 +82,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
     <>
       <AdminPageHeader
         title="Productos"
-        description={`${products.length} productos en el catálogo`}
+        description={`${products.length} vinos en el catálogo`}
         actions={
           user.isSuperAdmin || user.permissions.has("products.edit") ? (
             <Link
@@ -60,13 +90,19 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
               className={buttonVariants({ variant: "dark", size: "sm" })}
             >
               <Plus className="size-3.5" />
-              Nuevo producto
+              Nuevo vino
             </Link>
           ) : null
         }
       />
 
       <form className="mb-4 flex flex-wrap items-end gap-2">
+        {kindFiltrado && valor && (
+          <>
+            <input type="hidden" name="clasificacion" value={clasificacion} />
+            <input type="hidden" name="valor" value={valor} />
+          </>
+        )}
         <label className="flex flex-col gap-1">
           <span className="text-[11px] uppercase tracking-wider text-stone-500">Buscar</span>
           <Input name="q" defaultValue={q ?? ""} placeholder="Nombre o SKU" className="h-8 w-52 text-[13px]" />
@@ -80,14 +116,6 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
             <option value="ARCHIVED">Archivado</option>
           </Select>
         </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-[11px] uppercase tracking-wider text-stone-500">Tipo</span>
-          <Select name="tipo" defaultValue={tipo ?? ""} className="h-8 w-auto text-[13px]">
-            <option value="">Todos</option>
-            <option value="WINE">Vinos</option>
-            <option value="PACK">Packs</option>
-          </Select>
-        </label>
         <button
           type="submit"
           className={buttonVariants({ variant: "subtle", size: "sm" })}
@@ -95,6 +123,19 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
           Filtrar
         </button>
       </form>
+
+      {kindFiltrado && valor && (
+        <p className="mb-4 flex flex-wrap items-center gap-2 border border-linen-300 bg-linen-100 px-3 py-2 text-[13px] text-carbon-800">
+          Sólo {TAXONOMIES[kindFiltrado].singular}{" "}
+          <code className="text-[12px] text-stone-500">{valor}</code>
+          <Link
+            href="/admin/productos"
+            className="underline underline-offset-4 hover:text-accent-700"
+          >
+            Ver todos
+          </Link>
+        </p>
+      )}
 
       <AdminCard padded={false}>
         <AdminTable
@@ -129,13 +170,9 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
                 </Td>
                 <Td className="text-stone-500">{product.sku}</Td>
                 <Td>
-                  {product.kind === "PACK" ? (
-                    <Badge tone="gold">Pack · {product.packItems.length}</Badge>
-                  ) : (
-                    <span className="text-stone-600">
-                      {product.wineType ? WINE_TYPE_LABELS[product.wineType] : "—"}
-                    </span>
-                  )}
+                  <span className="text-stone-600">
+                    {product.wineType ? WINE_TYPE_LABELS[product.wineType] : "—"}
+                  </span>
                 </Td>
                 <Td className="text-stone-500">{product.line?.name ?? "—"}</Td>
                 <Td className="text-stone-500">{product.region?.name ?? "—"}</Td>
@@ -149,13 +186,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
                     )}
                   </Td>
                 )}
-                <Td align="right" className="tabular">
-                  {product.kind === "PACK" ? (
-                    <span className="text-stone-500">{available} (derivado)</span>
-                  ) : (
-                    available
-                  )}
-                </Td>
+                <Td align="right" className="tabular">{available}</Td>
                 <Td>
                   <Badge
                     tone={

@@ -299,6 +299,24 @@
   }
 }
 
+/* ═══════════════════ Copa que se llena (velo de carga del admin) ═══════════
+   El líquido es un rectángulo que se desplaza dentro de un recorte con forma
+   de cáliz. Se anima la posición y no la altura: mover es más barato que
+   recalcular geometría en cada cuadro.
+
+   El recorrido NO arranca en copa vacía. La mayoría de las navegaciones del
+   panel duran alrededor de un segundo, así que si el ciclo empezara en cero
+   se vería una copa vacía casi todo el tiempo y no se entendería qué está
+   pasando. Va de "un poco de vino" a "casi llena" y vuelve: siempre hay algo
+   servido.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes copa-llenar {
+  0%   { transform: translateY(34px); }
+  50%  { transform: translateY(6px); }
+  100% { transform: translateY(34px); }
+}
+
 /* ═══════════════════ Accesibilidad: reduced motion ═════════════════════════ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -307,6 +325,11 @@
   /* Sin animación la copia no cumple ninguna función: sólo repetiría la
      lista dentro de una tira que ahora se recorre a mano. */
   [data-ticker-copia] { display: none; }
+
+  /* La copa del velo de carga queda llena a la mitad. Sin esto la regla
+     general de abajo la deja en el último cuadro, que es la copa vacía:
+     se vería como si no estuviera pasando nada. */
+  [data-copa] { transform: translateY(20px) !important; }
 
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
