@@ -1,0 +1,51 @@
+# Tareas puntuales sobre la base de producción, para cuando ya está inicializada
+# y "Inicializar base" no se puede volver a correr.
+#
+# Las dos son idempotentes: se pueden repetir sin romper nada.
+
+name: Operaciones
+
+on:
+  workflow_dispatch:
+    inputs:
+      tarea:
+        description: "Qué hacer"
+        required: true
+        type: choice
+        options:
+          - crear-o-actualizar-admin
+          - cargar-catalogo-de-ejemplo
+
+jobs:
+  operar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Abrir sesión SSH con el servidor
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # El comando sale de una lista cerrada y no de la entrada del usuario:
+      # interpolar un input dentro de un `ssh ... bash -s` es una forma cómoda
+      # de dejar que cualquiera con permiso de lanzar workflows corra lo que
+      # quiera en el servidor.
+      - name: Resolver la tarea
+        id: tarea
+        run: |
+          case "${{ inputs.tarea }}" in
+            crear-o-actualizar-admin)   echo "script=prisma/ops/admin.ts" >> "$GITHUB_OUTPUT" ;;
+            cargar-catalogo-de-ejemplo) echo "script=prisma/ops/catalogo-ejemplo.ts" >> "$GITHUB_OUTPUT" ;;
+            *) echo "Tarea desconocida."; exit 1 ;;
+          esac
+
+      # Las credenciales viajan en .env.production, que el deploy ya dejó
+      # escrito en el servidor. Pasarlas por -e las dejaría visibles en el `ps`.
+      - name: Ejecutar
+        env:
+          SCRIPT: ${{ steps.tarea.outputs.script }}
+        run: |
+          ssh -o BatchMode=yes "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "cd /opt/atul-vinos/deploy && docker compose --env-file .env.production run --rm migrate npx tsx $SCRIPT"
