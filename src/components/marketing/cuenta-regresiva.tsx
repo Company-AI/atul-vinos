@@ -81,7 +81,7 @@ export function CuentaRegresiva({
             <span className="block font-display text-[42px] font-light leading-none tabular text-bone sm:text-[64px]">
               {b.valor === undefined ? "––" : String(b.valor).padStart(2, "0")}
             </span>
-            <span className="eyebrow mt-3 block text-linen-300/70">{b.etiqueta}</span>
+            <span className="eyebrow mt-3 block text-linen-200/90">{b.etiqueta}</span>
           </div>
         </div>
       ))}

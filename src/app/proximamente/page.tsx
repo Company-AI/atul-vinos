@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Mail } from "lucide-react";
-import { InstagramIcon } from "@/components/site/social-icons";
+import { InstagramIcon, WhatsappIcon } from "@/components/site/social-icons";
 import { getSection } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
 import { CuentaRegresiva } from "@/components/marketing/cuenta-regresiva";
@@ -54,7 +53,18 @@ export default async function ProximamentePage() {
           fill
           priority
           sizes="100vw"
-          className="-z-20 object-cover"
+          /*
+            Desenfocada a propósito. El viñedo se sigue leyendo como viñedo
+            —las hileras, la luz, el verde— pero deja de competir con el texto:
+            sin detalle fino, el titular y la cuenta regresiva apoyan sobre una
+            superficie pareja en vez de sobre hojas y alambres.
+
+            El scale-110 es para que el desenfoque no deje los bordes
+            transparentes: al difuminar, los píxeles del borde se mezclan con
+            lo que no hay y aparece una orla clara. Agrandando la foto, esa
+            orla queda fuera de la pantalla.
+          */
+          className="-z-20 scale-110 object-cover blur-[10px]"
         />
       )}
 
@@ -115,7 +125,7 @@ export default async function ProximamentePage() {
         )}
 
         {contenido.eyebrow && (
-          <p className="eyebrow mt-8 text-linen-300/80">{contenido.eyebrow}</p>
+          <p className="eyebrow mt-8 text-bone/90">{contenido.eyebrow}</p>
         )}
 
         {contenido.title && (
@@ -141,31 +151,37 @@ export default async function ProximamentePage() {
         )}
 
         {/*
-          Sin navegación, pero con una forma de llegar a una persona: quien
-          entra por error o por curiosidad tiene que poder preguntar.
+          Sin navegación, pero con una forma de seguir a la marca mientras no
+          hay tienda. Instagram y nada más: el mail acá invitaba a escribir a
+          una casilla que todavía nadie atiende, y una consulta sin respuesta
+          es peor que no ofrecer el canal.
         */}
-        <div className="mt-10 flex items-center gap-6 border-t border-bone/15 pt-8">
-          {company.instagram && (
-            <a
-              href={company.instagram}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 text-[13px] text-linen-300/80 transition-colors hover:text-bone"
-            >
-              <InstagramIcon className="size-4" aria-hidden />
-              Instagram
-            </a>
-          )}
-          {company.email && (
-            <a
-              href={`mailto:${company.email}`}
-              className="flex items-center gap-2 text-[13px] text-linen-300/80 transition-colors hover:text-bone"
-            >
-              <Mail className="size-4" aria-hidden />
-              {company.email}
-            </a>
-          )}
-        </div>
+        {(company.instagram || company.whatsapp) && (
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-t border-bone/15 pt-8">
+            {company.instagram && (
+              <a
+                href={company.instagram}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 text-[14px] text-linen-200 transition-colors hover:text-bone"
+              >
+                <InstagramIcon className="size-[18px]" aria-hidden />
+                Seguinos en Instagram
+              </a>
+            )}
+            {company.whatsapp && (
+              <a
+                href={`https://wa.me/${company.whatsapp}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 text-[14px] text-linen-200 transition-colors hover:text-bone"
+              >
+                <WhatsappIcon className="size-[18px]" aria-hidden />
+                Escribinos por WhatsApp
+              </a>
+            )}
+          </div>
+        )}
 
         <p className="script mt-8 text-[20px] text-linen-300/60">{company.tagline}</p>
       </div>
