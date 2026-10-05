@@ -20,7 +20,17 @@ import { NextResponse, type NextRequest } from "next/server";
  *     redirect es un pedido cobrado que nadie registra;
  *   - /proximamente, que es el destino;
  *   - los archivos estáticos, que los necesita esa misma pantalla.
+ *
+ * Y hay una llave para mirar la tienda cerrada: entrando con ?ver=LA-LLAVE se
+ * guarda una cookie y esa persona pasa derecho. Sirve para revisar la home
+ * terminada sin abrirle la puerta a todo el mundo, que es la alternativa:
+ * apagar el modo, mirar y volver a prenderlo, con la tienda abierta en el
+ * medio. No es una barrera de seguridad —del otro lado no hay nada secreto,
+ * sólo una tienda a medio terminar— sino una forma de que nadie entre por
+ * casualidad.
  */
+
+const COOKIE_VER = "atul-ver";
 
 const SIN_DESVIO = [/^\/admin(\/|$)/, /^\/api(\/|$)/, /^\/proximamente\/?$/];
 
@@ -29,6 +39,31 @@ export function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   if (SIN_DESVIO.some((patron) => patron.test(pathname))) return NextResponse.next();
+
+  const llave = process.env.APERTURA_LLAVE?.trim();
+
+  /*
+    La llave llega una sola vez por la dirección y queda en una cookie: así no
+    hay que arrastrar ?ver= en cada clic, y el parámetro no se queda pegado en
+    la barra para que alguien lo copie y lo mande por ahí sin pensarlo.
+  */
+  if (llave && request.nextUrl.searchParams.get("ver") === llave) {
+    const limpio = request.nextUrl.clone();
+    limpio.searchParams.delete("ver");
+    const respuesta = NextResponse.redirect(limpio, 307);
+    respuesta.cookies.set(COOKIE_VER, llave, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: request.nextUrl.protocol === "https:",
+      path: "/",
+      maxAge: 60 * 60 * 8, // una jornada de trabajo
+    });
+    return respuesta;
+  }
+
+  if (llave && request.cookies.get(COOKIE_VER)?.value === llave) {
+    return NextResponse.next();
+  }
 
   const destino = request.nextUrl.clone();
   destino.pathname = "/proximamente";
