@@ -13,6 +13,19 @@ export function InstagramIcon({ className }: IconProps) {
   );
 }
 
+export function WhatsappIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+      strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden focusable="false">
+      {/* Globo de chat con la cola abajo a la izquierda, como el de la app. */}
+      <path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.45L3 20.5l1.6-5.3A8.5 8.5 0 1 1 21 11.5Z" />
+      {/* El auricular, simplificado: a 18 px el detalle fino se pierde igual. */}
+      <path d="M9 9.2c0 2.6 2.1 4.8 4.8 4.8l.9-1.4-1.9-1-.8.8a4.4 4.4 0 0 1-1.4-1.4l.8-.8-1-1.9-1.4.9Z"
+        fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function FacebookIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"

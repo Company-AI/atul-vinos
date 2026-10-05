@@ -108,7 +108,7 @@ export const CMS_SECTIONS = [
       titleAccent: "encontramos.",
       body:
         "Estamos terminando de armar la tienda. En unos días vas a poder pedir " +
-        "los vinos que probamos uno por uno, con envío a todo el país.",
+        "los vinos que probamos uno por uno.",
       /*
         Instante fijo, no "dentro de quince días": una cuenta que se recalcula
         en cada visita nunca baja. Se corre desde el admin, en Contenido, o con
