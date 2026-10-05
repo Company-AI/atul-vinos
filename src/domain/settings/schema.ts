@@ -27,7 +27,7 @@ export const companySettings = z.object({
   isologoUrl: z.string().default("/brand/isologo-azul.png"),
   isologoLightUrl: z.string().default("/brand/isologo-crema.png"),
   faviconUrl: z.string().default("/favicon.ico"),
-  email: z.string().default("hola@atulwines.com"),
+  email: z.string().default("atul.vinos@gmail.com"),
   phone: z.string().default("+54 358 400 0000"),
   whatsapp: z.string().default("5493586019491"),
   addressLine: z.string().default("Sarmiento 1240"),
@@ -113,7 +113,7 @@ export const seoSettings = z.object({
 
 export const emailSettings = z.object({
   fromName: z.string().default("Atul"),
-  fromEmail: z.string().default("hola@atulwines.com"),
+  fromEmail: z.string().default("atul.vinos@gmail.com"),
   replyTo: z.string().default(""),
   footerText: z
     .string()
