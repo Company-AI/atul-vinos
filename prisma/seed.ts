@@ -203,30 +203,52 @@ async function main() {
   */
   const staffPlainPassword = process.env.SEED_ADMIN_PASSWORD ?? "Aurora2026!";
   const staffPassword = await bcrypt.hash(staffPlainPassword, 12);
-  const [superAdmin] = await Promise.all([
-    prisma.user.create({
-      data: {
-        email: "admin@atulwines.com", passwordHash: staffPassword,
-        firstName: "Facundo", lastName: "Administrador", isStaff: true,
-        roleId: roles.super_admin, emailVerifiedAt: NOW,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        email: "deposito@atulwines.com", passwordHash: staffPassword,
-        firstName: "Marcos", lastName: "Depósito", isStaff: true,
-        roleId: roles.deposito, emailVerifiedAt: NOW,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        email: "atencion@atulwines.com", passwordHash: staffPassword,
-        firstName: "Carla", lastName: "Atención", isStaff: true,
-        roleId: roles.atencion_cliente, emailVerifiedAt: NOW,
-      },
-    }),
-  ]);
-  console.log(`✓ ${PERMISSIONS.length} permisos, ${Object.keys(roles).length} roles, 3 usuarios de staff`);
+
+  /*
+    El correo del administrador también sale del entorno. Es con el que se
+    entra al panel el primer día, así que tiene que poder ser uno real y no
+    una casilla de ejemplo que nadie lee.
+  */
+  const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim() || "admin@atulwines.com";
+
+  const superAdmin = await prisma.user.create({
+    data: {
+      email: adminEmail, passwordHash: staffPassword,
+      firstName: "Facundo", lastName: "Administrador", isStaff: true,
+      roleId: roles.super_admin, emailVerifiedAt: NOW,
+    },
+  });
+
+  /*
+    Depósito y atención al cliente son usuarios de demostración. En un sitio
+    real no se crean solos: compartirían la contraseña del administrador y
+    serían dos puertas de entrada más que nadie sabe que existen. Los roles sí
+    quedan creados, así que se dan de alta desde Usuarios y roles cuando haya
+    alguien que los use.
+  */
+  if (!BOOTSTRAP) {
+    await Promise.all([
+      prisma.user.create({
+        data: {
+          email: "deposito@atulwines.com", passwordHash: staffPassword,
+          firstName: "Marcos", lastName: "Depósito", isStaff: true,
+          roleId: roles.deposito, emailVerifiedAt: NOW,
+        },
+      }),
+      prisma.user.create({
+        data: {
+          email: "atencion@atulwines.com", passwordHash: staffPassword,
+          firstName: "Carla", lastName: "Atención", isStaff: true,
+          roleId: roles.atencion_cliente, emailVerifiedAt: NOW,
+        },
+      }),
+    ]);
+  }
+
+  console.log(
+    `✓ ${PERMISSIONS.length} permisos, ${Object.keys(roles).length} roles, ` +
+      `${BOOTSTRAP ? 1 : 3} usuario${BOOTSTRAP ? "" : "s"} de staff`,
+  );
 
   // ═══════════════════════════════ Settings ══════════════════════════════════
   const { defaultSettings } = await import("../src/domain/settings/schema");
@@ -651,7 +673,7 @@ async function main() {
     const productos = await prisma.product.count();
     console.log("\n─────────────────────────────────────────────");
     console.log(`Productos: ${productos}. Sin datos de demostración.`);
-    console.log(`Acceso admin: admin@atulwines.com / ${claveMostrada()}`);
+    console.log(`Acceso admin: ${adminEmail} / ${claveMostrada()}`);
     console.log("─────────────────────────────────────────────\n");
     return;
   }
@@ -1169,7 +1191,7 @@ async function main() {
 
   console.log("\n─────────────────────────────────────────────");
   console.log(`Productos: ${productCount}   Pedidos: ${orderCount}   Alertas de stock: ${invAlerts[0].count}`);
-  console.log(`\nAcceso admin:    admin@atulwines.com / ${claveMostrada()}`);
+  console.log(`\nAcceso admin:    ${adminEmail} / ${claveMostrada()}`);
   console.log(`Acceso depósito: deposito@atulwines.com / ${claveMostrada()}`);
   console.log("Acceso cliente:  juan.perez@example.com / Cliente2026!");
   console.log("─────────────────────────────────────────────\n");
