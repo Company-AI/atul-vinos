@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { Mail } from "lucide-react";
 import { InstagramIcon, WhatsappIcon } from "@/components/site/social-icons";
 import { getSection } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
@@ -151,12 +152,12 @@ export default async function ProximamentePage() {
         )}
 
         {/*
-          Sin navegación, pero con una forma de seguir a la marca mientras no
-          hay tienda. Instagram y nada más: el mail acá invitaba a escribir a
-          una casilla que todavía nadie atiende, y una consulta sin respuesta
-          es peor que no ofrecer el canal.
+          Sin navegación, pero con tres formas de llegar a una persona. El mail
+          había salido de acá porque la casilla que figuraba era de un dominio
+          que ni siquiera es el del sitio; ahora hay una real y alguien del otro
+          lado, así que vuelve.
         */}
-        {(company.instagram || company.whatsapp) && (
+        {(company.instagram || company.whatsapp || company.email) && (
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-t border-bone/15 pt-8">
             {company.instagram && (
               <a
@@ -166,7 +167,7 @@ export default async function ProximamentePage() {
                 className="flex items-center gap-2 text-[14px] text-linen-200 transition-colors hover:text-bone"
               >
                 <InstagramIcon className="size-[18px]" aria-hidden />
-                Seguinos en Instagram
+                Instagram
               </a>
             )}
             {company.whatsapp && (
@@ -177,7 +178,16 @@ export default async function ProximamentePage() {
                 className="flex items-center gap-2 text-[14px] text-linen-200 transition-colors hover:text-bone"
               >
                 <WhatsappIcon className="size-[18px]" aria-hidden />
-                Escribinos por WhatsApp
+                WhatsApp
+              </a>
+            )}
+            {company.email && (
+              <a
+                href={`mailto:${company.email}`}
+                className="flex items-center gap-2 text-[14px] text-linen-200 transition-colors hover:text-bone"
+              >
+                <Mail className="size-[18px]" aria-hidden />
+                {company.email}
               </a>
             )}
           </div>

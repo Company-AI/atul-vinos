@@ -63,6 +63,7 @@ jobs:
             STORAGE_DRIVER=local
             MODO_APERTURA=${{ vars.MODO_APERTURA }}
             APERTURA_EN=${{ vars.APERTURA_EN }}
+            APERTURA_LLAVE=${{ secrets.APERTURA_LLAVE }}
             ENVIOPACK_API_KEY=${{ secrets.ENVIOPACK_API_KEY }}
             ENVIOPACK_SECRET_KEY=${{ secrets.ENVIOPACK_SECRET_KEY }}
             ENVIOPACK_DIRECCION_ENVIO=${{ vars.ENVIOPACK_DIRECCION_ENVIO }}
