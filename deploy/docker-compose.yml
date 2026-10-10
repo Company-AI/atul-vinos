@@ -63,6 +63,12 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      # HTTP/3 va por UDP. Caddy lo ofrece solo, pero sin este puerto abierto
+      # el navegador nunca puede usarlo. Importa acá más que en otros sitios:
+      # el servidor está en Seattle y los clientes en Argentina, a unos 250 ms
+      # de ida y vuelta, y HTTP/3 ahorra una de las vueltas que hoy se pagan
+      # antes de pedir la primera imagen.
+      - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
