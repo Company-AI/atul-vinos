@@ -190,8 +190,16 @@ function Flecha({ hacia, onClick }: { hacia: "anterior" | "siguiente"; onClick: 
       onClick={onClick}
       aria-label={hacia === "anterior" ? "Foto anterior" : "Foto siguiente"}
       className={cn(
-        "absolute top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full",
-        "bg-bone-pure/90 text-carbon-900 shadow-raised transition-colors hover:bg-bone-pure",
+        "absolute top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full",
+        "bg-bone-pure/85 text-carbon-900 shadow-raised backdrop-blur-sm",
+        /*
+          La transición cubre color, sombra y escala a la vez: el botón se
+          agranda apenas y se asienta al apretarlo. Es el gesto que le dice a
+          la mano que algo respondió, antes de que la foto cambie.
+        */
+        "transition-[transform,background-color,box-shadow] duration-200 ease-out",
+        "hover:scale-110 hover:bg-bone-pure hover:shadow-overlay active:scale-95",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon-900 focus-visible:ring-offset-2",
         /*
           Siempre visibles en pantallas táctiles, donde no hay cursor que las
           revele; en escritorio aparecen al acercarse a la foto.
@@ -208,11 +216,19 @@ function Flecha({ hacia, onClick }: { hacia: "anterior" | "siguiente"; onClick: 
 /**
  * La foto a pantalla completa, para leer la contraetiqueta.
  *
- * Al tocarla se agranda al doble y el recuadro pasa a poder arrastrarse. Se
- * hace con el desplazamiento del navegador y no con una lupa propia: así el
- * teléfono aporta su gesto de siempre —arrastrar para recorrer, pellizcar
- * para acercar más— sin que haya que reimplementarlo peor.
+ * Tres niveles y no dos: la contraetiqueta de un vino trae la composición y
+ * las advertencias en un cuerpo que al doble todavía cuesta. El primer paso
+ * sirve para mirar la etiqueta entera, el segundo para leerla.
+ *
+ * El recorrido es el desplazamiento del navegador y no una lupa propia: así
+ * el teléfono aporta sus gestos de siempre —arrastrar para recorrer,
+ * pellizcar para acercar más— sin que haya que reimplementarlos peor.
  */
+
+/* 1 = entera en pantalla. Los saltos son grandes a propósito: un acercamiento
+   que no se nota obliga a tocar tres veces para llegar a algún lado. */
+const NIVELES = [1, 2, 3.5] as const;
+
 function Ampliador({
   abierta,
   onCerrar,
@@ -228,37 +244,100 @@ function Ampliador({
   posicion: string;
   onMover?: (paso: number) => void;
 }) {
-  const [acercada, setAcercada] = useState(false);
+  const [nivel, setNivel] = useState(0);
   const marco = useRef<HTMLDivElement>(null);
+  const lienzo = useRef<HTMLDivElement>(null);
+  const escalaAnterior = useRef(1);
+
+  /*
+    El acercamiento se anima con una transformación y no agrandando la caja.
+
+    Animar el ancho y el alto obliga al navegador a recalcular la página en
+    cada cuadro, y con una foto grande eso se entrecorta justo en el teléfono,
+    que es donde se mira. Una transformación la resuelve la placa de video.
+
+    El truco: la caja pasa al tamaño nuevo de una, así el área que se puede
+    recorrer ya es la correcta, y lo de adentro arranca encogido a la
+    proporción vieja y crece hasta su lugar. Se ve como un acercamiento
+    continuo sin mover el resto de la página.
+  */
+  useEffect(() => {
+    const el = lienzo.current;
+    if (!el) return;
+    const desde = escalaAnterior.current / NIVELES[nivel];
+    escalaAnterior.current = NIVELES[nivel];
+    if (desde === 1) return;
+
+    el.style.transition = "none";
+    el.style.transform = `scale(${desde})`;
+    /*
+      Leer una medida obliga al navegador a asentar el estado de partida acá
+      mismo, sin esperar a pintar un cuadro. Esperarlo era frágil: si la
+      pestaña está en segundo plano o la pantalla apagada, ese cuadro puede no
+      llegar nunca, y la foto se quedaba encogida o gigante para siempre. Así,
+      la escala final queda puesta pase lo que pase; lo único que se pierde si
+      el navegador no anima es la animación.
+    */
+    void el.offsetWidth;
+    el.style.transition = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
+    el.style.transform = "scale(1)";
+  }, [nivel]);
 
   // Cada foto se abre sin acercar: el estado anterior no tiene por qué heredarse.
   useEffect(() => {
-    if (!abierta) setAcercada(false);
+    if (!abierta) setNivel(0);
   }, [abierta]);
-  useEffect(() => setAcercada(false), [foto.url]);
+  useEffect(() => setNivel(0), [foto.url]);
 
-  const alternarAcercamiento = (e: React.MouseEvent<HTMLDivElement>) => {
+  const avanzarNivel = (e: React.MouseEvent<HTMLDivElement>) => {
     const caja = marco.current;
     if (!caja) return;
-    if (acercada) {
-      setAcercada(false);
-      return;
-    }
+
+    /* Da la vuelta: del último acercamiento se sale a la foto entera. */
+    const siguiente = (nivel + 1) % NIVELES.length;
+
     /*
-      Se acerca sobre el punto que se tocó y no sobre el centro: quien toca la
-      parte de abajo de una contraetiqueta quiere leer eso, no el medio.
+      Dónde se tocó, en proporción del contenido —no de la ventana—. Hay que
+      calcularlo antes de cambiar el nivel: después, el contenido ya es de
+      otro tamaño y la cuenta daría otro punto.
     */
     const r = caja.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-    setAcercada(true);
+    const px = (caja.scrollLeft + e.clientX - r.left) / caja.scrollWidth;
+    const py = (caja.scrollTop + e.clientY - r.top) / caja.scrollHeight;
+
+    setNivel(siguiente);
+
+    if (siguiente === 0) return;
+
+    /*
+      El marco se agranda con una transición, así que su tamaño nuevo todavía
+      no está cuando termina este clic. Se espera un cuadro y recién ahí se
+      centra el punto, con el destino ya calculado sobre la medida final.
+    */
     requestAnimationFrame(() => {
+      const escala = NIVELES[siguiente];
+      const anchoFinal = caja.clientWidth * escala;
+      const altoFinal = caja.clientHeight * escala;
+      /*
+        Sin desplazamiento suave: la caja ya está en su tamaño final y lo que
+        se anima es la imagen de adentro. Deslizar además el marco pondría dos
+        animaciones distintas a correr sobre lo mismo y se notaría el pulso.
+      */
       caja.scrollTo({
-        left: px * (caja.scrollWidth - caja.clientWidth),
-        top: py * (caja.scrollHeight - caja.clientHeight),
+        left: px * anchoFinal - caja.clientWidth / 2,
+        top: py * altoFinal - caja.clientHeight / 2,
       });
     });
   };
+
+  const escala = NIVELES[nivel];
+  const acercada = nivel > 0;
+  const leyenda =
+    nivel === 0
+      ? "Tocá la foto para acercar"
+      : nivel === NIVELES.length - 1
+        ? "Tocá para volver al tamaño original"
+        : "Tocá de nuevo para acercar más";
 
   return (
     <Dialog.Root open={abierta} onOpenChange={(v) => !v && onCerrar()}>
@@ -272,23 +351,35 @@ function Ampliador({
 
           <div className="flex shrink-0 items-center justify-between px-4 py-3 text-bone">
             <span className="tabular text-[13px] text-linen-300">{posicion}</span>
-            <Dialog.Close
-              aria-label="Cerrar"
-              className="rounded-full p-2 text-linen-200 transition-colors hover:bg-bone/10 hover:text-bone"
-            >
-              <X className="size-5" />
-            </Dialog.Close>
+            <div className="flex items-center gap-3">
+              {acercada && (
+                <span className="tabular rounded-pill bg-bone/10 px-2.5 py-1 text-[12px] text-linen-200">
+                  {escala}×
+                </span>
+              )}
+              <Dialog.Close
+                aria-label="Cerrar"
+                className="rounded-full p-2 text-linen-200 transition-colors hover:bg-bone/10 hover:text-bone"
+              >
+                <X className="size-5" />
+              </Dialog.Close>
+            </div>
           </div>
 
           <div
             ref={marco}
-            onClick={alternarAcercamiento}
+            onClick={avanzarNivel}
             className={cn(
               "min-h-0 flex-1 overscroll-contain",
-              acercada ? "cursor-zoom-out overflow-auto" : "cursor-zoom-in overflow-hidden",
+              acercada ? "overflow-auto" : "overflow-hidden",
+              nivel === NIVELES.length - 1 ? "cursor-zoom-out" : "cursor-zoom-in",
             )}
           >
-            <div className={cn("relative", acercada ? "h-[200%] w-[200%]" : "size-full")}>
+            <div
+              ref={lienzo}
+              className="relative will-change-transform"
+              style={{ width: `${escala * 100}%`, height: `${escala * 100}%` }}
+            >
               <Image
                 src={foto.url}
                 alt={foto.alt ?? productName}
@@ -307,20 +398,28 @@ function Ampliador({
                 type="button"
                 onClick={() => onMover(-1)}
                 aria-label="Foto anterior"
-                className="grid size-11 place-items-center rounded-full bg-bone/10 text-bone transition-colors hover:bg-bone/20"
+                className={cn(
+                  "grid size-11 place-items-center rounded-full bg-bone/10 text-bone",
+                  "transition-[transform,background-color] duration-200 ease-out",
+                  "hover:scale-110 hover:bg-bone/25 active:scale-95",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bone/70",
+                )}
               >
                 <ChevronLeft className="size-5" aria-hidden />
               </button>
             )}
-            <p className="text-[13px] text-linen-300">
-              {acercada ? "Tocá para alejar" : "Tocá la foto para acercar"}
-            </p>
+            <p className="min-w-[14rem] text-center text-[13px] text-linen-300">{leyenda}</p>
             {onMover && (
               <button
                 type="button"
                 onClick={() => onMover(1)}
                 aria-label="Foto siguiente"
-                className="grid size-11 place-items-center rounded-full bg-bone/10 text-bone transition-colors hover:bg-bone/20"
+                className={cn(
+                  "grid size-11 place-items-center rounded-full bg-bone/10 text-bone",
+                  "transition-[transform,background-color] duration-200 ease-out",
+                  "hover:scale-110 hover:bg-bone/25 active:scale-95",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bone/70",
+                )}
               >
                 <ChevronRight className="size-5" aria-hidden />
               </button>
