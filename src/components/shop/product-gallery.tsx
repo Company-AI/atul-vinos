@@ -246,42 +246,19 @@ function Ampliador({
 }) {
   const [nivel, setNivel] = useState(0);
   const marco = useRef<HTMLDivElement>(null);
-  const lienzo = useRef<HTMLDivElement>(null);
-  const escalaAnterior = useRef(1);
 
   /*
-    El acercamiento se anima con una transformación y no agrandando la caja.
+    El acercamiento cambia de golpe, sin animar.
 
-    Animar el ancho y el alto obliga al navegador a recalcular la página en
-    cada cuadro, y con una foto grande eso se entrecorta justo en el teléfono,
-    que es donde se mira. Una transformación la resuelve la placa de video.
+    Hubo una versión que lo animaba y daba un efecto raro: al pasar de foto
+    con el acercamiento puesto, la siguiente aparecía agrandada y se achicaba
+    sola. Parecía un fallo, y como la foto nueva entraba recortada, daba la
+    impresión de que la flecha no había hecho nada.
 
-    El truco: la caja pasa al tamaño nuevo de una, así el área que se puede
-    recorrer ya es la correcta, y lo de adentro arranca encogido a la
-    proporción vieja y crece hasta su lugar. Se ve como un acercamiento
-    continuo sin mover el resto de la página.
+    Un salto instantáneo no se confunde con nada: la foto está en un tamaño o
+    está en el otro. Si más adelante vale la pena animarlo, hay que mirarlo
+    en un teléfono de verdad antes de darlo por bueno.
   */
-  useEffect(() => {
-    const el = lienzo.current;
-    if (!el) return;
-    const desde = escalaAnterior.current / NIVELES[nivel];
-    escalaAnterior.current = NIVELES[nivel];
-    if (desde === 1) return;
-
-    el.style.transition = "none";
-    el.style.transform = `scale(${desde})`;
-    /*
-      Leer una medida obliga al navegador a asentar el estado de partida acá
-      mismo, sin esperar a pintar un cuadro. Esperarlo era frágil: si la
-      pestaña está en segundo plano o la pantalla apagada, ese cuadro puede no
-      llegar nunca, y la foto se quedaba encogida o gigante para siempre. Así,
-      la escala final queda puesta pase lo que pase; lo único que se pierde si
-      el navegador no anima es la animación.
-    */
-    void el.offsetWidth;
-    el.style.transition = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
-    el.style.transform = "scale(1)";
-  }, [nivel]);
 
   // Cada foto se abre sin acercar: el estado anterior no tiene por qué heredarse.
   useEffect(() => {
@@ -318,11 +295,6 @@ function Ampliador({
       const escala = NIVELES[siguiente];
       const anchoFinal = caja.clientWidth * escala;
       const altoFinal = caja.clientHeight * escala;
-      /*
-        Sin desplazamiento suave: la caja ya está en su tamaño final y lo que
-        se anima es la imagen de adentro. Deslizar además el marco pondría dos
-        animaciones distintas a correr sobre lo mismo y se notaría el pulso.
-      */
       caja.scrollTo({
         left: px * anchoFinal - caja.clientWidth / 2,
         top: py * altoFinal - caja.clientHeight / 2,
@@ -376,8 +348,7 @@ function Ampliador({
             )}
           >
             <div
-              ref={lienzo}
-              className="relative will-change-transform"
+              className="relative"
               style={{ width: `${escala * 100}%`, height: `${escala * 100}%` }}
             >
               <Image
