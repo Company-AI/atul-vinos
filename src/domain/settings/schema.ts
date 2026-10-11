@@ -61,6 +61,26 @@ export const ageGateSettings = z.object({
   rememberDays: z.number().int().default(180),
 });
 
+/*
+  Ventana que aparece una sola vez, cuando el visitante confirma la edad. Es un
+  anzuelo de primera compra, así que el texto y el cupón se editan desde el
+  admin: cambian por campaña y no deberían necesitar un deploy.
+*/
+export const promoSettings = z.object({
+  enabled: z.boolean().default(false),
+  title: z.string().default("10% en tu primera compra"),
+  message: z
+    .string()
+    .default("Usá este cupón al finalizar la compra y llevate un 10% de descuento."),
+  couponCode: z.string().default(""),
+  ctaLabel: z.string().default("Ver los vinos"),
+  ctaHref: z.string().default("/vinos"),
+  dismissLabel: z.string().default("Ahora no"),
+  imageUrl: z.string().default(""),
+  /** Días que se recuerda el cierre antes de volver a ofrecerlo. */
+  rememberDays: z.number().int().min(1).max(365).default(30),
+});
+
 export const shippingSettings = z.object({
   defaultProvider: z.string().default("mock"),
   freeShippingFrom: z.number().nullable().default(100000),
@@ -134,6 +154,7 @@ export const legalSettings = z.object({
 export const settingsSchema = z.object({
   company: companySettings.prefault({}),
   ageGate: ageGateSettings.prefault({}),
+  promo: promoSettings.prefault({}),
   shipping: shippingSettings.prefault({}),
   club: clubSettings.prefault({}),
   payments: paymentSettings.prefault({}),
@@ -150,6 +171,7 @@ export const SETTINGS_GROUPS = Object.keys(settingsSchema.shape) as SettingsGrou
 export const GROUP_SCHEMAS = {
   company: companySettings,
   ageGate: ageGateSettings,
+  promo: promoSettings,
   shipping: shippingSettings,
   club: clubSettings,
   payments: paymentSettings,
@@ -161,6 +183,7 @@ export const GROUP_SCHEMAS = {
 export const GROUP_LABELS: Record<SettingsGroup, string> = {
   company: "Empresa",
   ageGate: "Age gate",
+  promo: "Ventana promocional",
   shipping: "Envíos",
   club: "Club",
   payments: "Pagos",
