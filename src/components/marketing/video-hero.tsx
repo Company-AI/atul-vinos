@@ -30,6 +30,7 @@ export function VideoHero({
   data,
   logoUrl,
   isotipoUrl,
+  isologoUrl,
   companyName,
   priority = true,
 }: {
@@ -37,6 +38,8 @@ export function VideoHero({
   logoUrl?: string;
   /** Isotipo de la marca; se usa cuando el bloque pide logoVariant "isotipo". */
   isotipoUrl?: string;
+  /** Isologo: el sello redondo con la palabra adentro; logoVariant "isologo". */
+  isologoUrl?: string;
   companyName?: string;
   priority?: boolean;
 }) {
@@ -119,9 +122,25 @@ export function VideoHero({
     Qué marca va arriba del titular. El isotipo evita repetir el logotipo que
     la cabecera ya muestra a ~150px de distancia; si no hay archivo cargado,
     cae al logotipo antes que no mostrar nada.
+
+    El isologo lleva la palabra dentro del sello, así que necesita más altura
+    que el isotipo: por debajo de ~60px "ATUL" deja de leerse.
   */
+  const esIsologo = data.logoVariant === "isologo" && Boolean(isologoUrl);
   const esIsotipo = data.logoVariant === "isotipo" && Boolean(isotipoUrl);
-  const marcaUrl = esIsotipo ? isotipoUrl : logoUrl;
+  const marcaUrl = esIsologo ? isologoUrl : esIsotipo ? isotipoUrl : logoUrl;
+
+  /*
+    Cada variante lleva su propia escala: el logotipo es apaisado y los otros
+    dos cuadrados, así que con la misma altura el apaisado pesa el doble. Se
+    resuelve acá una vez porque el hero lo dibuja en dos lugares —el carrusel
+    y la pantalla única— y tenerlo duplicado ya se había desincronizado.
+  */
+  const marca = esIsologo
+    ? { width: 220, height: 220, alto: compacto ? "mb-5 h-20 lg:h-24" : "mb-7 h-24 lg:h-28" }
+    : esIsotipo
+      ? { width: 120, height: 118, alto: compacto ? "mb-5 h-12 lg:h-14" : "mb-7 h-14 lg:h-16" }
+      : { width: 260, height: 52, alto: compacto ? "mb-6 h-7 lg:h-8" : "mb-9 h-9 lg:h-11" };
 
   /*
     Pantallas del hero. Sin `slides` cargadas hay una sola, armada con los
@@ -288,27 +307,14 @@ export function VideoHero({
         varios && "pb-16 lg:pb-20",
       )}
     >
-      {/*
-        El isotipo es cuadrado y el logotipo apaisado: con la misma altura el
-        primero se ve diminuto. Por eso cada variante lleva su propia escala.
-      */}
       {data.showLogo && marcaUrl && (
         <Image
           src={marcaUrl}
           alt={companyName ?? ""}
-          width={esIsotipo ? 120 : 260}
-          height={esIsotipo ? 118 : 52}
+          width={marca.width}
+          height={marca.height}
           priority={priority && i === 0}
-          className={cn(
-            "w-auto",
-            esIsotipo
-              ? compacto
-                ? "mb-5 h-12 lg:h-14"
-                : "mb-7 h-14 lg:h-16"
-              : compacto
-                ? "mb-6 h-7 lg:h-8"
-                : "mb-9 h-9 lg:h-11",
-          )}
+          className={cn("w-auto", marca.alto)}
         />
       )}
 
@@ -584,28 +590,14 @@ export function VideoHero({
           data.align === "center" && "flex flex-col items-center",
         )}
       >
-        {/*
-          El isotipo es cuadrado y el logotipo apaisado: con la misma altura el
-          primero se ve diminuto. Por eso cada variante lleva su propia escala,
-          y el isotipo va bastante más alto para pesar lo mismo en la página.
-        */}
         {data.showLogo && marcaUrl && (
           <Image
             src={marcaUrl}
             alt={companyName ?? ""}
-            width={esIsotipo ? 120 : 260}
-            height={esIsotipo ? 118 : 52}
+            width={marca.width}
+            height={marca.height}
             priority={priority}
-            className={cn(
-              "w-auto",
-              esIsotipo
-                ? compacto
-                  ? "mb-5 h-12 lg:h-14"
-                  : "mb-7 h-14 lg:h-16"
-                : compacto
-                  ? "mb-6 h-7 lg:h-8"
-                  : "mb-9 h-9 lg:h-11",
-            )}
+            className={cn("w-auto", marca.alto)}
           />
         )}
 

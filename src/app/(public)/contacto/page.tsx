@@ -27,19 +27,23 @@ export default async function ContactPage() {
         <ContactForm />
 
         <aside className="space-y-8">
-          <div>
-            <Eyebrow>Dónde estamos</Eyebrow>
-            <address className="mt-4 flex gap-3 text-[15px] not-italic leading-relaxed text-carbon-800">
-              <MapPin className="mt-1 size-4 shrink-0 text-clay-500" />
-              <span>
-                {company.addressLine}<br />
-                {company.city}, {company.province} ({company.postalCode})
-              </span>
-            </address>
-            <p className="mt-3 text-[13px] text-stone-500">
-              Visitas guiadas con degustación de martes a sábado, con reserva previa.
-            </p>
-          </div>
+          {/*
+            La dirección y el teléfono se muestran sólo si están cargados: hoy
+            el cliente atiende por mail y WhatsApp, y dejarlos vacíos tiene que
+            hacerlos desaparecer en vez de imprimir un bloque sin contenido.
+          */}
+          {company.addressLine && (
+            <div>
+              <Eyebrow>Dónde estamos</Eyebrow>
+              <address className="mt-4 flex gap-3 text-[15px] not-italic leading-relaxed text-carbon-800">
+                <MapPin className="mt-1 size-4 shrink-0 text-clay-500" />
+                <span>
+                  {company.addressLine}<br />
+                  {company.city}, {company.province} ({company.postalCode})
+                </span>
+              </address>
+            </div>
+          )}
 
           <div>
             <Eyebrow>Directo</Eyebrow>
@@ -50,12 +54,14 @@ export default async function ContactPage() {
                   {company.email}
                 </a>
               </li>
-              <li>
-                <a href={`tel:${company.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-accent-700">
-                  <Phone className="size-4 shrink-0 text-clay-500" />
-                  {company.phone}
-                </a>
-              </li>
+              {company.phone && (
+                <li>
+                  <a href={`tel:${company.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-accent-700">
+                    <Phone className="size-4 shrink-0 text-clay-500" />
+                    {company.phone}
+                  </a>
+                </li>
+              )}
               {company.whatsapp && (
                 <li>
                   <a

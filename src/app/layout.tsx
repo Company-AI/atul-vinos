@@ -4,6 +4,7 @@ import "./globals.css";
 import { getSettings } from "@/domain/settings/service";
 import { Toaster } from "@/ui/toaster";
 import { AgeGate } from "@/components/site/age-gate";
+import { PromoPopup } from "@/components/site/promo-popup";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -87,6 +88,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         {children}
         <AgeGate settings={settings.ageGate} legal={settings.legal} company={settings.company} />
+        {settings.promo.enabled && (
+          <PromoPopup
+            title={settings.promo.title}
+            message={settings.promo.message}
+            ctaLabel={settings.promo.ctaLabel}
+            ctaHref={settings.promo.ctaHref}
+            dismissLabel={settings.promo.dismissLabel}
+            imageUrl={settings.promo.imageUrl}
+            rememberDays={settings.promo.rememberDays}
+            legalNote={settings.promo.legalNote}
+          />
+        )}
         <Toaster />
       </body>
     </html>

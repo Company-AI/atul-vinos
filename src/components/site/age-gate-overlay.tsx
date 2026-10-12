@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
 import { confirmAge } from "@/app/actions/age-gate";
+import { AGE_CONFIRMED_EVENT } from "@/components/site/age-gate-contrato";
 import { Button } from "@/ui/button";
 
 export function AgeGateOverlay({
@@ -58,6 +59,8 @@ export function AgeGateOverlay({
     startTransition(async () => {
       await confirmAge(rememberDays);
       setOpen(false);
+      // La ventana promocional espera esto para no salir encima del gate.
+      window.dispatchEvent(new Event(AGE_CONFIRMED_EVENT));
     });
   };
 

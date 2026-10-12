@@ -9,7 +9,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Preguntas frecuentes",
-  description: "Envíos, pagos, el Club y todo lo que suelen preguntarnos.",
+  description: "Envíos, pagos y todo lo que suelen preguntarnos.",
   alternates: { canonical: "/faq" },
 };
 

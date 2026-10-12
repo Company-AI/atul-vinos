@@ -5,8 +5,13 @@
   sólo "/", que las muestra como círculos con foto y le agrega "Todos"
   adelante.
 
-  Se listan sólo las que tienen productos: no hay espumantes en catálogo, y
-  mandar a alguien a un filtro vacío es peor que no ofrecer la categoría.
+  Espejan el desplegable "Vinos" del menú lateral: lo pidió el cliente para que
+  la home y el menú ofrezcan lo mismo. Eso incluye Espumantes y Dulces, que hoy
+  no tienen etiquetas cargadas; quien entre ahí cae en el vacío del catálogo,
+  que ya resuelve el caso con un mensaje y un botón para volver.
+
+  Ninguna de las dos tiene foto todavía: el círculo cae al ícono de copa hasta
+  que lleguen las imágenes.
 
   Viven acá y no en el CMS por ahora porque son estructura de navegación y el
   diseño todavía se está definiendo. Cuando se estabilice conviene moverlas a
@@ -16,25 +21,15 @@ export type CategoriaTienda = {
   label: string;
   href: string;
   /** 300×300, packshot real sobre crema. Sin imagen usa el fallback. */
-  imageUrl: string;
+  imageUrl?: string;
 };
 
 export const CATEGORIAS_TIENDA: CategoriaTienda[] = [
   { label: "Tintos", href: "/vinos?tipo=TINTO", imageUrl: "/media/categories/tintos.webp" },
-  { label: "Malbec", href: "/vinos?varietal=malbec", imageUrl: "/media/categories/malbec.webp" },
   { label: "Blancos", href: "/vinos?tipo=BLANCO", imageUrl: "/media/categories/blancos.webp" },
   { label: "Rosados", href: "/vinos?tipo=ROSADO", imageUrl: "/media/categories/rosados.webp" },
-  {
-    label: "Cabernet",
-    href: "/vinos?varietal=cabernet-franc",
-    imageUrl: "/media/categories/cabernet.webp",
-  },
-  {
-    label: "Chardonnay",
-    href: "/vinos?varietal=chardonnay",
-    imageUrl: "/media/categories/chardonnay.webp",
-  },
-  { label: "Box", href: "/box", imageUrl: "/media/categories/box.webp" },
+  { label: "Espumantes", href: "/vinos?tipo=ESPUMANTE" },
+  { label: "Dulces", href: "/vinos?tipo=DULCE" },
 ];
 
 /** Atajo para el enlace "todos" que cada maqueta pone al principio. */

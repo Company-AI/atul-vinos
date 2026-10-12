@@ -24,12 +24,14 @@ export function SectionRenderer({
   sections,
   logoUrl,
   isotipoUrl,
+  isologoUrl,
   companyName,
   anchors = {},
 }: {
   sections: CmsSection[];
   logoUrl?: string;
   isotipoUrl?: string;
+  isologoUrl?: string;
   companyName?: string;
   /** Ancla opcional por clave de sección, para links internos (#planes, #faq). */
   anchors?: Record<string, string>;
@@ -47,6 +49,7 @@ export function SectionRenderer({
                 data={section.data as BlockData<"video_hero">}
                 logoUrl={logoUrl}
                 isotipoUrl={isotipoUrl}
+                isologoUrl={isologoUrl}
                 companyName={companyName}
                 priority={index === 0}
               />

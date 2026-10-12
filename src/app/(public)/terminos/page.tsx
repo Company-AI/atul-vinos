@@ -33,10 +33,6 @@ export default async function TermsPage() {
           body: "Los pagos se procesan a través del proveedor habilitado. No almacenamos datos de tarjetas en nuestros sistemas. Un pedido se considera confirmado solo cuando el proveedor de pagos acredita la operación.",
         },
         {
-          heading: "Suscripciones del Club",
-          body: "La suscripción al Club se cobra automáticamente según la frecuencia del plan elegido. No tiene permanencia mínima: podés pausarla o cancelarla en cualquier momento desde Mi Cuenta. El cobro ya realizado da derecho al envío correspondiente a ese período.",
-        },
-        {
           heading: "Envíos",
           body: "Los plazos publicados son estimados y dependen del transportista. La entrega requiere una persona mayor de 18 años en el domicilio indicado.",
         },

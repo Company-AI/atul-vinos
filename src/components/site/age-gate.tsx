@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import type { Settings } from "@/domain/settings/schema";
 import { AgeGateOverlay } from "./age-gate-overlay";
 
-export const AGE_GATE_COOKIE = "bodega_age_ok";
+export { AGE_GATE_COOKIE } from "./age-gate-contrato";
+import { AGE_GATE_COOKIE } from "./age-gate-contrato";
 
 /**
  * Se renderiza en el servidor: si la cookie ya existe, no se envía nada al

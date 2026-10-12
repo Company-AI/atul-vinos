@@ -101,6 +101,7 @@ export default async function HomePage() {
         sections={hero}
         logoUrl={settings.company.logoLightUrl}
         isotipoUrl={settings.company.isotipoLightUrl}
+        isologoUrl={settings.company.isologoLightUrl}
         companyName={settings.company.name}
       />
 

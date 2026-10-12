@@ -32,10 +32,6 @@ export default async function ReturnsPage() {
           heading: "Cambios de producto",
           body: "Mientras el pedido no haya salido del depósito podés cambiar los productos escribiéndonos. Una vez despachado, aplica el procedimiento de devolución.",
         },
-        {
-          heading: "Suscripción del Club",
-          body: "La caja mensual no admite devolución por cambio de preferencia, pero sí por rotura o defecto. Si no querés recibir un mes, podés omitirlo desde Mi Cuenta antes del cierre del box.",
-        },
       ]}
     />
   );
