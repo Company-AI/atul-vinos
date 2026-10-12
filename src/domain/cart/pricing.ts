@@ -21,12 +21,18 @@ export type PricingInput = {
   freeShippingFromCents?: number | null;
   /** El plan del Club o el beneficio del socio cubren el envío. */
   shippingCoveredByBenefit?: boolean;
+  /*
+    Descuento por pagar con transferencia (0-100). Se aplica sobre los
+    productos, no sobre el envío: el banco no abarata el flete.
+  */
+  transferDiscountPercent?: number;
 };
 
 export type PricingResult = {
   subtotalCents: number;
   memberDiscountCents: number;
   couponDiscountCents: number;
+  transferDiscountCents: number;
   discountTotalCents: number;
   shippingCents: number;
   shippingFree: boolean;
@@ -53,7 +59,19 @@ export function calculatePricing(input: PricingInput): PricingResult {
   const afterMember = subtotalCents - memberDiscountCents;
   const couponDiscountCents = Math.min(afterMember, input.coupon?.discountCents ?? 0);
 
-  const discountTotalCents = memberDiscountCents + couponDiscountCents;
+  /*
+    El descuento por transferencia va último y sobre lo que quedó, no sobre el
+    precio de lista: si se calculara sobre el subtotal entero, alguien con
+    cupón terminaría descontando dos veces la misma plata y el total podría
+    quedar por debajo de lo que cuesta la mercadería.
+  */
+  const afterCoupon = afterMember - couponDiscountCents;
+  const transferDiscountCents = input.transferDiscountPercent
+    ? percentOfCents(afterCoupon, input.transferDiscountPercent)
+    : 0;
+
+  const discountTotalCents =
+    memberDiscountCents + couponDiscountCents + transferDiscountCents;
   const netCents = subtotalCents - discountTotalCents;
 
   let shippingCents = Math.max(0, input.shippingCents ?? 0);
@@ -68,7 +86,14 @@ export function calculatePricing(input: PricingInput): PricingResult {
   } else if (
     input.freeShippingFromCents !== null &&
     input.freeShippingFromCents !== undefined &&
-    netCents >= input.freeShippingFromCents
+    /*
+      El umbral se mide ANTES del descuento por transferencia. Si se midiera
+      después, un carrito apenas arriba del mínimo perdería el envío gratis
+      justo por elegir transferencia: ahorraría el 10% de la mercadería y
+      pagaría el flete entero. Además es lo que ya cotizó el transportista,
+      que no conoce el medio de pago, así que así los dos números coinciden.
+    */
+    afterCoupon >= input.freeShippingFromCents
   ) {
     shippingFreeReason = "threshold";
     shippingCents = 0;
@@ -80,6 +105,7 @@ export function calculatePricing(input: PricingInput): PricingResult {
     subtotalCents,
     memberDiscountCents,
     couponDiscountCents,
+    transferDiscountCents,
     discountTotalCents,
     shippingCents,
     shippingFree: shippingFreeReason !== null,

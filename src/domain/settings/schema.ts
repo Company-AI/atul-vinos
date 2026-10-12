@@ -132,6 +132,19 @@ export const paymentSettings = z.object({
     precio más bajo que nadie puede pagar es peor que no anunciarlo.
   */
   transferDiscountPercent: z.number().min(0).max(90).default(10),
+
+  /*
+    Pago por transferencia. Apagado por defecto: mientras no estén los datos
+    de la cuenta, ofrecerlo sería mandar a alguien a transferir sin decirle
+    a dónde. La pantalla de pago sólo lo muestra si está encendido y hay al
+    menos un alias o un CBU cargado.
+  */
+  transferEnabled: z.boolean().default(false),
+  transferHolder: z.string().default(""),
+  transferBank: z.string().default(""),
+  transferAlias: z.string().default(""),
+  transferCbu: z.string().default(""),
+  transferCuit: z.string().default(""),
 });
 
 export const seoSettings = z.object({

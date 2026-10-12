@@ -6,11 +6,13 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { Check, Loader2, Truck } from "lucide-react";
 import { quoteShippingForCheckout, submitCheckout } from "@/app/actions/checkout";
 import type { CartSummary } from "@/domain/cart/service";
+import type { DatosDeTransferencia } from "@/domain/payments/transferencia";
 import type { ShippingQuote } from "@/domain/shipping/ports";
 import { AR_PROVINCES } from "@/lib/ar";
 import { cn } from "@/lib/cn";
-import { formatARS } from "@/lib/money";
+import { formatARS, fromCents, percentOfCents } from "@/lib/money";
 import { Button } from "@/ui/button";
+import { DatosParaTransferir } from "@/ui/datos-para-transferir";
 import { Checkbox, Field, Input, Select, Textarea } from "@/ui/field";
 import { toast } from "@/ui/toaster";
 
@@ -25,6 +27,7 @@ export function CheckoutForm({
   requireDocument,
   prefill,
   providerLabel,
+  transferencia,
 }: {
   cart: CartSummary;
   requireDocument: boolean;
@@ -33,6 +36,8 @@ export function CheckoutForm({
     address?: Partial<typeof emptyAddress>;
   };
   providerLabel: string;
+  /** Datos de la cuenta, o null si no se ofrece transferencia. */
+  transferencia: DatosDeTransferencia | null;
 }) {
   const [contact, setContact] = useState({
     firstName: prefill.firstName ?? "",
@@ -45,6 +50,13 @@ export function CheckoutForm({
   const [billingSame, setBillingSame] = useState(true);
   const [billing, setBilling] = useState({ ...emptyAddress, taxId: "" });
   const [note, setNote] = useState("");
+  /*
+    Tarjeta por defecto: es el camino que se confirma solo. La transferencia
+    deja el pedido esperando a que alguien mire el banco, así que tiene que
+    elegirse a propósito y no caer en ella por no haber tocado nada.
+  */
+  const [medioDePago, setMedioDePago] = useState<"mercadopago" | "transferencia">("mercadopago");
+  const porTransferencia = medioDePago === "transferencia" && transferencia !== null;
 
   const [quotes, setQuotes] = useState<ShippingQuote[]>([]);
   const [selectedQuote, setSelectedQuote] = useState<string>("");
@@ -89,7 +101,24 @@ export function CheckoutForm({
 
   const quote = quotes.find((q) => q.serviceCode === selectedQuote);
   const shippingPrice = quote?.price ?? 0;
-  const total = cart.pricing.subtotal - cart.pricing.discountTotal + shippingPrice;
+
+  /*
+    Espejo exacto de calculatePricing: el descuento va sobre lo que queda
+    después del beneficio de socio y del cupón, nunca sobre el envío. El
+    total real lo vuelve a calcular el servidor al crear el pedido; esto es
+    sólo para que el número de la pantalla sea el mismo que se va a cobrar.
+  */
+  const baseTransferencia =
+    cart.pricing.subtotalCents -
+    cart.pricing.memberDiscountCents -
+    cart.pricing.couponDiscountCents;
+  const descuentoTransferencia =
+    porTransferencia && transferencia.descuentoPorcentaje > 0
+      ? fromCents(percentOfCents(baseTransferencia, transferencia.descuentoPorcentaje))
+      : 0;
+
+  const descuentos = cart.pricing.discountTotal + descuentoTransferencia;
+  const total = cart.pricing.subtotal - descuentos + shippingPrice;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -129,6 +158,7 @@ export function CheckoutForm({
           carrierCode: quote.providerCode,
         },
         customerNote: note || undefined,
+        paymentProvider: medioDePago,
       });
 
       if (result.ok) {
@@ -384,13 +414,50 @@ export function CheckoutForm({
         {/* Pago */}
         <section aria-labelledby="paso-pago">
           <StepTitle id="paso-pago" step={3} title="Pago" />
-          <div className="border border-linen-300 bg-bone-pure p-5">
-            <p className="text-[14px] text-carbon-900">{providerLabel}</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-stone-500">
-              Al confirmar te llevamos a la plataforma de pago. Tu pedido queda reservado y se
-              confirma cuando se acredita el cobro. No guardamos datos de tu tarjeta.
-            </p>
-          </div>
+          {transferencia === null ? (
+            <div className="border border-linen-300 bg-bone-pure p-5">
+              <p className="text-[14px] text-carbon-900">{providerLabel}</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-stone-500">
+                Al confirmar te llevamos a la plataforma de pago. Tu pedido queda reservado y se
+                confirma cuando se acredita el cobro. No guardamos datos de tu tarjeta.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <OpcionDePago
+                elegida={!porTransferencia}
+                onElegir={() => setMedioDePago("mercadopago")}
+                titulo={providerLabel}
+                detalle="Tarjeta de crédito, débito o dinero en cuenta. Al confirmar te llevamos a la plataforma de pago; no guardamos datos de tu tarjeta."
+              />
+
+              <OpcionDePago
+                elegida={porTransferencia}
+                onElegir={() => setMedioDePago("transferencia")}
+                titulo="Transferencia bancaria"
+                etiqueta={
+                  transferencia.descuentoPorcentaje > 0
+                    ? `${transferencia.descuentoPorcentaje}% OFF`
+                    : undefined
+                }
+                detalle="Transferís desde tu banco y nos mandás el comprobante por WhatsApp. Preparamos el pedido apenas vemos la acreditación."
+              >
+                {/*
+                  Los datos ya acá, antes de confirmar: alguien que no tiene
+                  home banking a mano quiere saberlo ahora y no después de
+                  haber dejado el pedido hecho.
+                */}
+                <div className="border-t border-linen-200 px-4 pt-3 pb-4">
+                  <p className="eyebrow mb-1 text-stone-500">Vas a transferir a</p>
+                  <DatosParaTransferir datos={transferencia} />
+                  <p className="mt-3 text-[12px] leading-relaxed text-stone-500">
+                    Al confirmar te mostramos estos datos de nuevo junto al número de tu pedido,
+                    que es la referencia que tenés que poner en la transferencia.
+                  </p>
+                </div>
+              </OpcionDePago>
+            </div>
+          )}
 
           <Field label="Comentarios para nosotros" htmlFor="note" className="mt-6"
             hint="Opcional. Ej.: es un regalo, incluir tarjeta.">
@@ -433,10 +500,10 @@ export function CheckoutForm({
               <dt className="text-stone-500">Subtotal</dt>
               <dd className="tabular">{formatARS(cart.pricing.subtotal)}</dd>
             </div>
-            {cart.pricing.discountTotal > 0 && (
+            {descuentos > 0 && (
               <div className="flex justify-between">
                 <dt className="text-stone-500">Descuentos</dt>
-                <dd className="tabular text-success-500">−{formatARS(cart.pricing.discountTotal)}</dd>
+                <dd className="tabular text-success-500">−{formatARS(descuentos)}</dd>
               </div>
             )}
             <div className="flex justify-between">
@@ -465,11 +532,20 @@ export function CheckoutForm({
             loading={submitting}
             disabled={submitting || !quote || cart.hasStockIssues}
           >
-            {cart.hasStockIssues ? "Revisá el stock" : "Confirmar y pagar"}
+            {cart.hasStockIssues
+              ? "Revisá el stock"
+              : porTransferencia
+                ? "Confirmar pedido"
+                : "Confirmar y pagar"}
           </Button>
 
           <ul className="mt-5 space-y-1.5 text-[12px] text-stone-500">
-            <li className="flex items-center gap-1.5"><Check className="size-3" /> Pago procesado por {providerLabel}</li>
+            <li className="flex items-center gap-1.5">
+              <Check className="size-3" />
+              {porTransferencia
+                ? "Te mostramos los datos para transferir"
+                : `Pago procesado por ${providerLabel}`}
+            </li>
             <li className="flex items-center gap-1.5"><Check className="size-3" /> Embalaje reforzado para botellas</li>
             <li className="flex items-center gap-1.5"><Check className="size-3" /> Si algo llega roto, lo reponemos</li>
           </ul>
@@ -483,6 +559,58 @@ export function CheckoutForm({
         </div>
       </aside>
     </form>
+  );
+}
+
+function OpcionDePago({
+  elegida,
+  onElegir,
+  titulo,
+  detalle,
+  etiqueta,
+  children,
+}: {
+  elegida: boolean;
+  onElegir: () => void;
+  titulo: string;
+  detalle: string;
+  etiqueta?: string;
+  children?: React.ReactNode;
+}) {
+  /*
+    El detalle queda FUERA del label a propósito: adentro tiene botones de
+    copiar, y un clic en ellos activaría también el label. Afuera, copiar el
+    CBU es copiar el CBU y nada más.
+  */
+  return (
+    <div
+      className={cn(
+        "border transition-colors",
+        elegida ? "border-carbon-900 bg-bone-pure" : "border-linen-300 hover:border-stone-400",
+      )}
+    >
+      <label className="flex cursor-pointer items-start gap-3 px-4 py-3.5">
+        <input
+          type="radio"
+          name="medio-de-pago"
+          checked={elegida}
+          onChange={onElegir}
+          className="mt-0.5 size-4 accent-accent-700"
+        />
+        <span className="flex-1">
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="text-[14px] text-carbon-900">{titulo}</span>
+            {etiqueta && (
+              <span className="bg-wine-700 px-1.5 py-0.5 text-[11px] font-medium tracking-wide text-bone-pure">
+                {etiqueta}
+              </span>
+            )}
+          </span>
+          <span className="mt-1 block text-[13px] leading-relaxed text-stone-500">{detalle}</span>
+        </span>
+      </label>
+      {elegida && children}
+    </div>
   );
 }
 
