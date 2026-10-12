@@ -72,11 +72,16 @@ export const promoSettings = z.object({
   message: z
     .string()
     .default("Usá este cupón al finalizar la compra y llevate un 10% de descuento."),
+  /** El código que se revela después de dejar los datos. */
   couponCode: z.string().default(""),
   ctaLabel: z.string().default("Ver los vinos"),
   ctaHref: z.string().default("/vinos"),
   dismissLabel: z.string().default("Ahora no"),
   imageUrl: z.string().default(""),
+  /** Condiciones al pie. Se pide un dato personal: tiene que estar a la vista. */
+  legalNote: z
+    .string()
+    .default("Válido en tu primera compra, un uso por persona. Te vamos a escribir cuando haya novedades."),
   /** Días que se recuerda el cierre antes de volver a ofrecerlo. */
   rememberDays: z.number().int().min(1).max(365).default(30),
 });

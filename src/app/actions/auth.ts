@@ -98,21 +98,30 @@ export async function register(input: {
   }
 
   const email = parsed.data.email.toLowerCase().trim();
+  /*
+    La ventana promocional deja fichas sin contraseña: alguien que dejó el mail
+    para llevarse el cupón existe como cliente pero nunca eligió una clave.
+
+    Si se rechazara por email repetido, esa persona quedaría encerrada: no
+    puede registrarse porque "ya existe", y no puede ingresar porque no hay
+    contraseña contra la cual validar. Así que termina de abrir la suya.
+  */
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
+  if (existing && existing.passwordHash) {
     return { ok: false, error: "Ya existe una cuenta con ese email. Probá ingresando." };
   }
 
-  const user = await prisma.user.create({
-    data: {
-      email,
-      passwordHash: await hashPassword(parsed.data.password),
-      firstName: parsed.data.firstName.trim(),
-      lastName: parsed.data.lastName.trim(),
-      phone: parsed.data.phone?.trim() || null,
-      acceptsMarketing: parsed.data.acceptsMarketing,
-    },
-  });
+  const datos = {
+    passwordHash: await hashPassword(parsed.data.password),
+    firstName: parsed.data.firstName.trim(),
+    lastName: parsed.data.lastName.trim(),
+    phone: parsed.data.phone?.trim() || null,
+    acceptsMarketing: parsed.data.acceptsMarketing,
+  };
+
+  const user = existing
+    ? await prisma.user.update({ where: { id: existing.id }, data: datos })
+    : await prisma.user.create({ data: { email, ...datos } });
 
   if (parsed.data.acceptsMarketing) {
     await prisma.newsletterSubscriber.upsert({

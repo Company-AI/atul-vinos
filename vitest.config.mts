@@ -7,6 +7,10 @@ config({ path: ".env.test", override: true });
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
+  resolve: {
+    // Ver tests/stubs/server-only.ts.
+    alias: { "server-only": new URL("./tests/stubs/server-only.ts", import.meta.url).pathname },
+  },
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],

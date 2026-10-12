@@ -92,12 +92,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <PromoPopup
             title={settings.promo.title}
             message={settings.promo.message}
-            couponCode={settings.promo.couponCode}
             ctaLabel={settings.promo.ctaLabel}
             ctaHref={settings.promo.ctaHref}
             dismissLabel={settings.promo.dismissLabel}
             imageUrl={settings.promo.imageUrl}
             rememberDays={settings.promo.rememberDays}
+            legalNote={settings.promo.legalNote}
           />
         )}
         <Toaster />
