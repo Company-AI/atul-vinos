@@ -207,7 +207,7 @@ export const CMS_SECTIONS = [
           imageUrl: "/media/scenes/toast.jpg",
           imageAlt: "Tres personas brindando con copas de vino tinto",
           kicker: "Box",
-          title: "Box armados de 2, 4 y 6 botellas",
+          title: "Box de 3 y de 6 vinos",
           body: "Cada uno con una idea detrás, y más barato que comprar las botellas por separado.",
           ctaLabel: "Ver los Box",
           ctaHref: "/box",

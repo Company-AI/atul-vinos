@@ -1,0 +1,66 @@
+/**
+ * Corrige textos del CMS que quedaron desactualizados.
+ *
+ * Hace falta porque el contenido vive en la base, no en el código: cambiar
+ * el seed arregla una instalación nueva y no toca la que está andando. Y
+ * entrar a editarlo a mano en cada ambiente es la forma de que uno quede
+ * distinto del otro sin que nadie se entere.
+ *
+ * REGLA: cada cambio sólo se aplica si el texto sigue siendo exactamente el
+ * viejo. Si alguien ya lo editó desde el admin, se respeta lo que escribió.
+ * Un script de mantenimiento que pisa la decisión de una persona es peor que
+ * no tenerlo.
+ *
+ * Es idempotente: la segunda corrida no encuentra nada que cambiar.
+ *
+ *   npx tsx prisma/ops/textos.ts
+ */
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+/** Reemplazos exactos, por sección. */
+const CAMBIOS: { seccion: string; de: string; a: string; porque: string }[] = [
+  {
+    seccion: "home.banner",
+    de: "Box armados de 2, 4 y 6 botellas",
+    a: "Box de 3 y de 6 vinos",
+    porque: "Los box pasan a ser de 3 y de 6.",
+  },
+];
+
+async function main() {
+  for (const cambio of CAMBIOS) {
+    const fila = await prisma.cmsSection.findUnique({ where: { key: cambio.seccion } });
+    if (!fila) {
+      console.log(`${cambio.seccion}: no existe, se saltea`);
+      continue;
+    }
+
+    /*
+      Se reemplaza sobre el JSON serializado y no campo por campo: estas
+      secciones tienen formas distintas —algunas con items, otras planas— y
+      buscar la clave exacta en cada una sería un `if` por tipo de sección
+      que se desactualiza al primer cambio de forma.
+    */
+    const antes = JSON.stringify(fila.data);
+    if (!antes.includes(cambio.de)) {
+      console.log(`${cambio.seccion}: ya no dice "${cambio.de}" — sin tocar`);
+      continue;
+    }
+
+    const despues = antes.split(cambio.de).join(cambio.a);
+    await prisma.cmsSection.update({
+      where: { key: cambio.seccion },
+      data: { data: JSON.parse(despues), updatedBy: "ops/textos" },
+    });
+    console.log(`${cambio.seccion}: "${cambio.de}" → "${cambio.a}"  (${cambio.porque})`);
+  }
+}
+
+main()
+  .catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  })
+  .finally(() => prisma.$disconnect());
