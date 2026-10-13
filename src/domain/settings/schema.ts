@@ -120,6 +120,31 @@ export const paymentSettings = z.object({
   statementDescriptor: z.string().default("ATUL VINOS"),
   installmentsEnabled: z.boolean().default(true),
   maxInstallments: z.number().int().default(6),
+  /*
+    Lo que se promete en la vidriera, que no es lo mismo que lo que el
+    proveedor permite: maxInstallments es hasta en cuántas se puede pagar, y
+    esto es hasta cuántas no tienen recargo. Se muestra bajo cada precio.
+    En cero, no se muestra nada.
+  */
+  interestFreeInstallments: z.number().int().min(0).max(24).default(3),
+  /*
+    Descuento por pagar con transferencia. En cero no se muestra: anunciar un
+    precio más bajo que nadie puede pagar es peor que no anunciarlo.
+  */
+  transferDiscountPercent: z.number().min(0).max(90).default(10),
+
+  /*
+    Pago por transferencia. Apagado por defecto: mientras no estén los datos
+    de la cuenta, ofrecerlo sería mandar a alguien a transferir sin decirle
+    a dónde. La pantalla de pago sólo lo muestra si está encendido y hay al
+    menos un alias o un CBU cargado.
+  */
+  transferEnabled: z.boolean().default(false),
+  transferHolder: z.string().default(""),
+  transferBank: z.string().default(""),
+  transferAlias: z.string().default(""),
+  transferCbu: z.string().default(""),
+  transferCuit: z.string().default(""),
 });
 
 export const seoSettings = z.object({

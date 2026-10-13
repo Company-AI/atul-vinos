@@ -31,7 +31,12 @@ export async function startOrderCheckout(
   if (!payment) return err("El pedido no tiene un pago pendiente.", "NO_PAYMENT");
 
   const settings = await getSettings();
-  const provider = getPaymentProvider();
+  /*
+    El proveedor sale del pago, no del que esté activo: el comprador ya eligió
+    al confirmar, y el precio del pedido se calculó con esa elección. Usar
+    otro acá cobraría por una pasarela un total con descuento de transferencia.
+  */
+  const provider = getPaymentProvider(payment.provider);
   const [firstName, ...rest] = order.customerName.split(" ");
 
   try {

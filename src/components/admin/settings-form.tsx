@@ -75,6 +75,23 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   statementDescriptor: { label: "Texto en el resumen de tarjeta" },
   installmentsEnabled: { label: "Permitir cuotas" },
   maxInstallments: { label: "Máximo de cuotas" },
+  interestFreeInstallments: {
+    label: "Cuotas sin interés que se anuncian",
+    hint: "Se muestra bajo cada precio: “3 x $12.700 sin interés”. Tiene que coincidir con lo que esté configurado en el panel de Mercado Pago. En 0 no se muestra nada.",
+  },
+  transferDiscountPercent: {
+    label: "Descuento por transferencia (%)",
+    hint: "Se anuncia bajo cada precio y se aplica al total si eligen transferencia. En 0 no se muestra nada.",
+  },
+  transferEnabled: {
+    label: "Ofrecer pago por transferencia",
+    hint: "Hace falta cargar al menos el alias o el CBU: sin eso el medio no aparece en el checkout.",
+  },
+  transferHolder: { label: "Titular de la cuenta" },
+  transferBank: { label: "Banco" },
+  transferAlias: { label: "Alias" },
+  transferCbu: { label: "CBU" },
+  transferCuit: { label: "CUIT del titular" },
 
   defaultTitle: { label: "Título por defecto" },
   titleTemplate: { label: "Plantilla de título", hint: "%s se reemplaza por el título de la página." },

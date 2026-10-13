@@ -6,6 +6,7 @@ import { getSettings } from "@/domain/settings/service";
 import { getCurrentUser } from "@/infra/auth/session";
 import { prisma } from "@/infra/db/prisma";
 import { getPaymentProvider } from "@/infra/payments/registry";
+import { datosDeTransferencia } from "@/domain/payments/transferencia";
 import { CheckoutForm } from "@/components/shop/checkout-form";
 import { Container, Eyebrow, Heading } from "@/ui/layout";
 
@@ -28,6 +29,7 @@ export default async function CheckoutPage() {
     : null;
 
   const provider = getPaymentProvider();
+  const transferencia = datosDeTransferencia(settings.payments);
 
   return (
     <Container className="py-12">
@@ -53,6 +55,7 @@ export default async function CheckoutPage() {
         cart={cart}
         requireDocument={settings.company.requireDocumentAtCheckout}
         providerLabel={provider.name}
+        transferencia={transferencia}
         prefill={{
           firstName: user?.firstName,
           lastName: user?.lastName,

@@ -5,6 +5,7 @@ import { WINE_TYPE_LABELS } from "@/domain/catalog/types";
 import { cn } from "@/lib/cn";
 import { Badge } from "@/ui/badge";
 import { Price } from "@/ui/price";
+import { FormasDePago } from "@/ui/formas-de-pago";
 import { StockIndicator } from "@/ui/stock-indicator";
 import { AddToCartButton } from "./add-to-cart";
 import { FavoriteButton } from "./favorite-button";
@@ -99,6 +100,8 @@ export function WineCard({
             <StockIndicator available={product.available} minStock={product.minStock} />
           )}
         </div>
+
+        <FormasDePago value={product.price} size="sm" className="mt-1.5" />
       </div>
     </article>
   );

@@ -85,3 +85,62 @@ describe("motor de precios", () => {
     expect(amountMissingForFreeShipping(50_000, null)).toBeNull();
   });
 });
+
+describe("descuento por transferencia", () => {
+  const unaBotella = [{ productId: "a", quantity: 1, unitPriceCents: toCents(38100) }];
+
+  it("descuenta el porcentaje sobre los productos", () => {
+    const r = calculatePricing({ lines: unaBotella, transferDiscountPercent: 10 });
+    expect(r.transferDiscountCents).toBe(toCents(3810));
+    expect(r.total).toBe(34290);
+  });
+
+  it("no abarata el envío: el banco no paga el flete", () => {
+    const r = calculatePricing({
+      lines: unaBotella,
+      shippingCents: toCents(8900),
+      transferDiscountPercent: 10,
+    });
+    // 38.100 − 10% = 34.290, más 8.900 de envío.
+    expect(r.shippingTotal).toBe(8900);
+    expect(r.total).toBe(43190);
+  });
+
+  it("se calcula sobre lo que queda después del cupón, no sobre el precio de lista", () => {
+    const r = calculatePricing({
+      lines: unaBotella,
+      coupon: { discountCents: toCents(8100), freeShipping: false, code: "X" },
+      transferDiscountPercent: 10,
+    });
+    // Sobre 30.000, no sobre 38.100: el 10% son 3.000, no 3.810.
+    expect(r.transferDiscountCents).toBe(toCents(3000));
+    expect(r.total).toBe(27000);
+  });
+
+  it("sin el dato, no descuenta nada", () => {
+    const r = calculatePricing({ lines: unaBotella });
+    expect(r.transferDiscountCents).toBe(0);
+    expect(r.total).toBe(38100);
+  });
+
+  it("no hace perder el envío gratis a un carrito que ya lo había alcanzado", () => {
+    const r = calculatePricing({
+      lines: [{ productId: "a", quantity: 1, unitPriceCents: toCents(100000) }],
+      shippingCents: toCents(8900),
+      freeShippingFromCents: toCents(100000),
+      transferDiscountPercent: 10,
+    });
+    // Queda en 90.000, pero el umbral se mide sobre los 100.000 de antes.
+    expect(r.shippingFreeReason).toBe("threshold");
+    expect(r.total).toBe(90000);
+  });
+
+  it("nunca deja el total por debajo de cero", () => {
+    const r = calculatePricing({
+      lines: [{ productId: "a", quantity: 1, unitPriceCents: toCents(1000) }],
+      coupon: { discountCents: toCents(1000), freeShipping: false, code: "TODO" },
+      transferDiscountPercent: 90,
+    });
+    expect(r.total).toBe(0);
+  });
+});
