@@ -71,12 +71,11 @@ const nextConfig: NextConfig = {
       { source: "/historia", destination: "/quienes-somos", permanent: true },
 
       /*
-        El Club no se lanza todavía. La ruta cae en la home en lugar de dar
-        404: cuando haya stock para sostenerlo, se quita este redirect y el
-        motor de suscripciones ya está entero detrás.
+        El Club ya no se esconde desde acá. Estaba resuelto con un redirect
+        estático, y eso obligaba a tocar código y redeployar para volver a
+        mostrarlo. Ahora lo decide `club.enabled` en Configuración: apagado,
+        /club da 404 y el Club desaparece del pie, del menú y del FAQ.
       */
-      { source: "/club", destination: "/", permanent: false },
-      { source: "/club/:path*", destination: "/", permanent: false },
       { source: "/v5/:path*", destination: "/v6/:path*", permanent: false },
     ];
   },

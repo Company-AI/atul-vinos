@@ -87,7 +87,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Saltar al contenido
         </a>
         {children}
-        <AgeGate settings={settings.ageGate} legal={settings.legal} company={settings.company} />
+        <AgeGate
+          settings={settings.ageGate}
+          legal={settings.legal}
+          company={{ name: settings.company.name, logoLightUrl: settings.company.logoLightUrl }}
+        />
         {settings.promo.enabled && (
           <PromoPopup
             title={settings.promo.title}
@@ -96,8 +100,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             ctaHref={settings.promo.ctaHref}
             dismissLabel={settings.promo.dismissLabel}
             imageUrl={settings.promo.imageUrl}
-            rememberDays={settings.promo.rememberDays}
             legalNote={settings.promo.legalNote}
+            minAge={settings.ageGate.minAge}
           />
         )}
         <Toaster />

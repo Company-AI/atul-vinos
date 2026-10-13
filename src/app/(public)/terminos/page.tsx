@@ -18,7 +18,7 @@ export default async function TermsPage() {
       fallback={[
         {
           heading: "Quiénes somos",
-          body: `Este sitio es operado por ${company.legalName}, con domicilio en ${company.addressLine}, ${company.city}, ${company.province}. Podés escribirnos a ${company.email}.`,
+          body: `Este sitio es operado por ${company.legalName}. Podés escribirnos a ${company.email} o por WhatsApp al ${company.phone}.`,
         },
         {
           heading: "Venta a mayores de edad",

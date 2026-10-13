@@ -15,6 +15,8 @@ on:
         options:
           - crear-o-actualizar-admin
           - cargar-catalogo-de-ejemplo
+          - actualizar-datos-de-contacto
+          - configurar-ventana-de-bienvenida
 
 jobs:
   operar:
@@ -38,6 +40,8 @@ jobs:
           case "${{ inputs.tarea }}" in
             crear-o-actualizar-admin)   echo "script=prisma/ops/admin.ts" >> "$GITHUB_OUTPUT" ;;
             cargar-catalogo-de-ejemplo) echo "script=prisma/ops/catalogo-ejemplo.ts" >> "$GITHUB_OUTPUT" ;;
+            actualizar-datos-de-contacto) echo "script=prisma/ops/contacto.ts" >> "$GITHUB_OUTPUT" ;;
+            configurar-ventana-de-bienvenida) echo "script=prisma/ops/bienvenida.ts" >> "$GITHUB_OUTPUT" ;;
             *) echo "Tarea desconocida."; exit 1 ;;
           esac
 

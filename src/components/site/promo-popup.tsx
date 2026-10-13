@@ -8,16 +8,31 @@ import { claimPromo } from "@/app/actions/promo";
 import { Button, buttonVariants } from "@/ui/button";
 import { AGE_CONFIRMED_EVENT, AGE_GATE_COOKIE } from "@/components/site/age-gate-contrato";
 
-const DISMISS_KEY = "atul:promo-visto";
+/*
+  Una sola llave y para siempre, sin vencimiento.
 
-function yaFueVisto(): boolean {
+  Da igual si la persona completó los datos o si cerró la ventana: en los dos
+  casos ya decidió. A quien se llevó el cupón volver a ofrecérselo sería
+  prometerle algo que el checkout le va a rechazar —es uno por persona—, y a
+  quien la cerró, insistirle.
+*/
+const VISTA_KEY = "atul:bienvenida-vista";
+
+function yaFueVista(): boolean {
   try {
-    const hasta = window.localStorage.getItem(DISMISS_KEY);
-    return hasta !== null && Number(hasta) > Date.now();
+    return window.localStorage.getItem(VISTA_KEY) === "1";
   } catch {
-    // Navegación privada o storage bloqueado: mostrarlo de nuevo es preferible
-    // a que no aparezca nunca.
+    // Navegación privada o storage bloqueado: mostrarla es preferible a que
+    // no aparezca nunca. Como mucho, alguien la ve dos veces.
     return false;
+  }
+}
+
+function marcarComoVista(): void {
+  try {
+    window.localStorage.setItem(VISTA_KEY, "1");
+  } catch {
+    // Sin storage se vuelve a ofrecer. El cupón igual es uno por persona.
   }
 }
 
@@ -41,8 +56,8 @@ export function PromoPopup({
   ctaHref,
   dismissLabel,
   imageUrl,
-  rememberDays,
   legalNote,
+  minAge,
 }: {
   title: string;
   message: string;
@@ -50,19 +65,22 @@ export function PromoPopup({
   ctaHref: string;
   dismissLabel: string;
   imageUrl: string;
-  rememberDays: number;
   legalNote: string;
+  /** Edad mínima configurada: acota el calendario del campo de nacimiento. */
+  minAge: number;
 }) {
   const [open, setOpen] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [campoConError, setCampoConError] = useState("");
   const [cupon, setCupon] = useState("");
   const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
-    if (yaFueVisto()) return;
+    if (yaFueVista()) return;
 
     // Ya venía confirmado de una visita anterior: el gate no se va a mostrar.
     if (edadConfirmada()) {
@@ -77,13 +95,8 @@ export function PromoPopup({
 
   const cerrar = useCallback(() => {
     setOpen(false);
-    try {
-      const hasta = Date.now() + rememberDays * 24 * 60 * 60 * 1000;
-      window.localStorage.setItem(DISMISS_KEY, String(hasta));
-    } catch {
-      // Sin storage se vuelve a ofrecer en la próxima visita. No es grave.
-    }
-  }, [rememberDays]);
+    marcarComoVista();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -96,14 +109,32 @@ export function PromoPopup({
 
   if (!open) return null;
 
+  /*
+    El calendario no deja elegir una fecha que dé menos de la edad mínima.
+    Es una comodidad, no un control: la decisión la toma el servidor, porque
+    el atributo se saltea mandando el pedido a mano.
+  */
+  const hoy = new Date();
+  const fechaTope = new Date(
+    Date.UTC(hoy.getFullYear() - minAge, hoy.getMonth(), hoy.getDate()),
+  )
+    .toISOString()
+    .slice(0, 10);
+
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
     setPending(true);
     setError("");
-    const res = await claimPromo({ firstName, email });
+    setCampoConError("");
+    const res = await claimPromo({ firstName, email, birthDate });
     setPending(false);
-    if (res.ok) setCupon(res.couponCode);
-    else setError(res.error);
+    if (res.ok) {
+      setCupon(res.couponCode);
+      marcarComoVista();
+    } else {
+      setError(res.error);
+      setCampoConError(res.field ?? "");
+    }
   };
 
   const copiarCupon = async () => {
@@ -127,7 +158,7 @@ export function PromoPopup({
         type="button"
         aria-label="Cerrar"
         onClick={cerrar}
-        className="absolute inset-0 bg-carbon-950/60"
+        className="absolute inset-0 bg-carbon-950/60 backdrop-blur-md"
       />
 
       <div className="relative my-auto w-full max-w-4xl overflow-hidden rounded-2xl bg-bone-pure shadow-2xl sm:grid sm:grid-cols-2">
@@ -188,7 +219,10 @@ export function PromoPopup({
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-linen-300 bg-bone px-3 py-2.5 text-[15px] outline-none focus:border-accent-700"
+                  aria-invalid={campoConError === "firstName" || undefined}
+                  className={`mt-1 w-full rounded-lg border bg-bone px-3 py-2.5 text-[15px] outline-none focus:border-accent-700 ${
+                    campoConError === "firstName" ? "border-red-700" : "border-linen-300"
+                  }`}
                 />
               </div>
 
@@ -203,8 +237,35 @@ export function PromoPopup({
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-linen-300 bg-bone px-3 py-2.5 text-[15px] outline-none focus:border-accent-700"
+                  aria-invalid={campoConError === "email" || undefined}
+                  className={`mt-1 w-full rounded-lg border bg-bone px-3 py-2.5 text-[15px] outline-none focus:border-accent-700 ${
+                    campoConError === "email" ? "border-red-700" : "border-linen-300"
+                  }`}
                 />
+              </div>
+
+              <div>
+                <label htmlFor="promo-nacimiento" className="text-[13px] text-carbon-800">
+                  Tu fecha de nacimiento
+                </label>
+                <input
+                  id="promo-nacimiento"
+                  type="date"
+                  required
+                  autoComplete="bday"
+                  value={birthDate}
+                  max={fechaTope}
+                  min="1920-01-01"
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  aria-describedby="promo-nacimiento-ayuda"
+                  aria-invalid={campoConError === "birthDate" || undefined}
+                  className={`mt-1 w-full rounded-lg border bg-bone px-3 py-2.5 text-[15px] outline-none focus:border-accent-700 ${
+                    campoConError === "birthDate" ? "border-red-700" : "border-linen-300"
+                  }`}
+                />
+                <p id="promo-nacimiento-ayuda" className="mt-1 text-[12px] text-stone-500">
+                  Necesitamos confirmar que sos mayor de {minAge}.
+                </p>
               </div>
 
               {error && (

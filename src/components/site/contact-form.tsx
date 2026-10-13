@@ -5,15 +5,22 @@ import { sendContactMessage } from "@/app/actions/contact";
 import { Button } from "@/ui/button";
 import { Field, Input, Select, Textarea } from "@/ui/field";
 
-const SUBJECTS = [
+/*
+  El asunto del Club sólo se ofrece si el Club existe: elegirlo cuando no hay
+  Club deja a alguien esperando respuesta sobre algo que no vendemos.
+*/
+const SUBJECTS_BASE = [
   "Consulta sobre un pedido",
-  "Consulta sobre el Club",
   "Visitas y degustaciones",
   "Venta mayorista",
   "Otro",
 ];
 
-export function ContactForm() {
+export function ContactForm({ clubEnabled = false }: { clubEnabled?: boolean }) {
+  const SUBJECTS = clubEnabled
+    ? [SUBJECTS_BASE[0], "Consulta sobre el Club", ...SUBJECTS_BASE.slice(1)]
+    : SUBJECTS_BASE;
+
   const [form, setForm] = useState({
     name: "", email: "", phone: "", subject: SUBJECTS[0], message: "",
   });

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { getSettings } from "@/domain/settings/service";
 import { ContactForm } from "@/components/site/contact-form";
 import { Container, Eyebrow, Heading, Prose } from "@/ui/layout";
@@ -8,13 +8,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const { company } = await getSettings();
   return {
     title: "Contacto",
-    description: `Escribinos o visitanos en ${company.city}, ${company.province}.`,
+    description: `Escribinos por WhatsApp a ${company.phone} o por mail a ${company.email}.`,
     alternates: { canonical: "/contacto" },
   };
 }
 
 export default async function ContactPage() {
-  const { company } = await getSettings();
+  const { company, club } = await getSettings();
 
   return (
     <Container className="pb-section pt-4">
@@ -24,27 +24,16 @@ export default async function ContactPage() {
       </Heading>
 
       <div className="mt-14 grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
-        <ContactForm />
+        <ContactForm clubEnabled={club.enabled} />
 
         <aside className="space-y-8">
           {/*
-            La dirección y el teléfono se muestran sólo si están cargados: hoy
-            el cliente atiende por mail y WhatsApp, y dejarlos vacíos tiene que
-            hacerlos desaparecer en vez de imprimir un bloque sin contenido.
+            Dos canales y nada más: el WhatsApp y el mail. No hay local a la
+            calle, así que publicar un domicilio sólo lograría que alguien se
+            tome el viaje al pedo. El número va escrito y no detrás de la
+            palabra "WhatsApp": quien prefiera llamar o agendarlo lo necesita
+            a la vista.
           */}
-          {company.addressLine && (
-            <div>
-              <Eyebrow>Dónde estamos</Eyebrow>
-              <address className="mt-4 flex gap-3 text-[15px] not-italic leading-relaxed text-carbon-800">
-                <MapPin className="mt-1 size-4 shrink-0 text-clay-500" />
-                <span>
-                  {company.addressLine}<br />
-                  {company.city}, {company.province} ({company.postalCode})
-                </span>
-              </address>
-            </div>
-          )}
-
           <div>
             <Eyebrow>Directo</Eyebrow>
             <ul className="mt-4 space-y-3 text-[15px]">
@@ -54,14 +43,6 @@ export default async function ContactPage() {
                   {company.email}
                 </a>
               </li>
-              {company.phone && (
-                <li>
-                  <a href={`tel:${company.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-accent-700">
-                    <Phone className="size-4 shrink-0 text-clay-500" />
-                    {company.phone}
-                  </a>
-                </li>
-              )}
               {company.whatsapp && (
                 <li>
                   <a
@@ -71,7 +52,7 @@ export default async function ContactPage() {
                     className="flex items-center gap-3 hover:text-accent-700"
                   >
                     <MessageCircle className="size-4 shrink-0 text-clay-500" />
-                    WhatsApp
+                    {company.phone}
                   </a>
                 </li>
               )}

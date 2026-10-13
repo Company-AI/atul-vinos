@@ -29,6 +29,10 @@ model User {
   lastName         String
   phone            String?
   documentId       String?
+  /// Fecha de nacimiento. La deja la ventana de bienvenida y es lo que
+  /// respalda la venta: sin esto, la única constancia de que alguien dijo
+  /// ser mayor es una cookie que se borra.
+  birthDate        DateTime? @db.Date
   emailVerifiedAt  DateTime?
   isStaff          Boolean   @default(false)
   isActive         Boolean   @default(true)

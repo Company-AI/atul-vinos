@@ -8,6 +8,7 @@ import { getSession } from "@/infra/auth/session";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { getMemberBenefits } from "@/domain/promotions/club-benefits";
 import { validateCoupon } from "@/domain/promotions/coupons";
+import { esPrimeraCompra } from "@/domain/promotions/primera-compra";
 import { getSettings } from "@/domain/settings/service";
 import { toCents, toNumber } from "@/lib/money";
 import { calculatePricing, type PricingResult } from "./pricing";
@@ -180,12 +181,6 @@ export const getCart = cache(async (): Promise<CartSummary> => {
   let couponDiscount: { discountCents: number; freeShipping: boolean; code: string } | null = null;
 
   if (cart.coupon) {
-    const paidOrders = session?.userId
-      ? await prisma.order.count({
-          where: { userId: session.userId, status: { notIn: ["PAYMENT_PENDING", "CANCELLED"] } },
-        })
-      : 0;
-
     const validation = await validateCoupon(cart.coupon.code, {
       subtotalCents,
       userId: session?.userId ?? null,
@@ -193,7 +188,10 @@ export const getCart = cache(async (): Promise<CartSummary> => {
       isClubMember: member.isMember,
       productIds: lines.map((l) => l.productId),
       categoryIds: cart.items.map((i) => i.product.categoryId).filter((c): c is string => !!c),
-      isFirstPurchase: paidOrders === 0,
+      isFirstPurchase: await esPrimeraCompra({
+        userId: session?.userId,
+        email: session?.email,
+      }),
     });
 
     if (validation.ok) {

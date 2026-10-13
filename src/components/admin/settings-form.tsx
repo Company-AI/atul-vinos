@@ -9,7 +9,14 @@ import { Checkbox, Field, Input, Textarea } from "@/ui/field";
 import { toast } from "@/ui/toaster";
 import { AdminCard } from "./admin-ui";
 
-/** Etiquetas y ayudas en castellano para cada clave de configuración. */
+/**
+ * Etiquetas y ayudas en castellano para cada clave de configuración.
+ *
+ * Se busca primero por "grupo.campo" y después por el campo suelto. Hace
+ * falta porque hay nombres que se repiten entre grupos —`enabled` está en
+ * age gate, en la ventana de bienvenida y en el Club— y con el mapa plano
+ * ganaba el último que se escribía: los tres decían "Age gate activado".
+ */
 const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> = {
   name: { label: "Nombre comercial" },
   legalName: { label: "Razón social" },
@@ -21,13 +28,22 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   isologoUrl: { label: "Isologo (fondo claro)", hint: "El sello redondo con la A, la copa y la palabra. Va en la cabecera." },
   isologoLightUrl: { label: "Isologo (fondo oscuro)" },
   faviconUrl: { label: "Favicon" },
-  email: { label: "Email de contacto" },
-  phone: { label: "Teléfono" },
-  whatsapp: { label: "WhatsApp", hint: "Solo números con código de país." },
-  addressLine: { label: "Dirección" },
-  city: { label: "Localidad" },
-  province: { label: "Provincia" },
-  postalCode: { label: "Código postal" },
+  email: { label: "Email de contacto", hint: "Se publica en el pie, en Contacto y en los legales." },
+  phone: {
+    label: "Teléfono de contacto",
+    hint: "El número tal cual se lee en pantalla. Es el que se publica en todo el sitio; debería ser el mismo que el de WhatsApp.",
+  },
+  whatsapp: {
+    label: "WhatsApp",
+    hint: "Solo números con código de país, sin espacios ni signos. Es el que abre el chat.",
+  },
+  addressLine: {
+    label: "Dirección del remitente",
+    hint: "No se publica en el sitio. Se imprime sólo en la etiqueta del correo y en el remito, donde el paquete necesita un remitente.",
+  },
+  city: { label: "Localidad del remitente" },
+  province: { label: "Provincia del remitente" },
+  postalCode: { label: "Código postal del remitente" },
   currency: { label: "Moneda" },
   taxIncluded: { label: "Los precios incluyen impuestos" },
   taxPercent: { label: "IVA (%)" },
@@ -36,7 +52,7 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   youtube: { label: "YouTube" },
   requireDocumentAtCheckout: { label: "Pedir DNI obligatorio en el checkout" },
 
-  enabled: { label: "Age gate activado" },
+  "ageGate.enabled": { label: "Age gate activado" },
   minAge: { label: "Edad mínima" },
   title: { label: "Título" },
   message: { label: "Mensaje", long: true },
@@ -59,6 +75,15 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   pickupEnabled: { label: "Permitir retiro en depósito" },
   pickupLabel: { label: "Nombre del retiro" },
 
+  "promo.enabled": {
+    label: "Mostrar la ventana de bienvenida",
+    hint: "Aparece una sola vez, después de confirmar la edad, y entrega el cupón de primera compra.",
+  },
+
+  "club.enabled": {
+    label: "Mostrar el Club en la tienda",
+    hint: "Apagado, el Club desaparece del pie, del menú y de /club. Los planes y las suscripciones que existan no se tocan.",
+  },
   allowPause: { label: "Permitir pausar la suscripción" },
   allowCancel: { label: "Permitir cancelar desde Mi Cuenta" },
   allowPlanChange: { label: "Permitir cambiar de plan" },
@@ -137,7 +162,7 @@ export function SettingsForm({
     <AdminCard title={groupLabel} description={description}>
       <div className="grid gap-4 sm:grid-cols-2">
         {Object.entries(values).map(([key, value]) => {
-          const meta = LABELS[key] ?? { label: key };
+          const meta = LABELS[`${group}.${key}`] ?? LABELS[key] ?? { label: key };
           const id = `${group}-${key}`;
 
           if (typeof value === "boolean") {

@@ -22,6 +22,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function SubscribePage({ params }: PageProps) {
+  // Mismo criterio que /club: apagado, no hay a qué suscribirse.
+  if (!(await getSettings()).club.enabled) notFound();
+
   const { plan: slug } = await params;
   const plan = await getPlanBySlug(slug);
   if (!plan || !plan.isActive) notFound();

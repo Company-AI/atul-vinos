@@ -176,20 +176,21 @@ export const CMS_SECTIONS = [
         ("site.beneficios"). Son los dos únicos lugares donde se escriben: si
         cambia una, se cambian las dos.
 
-        NINGUNA de las tres está resuelta de punta a punta todavía, y hay que
-        cerrarlas antes de abrir la tienda de verdad:
+        Dos de las tres ya están resueltas de punta a punta. La tercera no
+        depende de este código:
 
-        · 10% registrándote — existe el cupón BIENVENIDO10 (10%, sólo primera
-          compra, mínimo $20.000), pero hay que escribirlo a mano en el
-          checkout. Nadie lo entrega al crear la cuenta. O se aplica solo, o
-          el texto tiene que decir el código y el mínimo.
-        · 10% por transferencia — no hay forma de cumplirlo: el único medio de
-          pago es Mercado Pago y el checkout no ofrece transferencia como
-          opción propia, así que no hay dónde aplicar el descuento.
-        · 3 cuotas sin interés — las cuotas las define la configuración de
-          Mercado Pago, no este código, y el costo de la financiación lo paga
-          el vendedor. Las preguntas frecuentes decían "hasta 6 según tu
-          banco"; se corrigieron para no contradecir esto.
+        · 10% registrándote — RESUELTO. La ventana de bienvenida pide nombre,
+          mail y fecha de nacimiento, crea el cliente y entrega el cupón
+          BIENVENIDOATUL10 (10%, sólo primera compra, un uso por persona, sin
+          mínimo). El checkout aplica esas reglas al validarlo.
+        · 10% por transferencia — RESUELTO. El checkout ofrece transferencia
+          como medio propio y el descuento sale de Configuración → Pagos.
+        · 3 cuotas sin interés — PENDIENTE, y no se arregla acá: las cuotas
+          las define la configuración de Mercado Pago y el costo de la
+          financiación lo paga el vendedor. Lo que se anuncia sale de
+          `payments.interestFreeInstallments`; en cero, la línea desaparece.
+          Las preguntas frecuentes decían "hasta 6 según tu banco"; se
+          corrigieron para no contradecir esto.
 
         Las fotos se eligen por cómo quedan en el recorte de la banda, que es
         muy apaisado (unos 3,8 a 1) y toma sólo una franja del medio. Medido
@@ -290,7 +291,6 @@ export const CMS_SECTIONS = [
           icon: "sparkle",
           href: "/quienes-somos",
         },
-        { text: "Sumate al Club y recibí una selección por mes", icon: "card", href: "/club" },
       ],
       speed: "normal",
       tone: "accent",
@@ -887,7 +887,6 @@ export const CMS_SECTIONS = [
             { label: "Toda la selección", href: "/vinos" },
             { label: "Packs", href: "/packs" },
             { label: "Novedades", href: "/vinos?orden=novedades" },
-            { label: "El Club", href: "/club" },
           ],
         },
         {

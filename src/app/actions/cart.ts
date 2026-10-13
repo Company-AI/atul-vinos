@@ -7,6 +7,7 @@ import { getSession } from "@/infra/auth/session";
 import { getAvailability } from "@/domain/inventory/availability";
 import { getMemberBenefits } from "@/domain/promotions/club-benefits";
 import { validateCoupon } from "@/domain/promotions/coupons";
+import { esPrimeraCompra } from "@/domain/promotions/primera-compra";
 import { getOrCreateCart } from "@/domain/cart/service";
 import { formatARS } from "@/lib/money";
 
@@ -120,12 +121,6 @@ export async function applyCoupon(code: string): Promise<ActionResult> {
     (acc, i) => acc + Math.round(Number(i.product.price) * 100) * i.quantity, 0,
   );
   const member = await getMemberBenefits(session?.userId);
-  const paidOrders = session?.userId
-    ? await prisma.order.count({
-        where: { userId: session.userId, status: { notIn: ["PAYMENT_PENDING", "CANCELLED"] } },
-      })
-    : 0;
-
   const validation = await validateCoupon(code, {
     subtotalCents,
     userId: session?.userId ?? null,
@@ -133,7 +128,10 @@ export async function applyCoupon(code: string): Promise<ActionResult> {
     isClubMember: member.isMember,
     productIds: cart.items.map((i) => i.product.id),
     categoryIds: cart.items.map((i) => i.product.categoryId).filter((c): c is string => !!c),
-    isFirstPurchase: paidOrders === 0,
+    isFirstPurchase: await esPrimeraCompra({
+      userId: session?.userId,
+      email: session?.email,
+    }),
   });
 
   if (!validation.ok) return { ok: false, error: validation.error };
