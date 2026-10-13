@@ -657,7 +657,7 @@ export type PackSeed = {
 */
 export const PACKS: PackSeed[] = [
   /*
-    La línea es de 2, 4 y 6 botellas.
+    La línea es de 3 y de 6 vinos, que es como se anuncia en la home.
 
     `compareAtPrice` es la suma exacta de los componentes a precio de lista y
     `price` el del pack: la diferencia es el descuento real, no un tachado
