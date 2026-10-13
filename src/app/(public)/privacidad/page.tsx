@@ -22,7 +22,7 @@ export default async function PrivacyPage() {
         },
         {
           heading: "Para qué los usamos",
-          body: "Para procesar y despachar tus pedidos, cobrar la suscripción del Club, enviarte el seguimiento y responder tus consultas. Si diste tu consentimiento, también para enviarte novedades; podés darte de baja en cualquier momento.",
+          body: "Para procesar y despachar tus pedidos, enviarte el seguimiento y responder tus consultas. Si diste tu consentimiento, también para enviarte novedades; podés darte de baja en cualquier momento.",
         },
         {
           heading: "Datos de pago",

@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const { company } = await getSettings();
+  const { company, club } = await getSettings();
 
   return (
     <Container className="pb-section pt-4">
@@ -24,7 +24,7 @@ export default async function ContactPage() {
       </Heading>
 
       <div className="mt-14 grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
-        <ContactForm />
+        <ContactForm clubEnabled={club.enabled} />
 
         <aside className="space-y-8">
           {/*

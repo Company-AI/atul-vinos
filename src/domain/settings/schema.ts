@@ -8,7 +8,12 @@ import { z } from "zod";
 
 export const companySettings = z.object({
   name: z.string().default("Atul"),
-  legalName: z.string().default("Atul S.R.L."),
+  /*
+    Lo que figura en los documentos: términos, remito y etiqueta. No es una
+    S.R.L. —lo aclaró el cliente—, así que hasta que haya una razón social
+    registrada va el nombre a secas. Se edita en Configuración.
+  */
+  legalName: z.string().default("Atul Vinos"),
   tagline: z.string().default("Vinos de todo el país"),
   logoUrl: z.string().default("/brand/logotipo-azul.png"),
   logoLightUrl: z.string().default("/brand/logotipo-crema.png"),
@@ -69,7 +74,12 @@ export const ageGateSettings = z.object({
   imageUrl: z.string().default(""),
   backgroundUrl: z.string().default("/media/scenes/pouring-dark.jpg"),
   exitUrl: z.string().default("https://www.google.com"),
-  rememberDays: z.number().int().default(180),
+  /*
+    Un día. Preguntar una vez por semestre convierte el gate en un trámite
+    que se hizo una vez y nunca más: el navegador de la casa queda abierto
+    y cualquiera que lo agarre entra sin que nadie le pregunte nada.
+  */
+  rememberDays: z.number().int().default(1),
 });
 
 /*
@@ -78,23 +88,27 @@ export const ageGateSettings = z.object({
   admin: cambian por campaña y no deberían necesitar un deploy.
 */
 export const promoSettings = z.object({
-  enabled: z.boolean().default(false),
+  enabled: z.boolean().default(true),
   title: z.string().default("10% en tu primera compra"),
   message: z
     .string()
     .default("Usá este cupón al finalizar la compra y llevate un 10% de descuento."),
-  /** El código que se revela después de dejar los datos. */
-  couponCode: z.string().default(""),
+  /*
+    El código que se revela después de dejar los datos. Tiene que existir en
+    Cupones: acá sólo se nombra. Si el cupón no está o está vencido, la
+    ventana entrega un código que el checkout después rechaza.
+  */
+  couponCode: z.string().default("BIENVENIDOATUL10"),
   ctaLabel: z.string().default("Ver los vinos"),
   ctaHref: z.string().default("/vinos"),
   dismissLabel: z.string().default("Ahora no"),
-  imageUrl: z.string().default(""),
+  imageUrl: z.string().default("/media/scenes/toast.jpg"),
   /** Condiciones al pie. Se pide un dato personal: tiene que estar a la vista. */
   legalNote: z
     .string()
-    .default("Válido en tu primera compra, un uso por persona. Te vamos a escribir cuando haya novedades."),
-  /** Días que se recuerda el cierre antes de volver a ofrecerlo. */
-  rememberDays: z.number().int().min(1).max(365).default(30),
+    .default(
+      "Válido en tu primera compra, un uso por persona. Necesitás ser mayor de 18 años. Te vamos a escribir cuando haya novedades.",
+    ),
 });
 
 export const shippingSettings = z.object({
@@ -111,6 +125,15 @@ export const shippingSettings = z.object({
 });
 
 export const clubSettings = z.object({
+  /*
+    Apagado. El Club no se lanza todavía: sin stock profundo por etiqueta,
+    prometer una caja distinta cada mes se rompe al segundo mes.
+
+    Apagarlo y no borrarlo es a propósito. El motor de suscripciones, los
+    planes y las cajas quedan enteros; esto sólo decide si el visitante ve
+    que existe. Encenderlo acá lo devuelve al pie, al menú y a /club.
+  */
+  enabled: z.boolean().default(false),
   allowPause: z.boolean().default(true),
   allowCancel: z.boolean().default(true),
   allowPlanChange: z.boolean().default(true),

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSettings } from "@/domain/settings/service";
 import { getFaqs } from "@/domain/cms/service";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
@@ -23,9 +24,15 @@ const GROUP_LABELS: Record<string, string> = {
 export default async function FaqPage() {
   // getFaqs ordena por sortOrder; el agrupado de esta página necesita además
   // que las preguntas de un mismo grupo queden juntas.
-  const faqs = (await getFaqs()).sort(
-    (a, b) => a.group.localeCompare(b.group) || a.sortOrder - b.sortOrder,
-  );
+  const { club } = await getSettings();
+
+  /*
+    Las preguntas del Club se esconden mientras el Club esté apagado. No se
+    borran: siguen cargadas en el admin y vuelven solas al encenderlo.
+  */
+  const faqs = (await getFaqs())
+    .filter((faq) => club.enabled || faq.group !== "club")
+    .sort((a, b) => a.group.localeCompare(b.group) || a.sortOrder - b.sortOrder);
 
   const groups = [...new Set(faqs.map((faq) => faq.group))];
 

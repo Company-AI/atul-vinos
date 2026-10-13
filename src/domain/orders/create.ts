@@ -2,6 +2,7 @@ import type { OrderType, Prisma } from "@prisma/client";
 import { prisma } from "@/infra/db/prisma";
 import { getMemberBenefits } from "@/domain/promotions/club-benefits";
 import { validateCoupon } from "@/domain/promotions/coupons";
+import { esPrimeraCompra } from "@/domain/promotions/primera-compra";
 import { calculatePricing } from "@/domain/cart/pricing";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { getSettings } from "@/domain/settings/service";
@@ -118,12 +119,6 @@ export async function createOrderFromCart(
   // Revalidación del cupón en el momento de crear el pedido.
   let couponData: { id: string; code: string; discountCents: number; freeShipping: boolean } | null = null;
   if (cart.coupon) {
-    const paidOrders = input.userId
-      ? await prisma.order.count({
-          where: { userId: input.userId, status: { notIn: ["PAYMENT_PENDING", "CANCELLED"] } },
-        })
-      : 0;
-
     const validation = await validateCoupon(cart.coupon.code, {
       subtotalCents,
       userId: input.userId ?? null,
@@ -131,7 +126,10 @@ export async function createOrderFromCart(
       isClubMember: member.isMember,
       productIds: cart.items.map((i) => i.productId),
       categoryIds: cart.items.map((i) => i.product.categoryId).filter((c): c is string => !!c),
-      isFirstPurchase: paidOrders === 0,
+      isFirstPurchase: await esPrimeraCompra({
+        userId: input.userId,
+        email: input.contact.email,
+      }),
     });
 
     if (validation.ok) {

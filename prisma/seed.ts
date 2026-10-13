@@ -725,7 +725,9 @@ async function main() {
   // ═══════════════════════════════ Cupones ═══════════════════════════════════
   await prisma.coupon.createMany({
     data: [
-      { code: "BIENVENIDO10", type: "PERCENT", value: 10, description: "10% en la primera compra", firstPurchaseOnly: true, maxUsesPerUser: 1, minPurchase: 20000, isActive: true },
+      // Sin mínimo de compra a propósito: es el que entrega la ventana de bienvenida,
+      // y un cupón que la persona recibe y después no puede usar es peor que no darlo.
+      { code: "BIENVENIDOATUL10", type: "PERCENT", value: 10, description: "10% en la primera compra", firstPurchaseOnly: true, maxUsesPerUser: 1, isActive: true },
       { code: "ENVIOGRATIS", type: "FREE_SHIPPING", value: 0, description: "Envío sin cargo sin mínimo", maxUses: 200, maxUsesPerUser: 2, isActive: true },
       { code: "CLUB15", type: "PERCENT", value: 15, description: "15% exclusivo para socios del Club", clubMembersOnly: true, maxUsesPerUser: 3, isActive: true },
       { code: "COSECHA2026", type: "FIXED", value: 8000, description: "$8.000 en compras desde $80.000", minPurchase: 80000, maxUses: 500, endsAt: new Date(PERIOD.year, PERIOD.month + 1, 30), isActive: true },
@@ -813,7 +815,7 @@ async function main() {
         customerDocument: customer.address.documentId,
         addressId: customer.addressId, shippingSnapshot: customer.address,
         subtotal, discountTotal, shippingTotal, total,
-        couponCode: useCoupon ? "BIENVENIDO10" : null,
+        couponCode: useCoupon ? "BIENVENIDOATUL10" : null,
         shippingMethod: shippingTotal === 0 ? "Envío estándar (sin cargo)" : "Envío estándar",
         carrierCode: "mock",
         createdAt,

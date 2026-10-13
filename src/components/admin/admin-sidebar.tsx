@@ -92,12 +92,18 @@ export function AdminSidebar({
         { href: "/admin/stock", label: "Stock", Icon: Box, permission: "stock.view", badge: counters.lowStock },
       ],
     },
+    /*
+      El Club está apagado, así que el grupo entero se oculta: con los tres
+      ítems ocultos el encabezado no se dibuja. Las pantallas siguen existiendo
+      y responden si se entra por la URL —no se borró nada—, pero no tiene
+      sentido ofrecerle a alguien "Box del mes" cuando no hay Club.
+    */
     {
       title: "Club",
       items: [
         { href: "/admin/suscripciones", label: "Suscriptores", Icon: Users, permission: "subscriptions.view", oculto: true },
         { href: "/admin/suscripciones/planes", label: "Planes", Icon: FileText, permission: "subscriptions.plans", oculto: true },
-        { href: "/admin/suscripciones/box", label: "Box del mes", Icon: Package, permission: "subscriptions.box" },
+        { href: "/admin/suscripciones/box", label: "Box del mes", Icon: Package, permission: "subscriptions.box", oculto: true },
       ],
     },
     {

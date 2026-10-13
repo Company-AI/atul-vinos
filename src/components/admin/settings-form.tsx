@@ -9,7 +9,14 @@ import { Checkbox, Field, Input, Textarea } from "@/ui/field";
 import { toast } from "@/ui/toaster";
 import { AdminCard } from "./admin-ui";
 
-/** Etiquetas y ayudas en castellano para cada clave de configuración. */
+/**
+ * Etiquetas y ayudas en castellano para cada clave de configuración.
+ *
+ * Se busca primero por "grupo.campo" y después por el campo suelto. Hace
+ * falta porque hay nombres que se repiten entre grupos —`enabled` está en
+ * age gate, en la ventana de bienvenida y en el Club— y con el mapa plano
+ * ganaba el último que se escribía: los tres decían "Age gate activado".
+ */
 const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> = {
   name: { label: "Nombre comercial" },
   legalName: { label: "Razón social" },
@@ -45,7 +52,7 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   youtube: { label: "YouTube" },
   requireDocumentAtCheckout: { label: "Pedir DNI obligatorio en el checkout" },
 
-  enabled: { label: "Age gate activado" },
+  "ageGate.enabled": { label: "Age gate activado" },
   minAge: { label: "Edad mínima" },
   title: { label: "Título" },
   message: { label: "Mensaje", long: true },
@@ -68,6 +75,15 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
   pickupEnabled: { label: "Permitir retiro en depósito" },
   pickupLabel: { label: "Nombre del retiro" },
 
+  "promo.enabled": {
+    label: "Mostrar la ventana de bienvenida",
+    hint: "Aparece una sola vez, después de confirmar la edad, y entrega el cupón de primera compra.",
+  },
+
+  "club.enabled": {
+    label: "Mostrar el Club en la tienda",
+    hint: "Apagado, el Club desaparece del pie, del menú y de /club. Los planes y las suscripciones que existan no se tocan.",
+  },
   allowPause: { label: "Permitir pausar la suscripción" },
   allowCancel: { label: "Permitir cancelar desde Mi Cuenta" },
   allowPlanChange: { label: "Permitir cambiar de plan" },
@@ -146,7 +162,7 @@ export function SettingsForm({
     <AdminCard title={groupLabel} description={description}>
       <div className="grid gap-4 sm:grid-cols-2">
         {Object.entries(values).map(([key, value]) => {
-          const meta = LABELS[key] ?? { label: key };
+          const meta = LABELS[`${group}.${key}`] ?? LABELS[key] ?? { label: key };
           const id = `${group}-${key}`;
 
           if (typeof value === "boolean") {

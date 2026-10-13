@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { AGE_GATE_COOKIE } from "@/components/site/age-gate";
 
 /** Guarda la confirmación para no volver a preguntar. */
-export async function confirmAge(rememberDays = 180): Promise<void> {
+export async function confirmAge(rememberDays = 1): Promise<void> {
   const store = await cookies();
   store.set(AGE_GATE_COOKIE, "1", {
     httpOnly: false,

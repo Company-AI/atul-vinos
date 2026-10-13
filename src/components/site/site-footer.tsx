@@ -12,7 +12,22 @@ export async function SiteFooter() {
     getSection("footer.main", "footer"),
     getSettings(),
   ]);
-  const { company, legal } = settings;
+  const { company, legal, club } = settings;
+
+  /*
+    Con el Club apagado se filtran sus enlaces del pie. Se filtra acá y no se
+    borra del CMS porque el pie lo edita el admin: si mañana vuelve a
+    agregarlo a mano mientras el Club sigue apagado, el visitante caería en
+    un 404. El interruptor manda sobre el contenido.
+  */
+  const columnas = club.enabled
+    ? footer.columns
+    : footer.columns
+        .map((column) => ({
+          ...column,
+          links: column.links.filter((link) => !link.href.startsWith("/club")),
+        }))
+        .filter((column) => column.links.length > 0);
 
   const socials = [
     { href: company.instagram, label: "Instagram", Icon: InstagramIcon },
@@ -80,7 +95,7 @@ export async function SiteFooter() {
 
           {/* Navegación */}
           <nav aria-label="Footer" className="grid gap-8 sm:grid-cols-3">
-            {footer.columns.map((column) => (
+            {columnas.map((column) => (
               <div key={column.title}>
                 <p className="eyebrow mb-4 text-stone-500">{column.title}</p>
                 <ul className="space-y-2.5">
@@ -120,7 +135,19 @@ export async function SiteFooter() {
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-4 text-[12px] text-stone-500">
             <p>
-              © {new Date().getFullYear()} {company.legalName}. Todos los derechos reservados.
+              {new Date().getFullYear()} · Creado con{" "}
+              <span aria-label="amor" role="img">
+                ❤️
+              </span>{" "}
+              por{" "}
+              <a
+                href="https://norwarestudio.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 hover:text-linen-200"
+              >
+                Norware Studio
+              </a>
             </p>
             <div className="flex gap-4">
               <Link href={legal.termsUrl} className="hover:text-linen-200">Términos</Link>

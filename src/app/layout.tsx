@@ -100,8 +100,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             ctaHref={settings.promo.ctaHref}
             dismissLabel={settings.promo.dismissLabel}
             imageUrl={settings.promo.imageUrl}
-            rememberDays={settings.promo.rememberDays}
             legalNote={settings.promo.legalNote}
+            minAge={settings.ageGate.minAge}
           />
         )}
         <Toaster />

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getPageSections } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
 import { getCurrentUser } from "@/infra/auth/session";
@@ -19,6 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ClubPage() {
+  /*
+    Con el Club apagado la página no existe. 404 y no un cartel de "próximamente":
+    el pie y el menú ya no la enlazan, así que quien llega acá viene de un
+    buscador o de un link viejo, y lo honesto es decirle que no está.
+  */
+  if (!(await getSettings()).club.enabled) notFound();
+
   const [sections, settings, user] = await Promise.all([
     getPageSections("club"),
     getSettings(),
