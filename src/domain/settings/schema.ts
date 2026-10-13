@@ -28,8 +28,19 @@ export const companySettings = z.object({
   isologoLightUrl: z.string().default("/brand/isologo-crema.png"),
   faviconUrl: z.string().default("/favicon.ico"),
   email: z.string().default("atul.vinos@gmail.com"),
-  phone: z.string().default("+54 358 400 0000"),
+  /*
+    El mismo número que el WhatsApp, escrito para leer. Son los dos únicos
+    canales de contacto que se publican: no hay local a la calle, así que
+    anunciar una dirección sólo haría que alguien se tome el viaje al pedo.
+  */
+  phone: z.string().default("+54 9 3586 01-9491"),
   whatsapp: z.string().default("5493586019491"),
+  /*
+    Domicilio del remitente. NO se publica en ningún lado del sitio: existe
+    sólo para lo que sale impreso con el paquete —la etiqueta del correo y
+    el remito—, donde un bulto sin remitente no se puede despachar ni
+    devolver. Se edita desde Configuración y puede ser el depósito.
+  */
   addressLine: z.string().default("Sarmiento 1240"),
   city: z.string().default("Río Cuarto"),
   province: z.string().default("Córdoba"),
