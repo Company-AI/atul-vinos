@@ -15,6 +15,7 @@ import { WineGrid } from "@/components/shop/wine-grid";
 import { Badge } from "@/ui/badge";
 import { Container, Divider, Eyebrow, Heading, Prose, Section } from "@/ui/layout";
 import { Price } from "@/ui/price";
+import { FormasDePago } from "@/ui/formas-de-pago";
 import { Reveal } from "@/ui/reveal";
 import { StockIndicator } from "@/ui/stock-indicator";
 
@@ -176,13 +177,21 @@ export default async function ProductPage({ params }: PageProps) {
               </p>
             )}
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Price value={product.price} compareAt={product.compareAtPrice} size="lg" />
-              <StockIndicator
-                available={available}
-                minStock={product.availability.minStock}
-                showCount={available > 0 && available <= 12}
-              />
+            {/*
+              El precio y la disponibilidad van en una línea; las formas de
+              pago, debajo. Puestas al lado competían con el precio y las tres
+              cifras se leían como una sola masa de números.
+            */}
+            <div className="mt-8">
+              <div className="flex flex-wrap items-center gap-4">
+                <Price value={product.price} compareAt={product.compareAtPrice} size="lg" />
+                <StockIndicator
+                  available={available}
+                  minStock={product.availability.minStock}
+                  showCount={available > 0 && available <= 12}
+                />
+              </div>
+              <FormasDePago value={product.price} className="mt-2.5" />
             </div>
 
             {isPack && product.packItems.length > 0 && (

@@ -38,6 +38,8 @@ export type CreateOrderInput = {
     carrierCode: string;
     serviceCode?: string | null;
   };
+  /** Código del proveedor de pago elegido. Vacío = el que esté activo. */
+  paymentProvider?: string | null;
   customerNote?: string | null;
   /** Solo para pedidos generados por suscripción. */
   type?: OrderType;
@@ -142,6 +144,13 @@ export async function createOrderFromCart(
     }
   }
 
+  /*
+    Sólo cuenta como transferencia si además está habilitada. Un pedido que
+    pida el descuento con el medio apagado paga el precio de lista.
+  */
+  const esTransferencia =
+    input.paymentProvider === "transferencia" && settings.payments.transferEnabled;
+
   const pricing = calculatePricing({
     lines: cart.items.map((i) => ({
       productId: i.productId,
@@ -157,6 +166,12 @@ export async function createOrderFromCart(
       ? toCents(settings.shipping.freeShippingFrom)
       : null,
     shippingCoveredByBenefit: false,
+    /*
+      El porcentaje se lee de los ajustes acá, no se recibe del formulario:
+      si viajara en el pedido, cualquiera podría mandarse un noventa por
+      ciento y el sitio lo cobraría.
+    */
+    transferDiscountPercent: esTransferencia ? settings.payments.transferDiscountPercent : 0,
   });
 
   const idempotencyKey = `order-${cart.id}-${pricing.totalCents}-${Date.now()}`;
@@ -276,7 +291,7 @@ export async function createOrderFromCart(
 
       const payment = await tx.payment.create({
         data: {
-          provider: settings.payments.provider,
+          provider: esTransferencia ? "transferencia" : settings.payments.provider,
           purpose: "ORDER",
           status: "PENDING",
           amount: pricing.total,

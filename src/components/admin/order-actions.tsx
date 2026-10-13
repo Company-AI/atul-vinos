@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Printer } from "lucide-react";
+import { Landmark, Printer } from "lucide-react";
 import type { OrderStatus } from "@prisma/client";
 import {
-  addOrderNote, generateLabel, updateOrderStatus, updateShipmentTracking,
+  addOrderNote, generateLabel, registrarTransferencia, updateOrderStatus,
+  updateShipmentTracking,
 } from "@/app/actions/admin-orders";
 import { ORDER_STATUS_ADMIN_LABELS } from "@/domain/orders/status";
 import { Button } from "@/ui/button";
@@ -19,12 +20,15 @@ export function OrderActions({
   shipment,
   carriers,
   internalNote,
+  esperaTransferencia,
 }: {
   orderId: string;
   allowedTransitions: OrderStatus[];
   shipment: { id: string; trackingNumber: string | null; trackingUrl: string | null; carrierCode: string | null } | null;
   carriers: { code: string; name: string }[];
   internalNote: string | null;
+  /** El pedido se pagó por transferencia y la plata todavía no se confirmó. */
+  esperaTransferencia: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -32,6 +36,8 @@ export function OrderActions({
   const [noteModal, setNoteModal] = useState(false);
   const [note, setNote] = useState(internalNote ?? "");
   const [trackingModal, setTrackingModal] = useState(false);
+  const [transferenciaModal, setTransferenciaModal] = useState(false);
+  const [referencia, setReferencia] = useState("");
   const [tracking, setTracking] = useState({
     trackingNumber: shipment?.trackingNumber ?? "",
     trackingUrl: shipment?.trackingUrl ?? "",
@@ -56,6 +62,13 @@ export function OrderActions({
   return (
     <>
       <div className="flex flex-wrap gap-2">
+        {esperaTransferencia && (
+          <Button size="sm" variant="dark" disabled={pending} onClick={() => setTransferenciaModal(true)}>
+            <Landmark className="size-3.5" />
+            Registrar transferencia recibida
+          </Button>
+        )}
+
         {allowedTransitions
           .filter((next) => !destructive.includes(next))
           .map((next) => (
@@ -177,6 +190,46 @@ export function OrderActions({
             value={note}
             maxLength={300}
             onChange={(e) => setNote(e.target.value)}
+          />
+        </Field>
+      </Modal>
+
+      <Modal
+        open={transferenciaModal}
+        onOpenChange={setTransferenciaModal}
+        title="Registrar la transferencia"
+        description="Confirmá sólo si ya viste la plata acreditada en la cuenta. El pedido pasa a pagado y se reserva el stock, igual que con un cobro con tarjeta."
+        footer={
+          <>
+            <Button variant="subtle" onClick={() => setTransferenciaModal(false)} disabled={pending}>
+              Cancelar
+            </Button>
+            <Button
+              variant="dark"
+              loading={pending}
+              disabled={pending}
+              onClick={() =>
+                run(
+                  () => registrarTransferencia({ orderId, referencia: referencia.trim() || undefined }),
+                  () => setTransferenciaModal(false),
+                )
+              }
+            >
+              Confirmar el pago
+            </Button>
+          </>
+        }
+      >
+        <Field
+          label="Número de comprobante"
+          htmlFor="referencia-transferencia"
+          hint="Opcional. Queda guardado en el pago para poder encontrarlo en el banco."
+        >
+          <Input
+            id="referencia-transferencia"
+            value={referencia}
+            maxLength={80}
+            onChange={(e) => setReferencia(e.target.value)}
           />
         </Field>
       </Modal>

@@ -64,7 +64,12 @@ export const ROLE_PRESETS: Record<
       "subscriptions.view", "subscriptions.edit", "subscriptions.plans", "subscriptions.box",
       "customers.view", "customers.edit",
       "coupons.view", "coupons.edit", "cms.edit",
-      "payments.view",
+      /*
+        Incluye payments.manage porque las transferencias no tienen webhook:
+        alguien del negocio mira el banco y confirma el pedido a mano. Sin
+        este permiso, un Admin vería pedidos pagados que no puede destrabar.
+      */
+      "payments.view", "payments.manage",
       "reports.view", "reports.export",
       "settings.view", "audit.view",
     ],

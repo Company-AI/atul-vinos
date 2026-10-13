@@ -78,6 +78,14 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           }
           carriers={carriers.map((c) => ({ code: c.code, name: c.name }))}
           internalNote={order.internalNote}
+          /*
+            Una transferencia no se confirma sola: sin webhook, el botón es
+            la única forma de que el pedido avance.
+          */
+          esperaTransferencia={
+            order.status === "PAYMENT_PENDING" &&
+            order.payments.some((p) => p.provider === "transferencia" && p.status === "PENDING")
+          }
         />
       </AdminCard>
 

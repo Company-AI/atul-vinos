@@ -6,7 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/infra/db/prisma";
 import { assertPermission } from "@/infra/auth/guards";
 import { recordAudit } from "@/domain/audit/service";
-import { transitionOrder } from "@/domain/orders/fulfillment";
+import { markOrderPaid, transitionOrder } from "@/domain/orders/fulfillment";
 import { createShipmentForOrder, syncShipmentTracking } from "@/domain/shipping/service";
 
 export type AdminActionResult =
@@ -72,6 +72,81 @@ export async function updateOrderStatus(input: {
   revalidatePath(`/admin/pedidos/${parsed.data.orderId}`);
   revalidatePath("/admin/picking");
   return { ok: true, message: `Pedido #${before?.number} actualizado.` };
+}
+
+/**
+ * Confirma a mano que entró una transferencia.
+ *
+ * Es el reemplazo del webhook para el único medio que no tiene uno: no hay
+ * proveedor que avise, así que la confirmación es una persona mirando el
+ * extracto del banco. Hace exactamente lo mismo que haría el aviso —aprueba
+ * el pago y reserva el stock— para que un pedido cobrado por transferencia
+ * quede en el mismo estado que uno cobrado con tarjeta.
+ *
+ * Sólo acepta pedidos cuyo pago pendiente sea una transferencia: no es una
+ * forma de dar por bueno un pago de Mercado Pago que el proveedor nunca
+ * confirmó.
+ */
+export async function registrarTransferencia(input: {
+  orderId: string;
+  referencia?: string;
+}): Promise<AdminActionResult> {
+  let user;
+  try {
+    user = await assertPermission("payments.manage");
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "Sin permiso." };
+  }
+
+  const parsed = z
+    .object({ orderId: z.string().min(1), referencia: z.string().max(80).optional() })
+    .safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Datos inválidos." };
+
+  const order = await prisma.order.findUnique({
+    where: { id: parsed.data.orderId },
+    select: {
+      number: true,
+      status: true,
+      payments: {
+        where: { status: "PENDING", provider: "transferencia" },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { id: true },
+      },
+    },
+  });
+  if (!order) return { ok: false, error: "Pedido inexistente." };
+  if (order.status !== "PAYMENT_PENDING") {
+    return { ok: false, error: "El pedido ya no está esperando el pago." };
+  }
+
+  const payment = order.payments[0];
+  if (!payment) {
+    return { ok: false, error: "Este pedido no se pagó por transferencia." };
+  }
+
+  const result = await markOrderPaid({
+    orderId: parsed.data.orderId,
+    paymentId: payment.id,
+    paymentMethod: "transferencia",
+    // Queda el comprobante que miró la persona, para poder rastrearlo después.
+    externalPaymentId: parsed.data.referencia?.trim() || null,
+  });
+  if (!result.ok) return { ok: false, error: result.error };
+
+  await recordAudit(user, {
+    action: "order.transferencia_confirmada",
+    entityType: "Order",
+    entityId: parsed.data.orderId,
+    before: { status: "PAYMENT_PENDING" },
+    after: { status: result.data.status, referencia: parsed.data.referencia ?? null },
+  });
+
+  revalidatePath("/admin/pedidos");
+  revalidatePath(`/admin/pedidos/${parsed.data.orderId}`);
+  revalidatePath("/admin/picking");
+  return { ok: true, message: `Transferencia registrada. Pedido #${order.number} confirmado.` };
 }
 
 /** Cambio de estado masivo (spec §29). Informa qué pedidos no se pudieron mover. */

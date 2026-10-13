@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ProductCard } from "@/domain/catalog/types";
 import { WINE_TYPE_LABELS } from "@/domain/catalog/types";
 import { cn } from "@/lib/cn";
+import { FormasDePago } from "@/ui/formas-de-pago";
 import { formatARS } from "@/lib/money";
 import { AddToCartButton } from "./add-to-cart";
 import { FavoriteButton } from "./favorite-button";
@@ -127,6 +128,8 @@ export function WineCardRow({
               </>
             )}
           </p>
+
+          <FormasDePago value={product.price} size="sm" className="mt-1" />
 
           <div className="mt-3">
             <AddToCartButton

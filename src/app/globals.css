@@ -764,6 +764,7 @@
 /* ─── Acentos: sobre negro el vino se apaga, así que se levanta ──────────── */
 [data-theme="oscuro"] .text-accent-700 { color: #93A6D6; }
 [data-theme="oscuro"] .text-wine-700   { color: #C4667A; }
+[data-theme="oscuro"] .text-wine-500   { color: #D4697C; }
 [data-theme="oscuro"] .text-clay-500  { color: var(--color-clay-400); }
 [data-theme="oscuro"] .hover\:text-accent-700:hover { color: #93A6D6; }
 [data-theme="oscuro"] .hover\:text-wine-700:hover { color: #C4667A; }

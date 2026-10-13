@@ -86,6 +86,11 @@ const submitSchema = z.object({
     carrierCode: z.string().min(1),
   }),
   customerNote: z.string().max(500).optional(),
+  /*
+    Qué eligió pagar. Se valida contra la lista cerrada de proveedores: un
+    código inventado no debe poder desviar el cobro ni activar un descuento.
+  */
+  paymentProvider: z.enum(["mercadopago", "transferencia"]).optional(),
 });
 
 export type SubmitCheckoutResult =
@@ -137,6 +142,7 @@ export async function submitCheckout(
       serviceCode: data.shipping.serviceCode,
     },
     customerNote: data.customerNote ?? null,
+    paymentProvider: data.paymentProvider ?? null,
   });
 
   if (!created.ok) return { ok: false, error: created.error };
