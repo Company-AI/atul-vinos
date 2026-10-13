@@ -53,8 +53,22 @@ export function rateLimit(
 }
 
 /** IP del cliente detrás de proxy. */
+/**
+ * La IP de quien hace el pedido, para contar intentos por visitante.
+ *
+ * Se mira primero la cabecera que pone Cloudflare, y no por preferencia sino
+ * porque es la única que no se puede falsear: Cloudflare la escribe él y pisa
+ * cualquier valor que mande el cliente. X-Forwarded-For, en cambio, se va
+ * encadenando, y un pedido que ya trae una puesta a mano deja su invento
+ * primero en la fila. Con eso alcanza para esquivar el límite de intentos:
+ * basta cambiar el valor en cada pedido para parecer siempre alguien nuevo.
+ *
+ * Queda como respaldo para cuando no hay Cloudflare delante, que es el caso
+ * de desarrollo y el de hoy en producción.
+ */
 export function clientIp(headers: Headers): string {
   return (
+    headers.get("cf-connecting-ip")?.trim() ||
     headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     headers.get("x-real-ip") ||
     "desconocida"
