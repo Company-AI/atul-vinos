@@ -601,7 +601,7 @@ function OpcionDePago({
           <span className="flex flex-wrap items-center gap-2">
             <span className="text-[14px] text-carbon-900">{titulo}</span>
             {etiqueta && (
-              <span className="bg-wine-700 px-1.5 py-0.5 text-[11px] font-medium tracking-wide text-bone-pure">
+              <span className="bg-wine-500 px-1.5 py-0.5 text-[11px] font-medium tracking-wide text-bone-pure">
                 {etiqueta}
               </span>
             )}

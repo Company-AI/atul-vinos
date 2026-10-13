@@ -81,7 +81,7 @@ export default async function CheckoutStatusPage({ params }: PageProps) {
       body: "Algunos medios de pago tardan unos minutos. No hace falta que hagas nada: cuando se acredite te avisamos por email y empezamos a preparar tu pedido.",
     },
     transferencia: {
-      icon: <Landmark className="size-10 text-wine-700" />,
+      icon: <Landmark className="size-10 text-wine-500" />,
       eyebrow: "Gracias por tu compra",
       title: "Sólo falta que hagas la transferencia.",
       body: "Guardamos tu pedido con el descuento aplicado. Transferí el total a la cuenta de acá abajo y mandanos el comprobante por WhatsApp: lo preparamos apenas lo veamos acreditado.",
@@ -202,9 +202,9 @@ function TarjetaDeTransferencia({
   const mensaje = `Hola! Hice el pedido #${numero} por ${formatARS(total)} y les paso el comprobante de la transferencia.`;
 
   return (
-    <div className="mt-10 border border-wine-700/30 bg-wine-700/[0.04] p-6">
+    <div className="mt-10 border border-wine-500/30 bg-wine-500/[0.04] p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-linen-200 pb-4">
-        <p className="eyebrow text-wine-700">Transferí este importe</p>
+        <p className="eyebrow text-wine-500">Transferí este importe</p>
         <p className="text-2xl font-medium tabular text-carbon-900">{formatARS(total)}</p>
       </div>
 
