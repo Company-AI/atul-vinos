@@ -17,7 +17,14 @@ export async function AgeGate({
 }: {
   settings: Settings["ageGate"];
   legal: Settings["legal"];
-  company: Settings["company"];
+  /*
+    Sólo los dos campos que se usan, no el grupo entero. Recibir
+    Settings["company"] completo hacía que el teléfono, el mail, la
+    dirección del remitente y los datos fiscales viajaran serializados en
+    el HTML de todas las páginas, aunque el gate no los mostrara. Nada de
+    eso es secreto, pero tampoco hay por qué publicarlo.
+  */
+  company: Pick<Settings["company"], "name" | "logoLightUrl">;
 }) {
   if (!settings.enabled) return null;
 

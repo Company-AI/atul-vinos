@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from "./social-icons";
 import { getSection } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
@@ -40,12 +40,6 @@ export async function SiteFooter() {
             )}
 
             <ul className="mt-6 space-y-2 text-[13px] text-stone-400">
-              <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 size-3.5 shrink-0" />
-                <span>
-                  {company.addressLine}, {company.city}, {company.province}
-                </span>
-              </li>
               <li>
                 <a href={`mailto:${company.email}`} className="flex items-center gap-2 hover:text-bone">
                   <Mail className="size-3.5 shrink-0" />
