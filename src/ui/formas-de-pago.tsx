@@ -55,8 +55,13 @@ export async function FormasDePago({
           Granate: en este sitio ese color está reservado a ofertas y
           descuentos, así que el precio con transferencia se lee como lo que
           es sin necesidad de explicarlo.
+
+          El 500 y no el 700 de la escala: el más oscuro casi no se
+          distinguía del negro del precio de arriba y perdía el trabajo de
+          señalar. Sigue en 7,8:1 sobre el fondo, así que no se paga en
+          legibilidad.
         */
-        <p className="tabular font-bold text-wine-700">
+        <p className="tabular font-bold text-wine-500">
           {formatARS(conTransferencia)} con transferencia
         </p>
       )}
