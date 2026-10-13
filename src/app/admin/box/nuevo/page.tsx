@@ -23,7 +23,7 @@ const VACIO: ProductFormData = {
   seoTitle: "", seoDescription: "",
   categoryId: "", wineryId: "", regionId: "", lineId: "",
   grapeIds: [], pairingIds: [], tagIds: [],
-  minStock: "0", location: "",
+  minStock: "0", stockOnHand: "0", location: "",
   packItems: [], awards: [],
 };
 
