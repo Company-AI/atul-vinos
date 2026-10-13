@@ -6,6 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/infra/db/prisma";
 import { assertPermission } from "@/infra/auth/guards";
 import { recordAudit } from "@/domain/audit/service";
+import { recordMovement } from "@/domain/inventory/service";
 import { getStorage } from "@/infra/storage/registry";
 import {
   ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_VIDEO_BYTES,
@@ -68,6 +69,13 @@ const productSchema = z.object({
   pairingIds: z.array(z.string()).default([]),
   tagIds: z.array(z.string()).default([]),
   minStock: z.number().int().min(0).default(0),
+  /*
+    Las botellas que hay en el depósito, escritas derecho desde la ficha del
+    vino. Abajo sigue siendo un movimiento de stock como cualquier otro —el
+    historial no se saltea—, pero quien carga un vino no tiene por qué saber
+    eso: pone el número que contó y listo.
+  */
+  stockOnHand: z.number().int().min(0).max(1_000_000).optional(),
   location: z.string().max(40).optional(),
   packItems: z
     .array(z.object({ componentId: z.string(), quantity: z.number().int().min(1) }))
@@ -259,7 +267,7 @@ export async function saveProduct(
 
       // Inventario: solo los vinos tienen stock propio.
       if (data.kind === "WINE") {
-        await tx.inventory.upsert({
+        const inventario = await tx.inventory.upsert({
           where: { productId: product.id },
           create: {
             productId: product.id,
@@ -269,6 +277,23 @@ export async function saveProduct(
           },
           update: { minStock: data.minStock, location: data.location?.trim() || null },
         });
+
+        /*
+          El número de la ficha se traduce a un ajuste, y sólo si cambió. Pasa
+          por recordMovement y no por un update directo para que el cambio
+          quede en el historial con el antes y el después: el día que falten
+          seis botellas, la diferencia entre "alguien las vendió" y "alguien
+          escribió otro número" es lo único que permite saber qué pasó.
+        */
+        if (data.stockOnHand !== undefined && data.stockOnHand !== inventario.onHand) {
+          await recordMovement(tx, {
+            productId: product.id,
+            type: "AJUSTE",
+            quantity: data.stockOnHand,
+            userId: user.id,
+            comment: "Corregido desde la ficha del vino",
+          });
+        }
       }
 
       // Composición del pack.

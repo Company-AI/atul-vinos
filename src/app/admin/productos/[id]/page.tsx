@@ -70,6 +70,7 @@ export default async function EditProductPage({ params }: PageProps) {
     pairingIds: product.pairings.map((p) => p.pairingId),
     tagIds: product.tags.map((t) => t.tagId),
     minStock: String(product.inventory?.minStock ?? 0),
+    stockOnHand: String(product.inventory?.onHand ?? 0),
     location: product.inventory?.location ?? "",
     packItems: product.packItems.map((item) => ({
       componentId: item.componentId,

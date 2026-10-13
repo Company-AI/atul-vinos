@@ -70,6 +70,8 @@ export type ProductFormData = {
   pairingIds: string[];
   tagIds: string[];
   minStock: string;
+  /** Botellas en depósito, escritas derecho desde la ficha. */
+  stockOnHand: string;
   location: string;
   packItems: { componentId: string; quantity: number }[];
   awards: { title: string; organization: string; year: string; score: string }[];
@@ -166,6 +168,7 @@ export function ProductForm({
         pairingIds: form.pairingIds,
         tagIds: form.tagIds,
         minStock: Number(form.minStock || 0),
+        stockOnHand: form.kind === "WINE" ? Number(form.stockOnHand || 0) : undefined,
         location: form.location || undefined,
         packItems: form.packItems,
         awards: form.awards
@@ -922,28 +925,52 @@ export function ProductForm({
 
         {form.kind === "WINE" && (
           <AdminCard title="Stock" description={form.id ? undefined : "Se habilita al crear el producto."}>
-            {inventory && (
-              <dl className="mb-4 grid grid-cols-3 gap-2 border-b border-linen-200 pb-4 text-center">
-                <div>
-                  <dt className="text-[12px] uppercase text-stone-500">Físico</dt>
-                  <dd className="text-[20px] tabular">{inventory.onHand}</dd>
-                </div>
-                <div>
-                  <dt className="text-[12px] uppercase text-stone-500">Reservado</dt>
-                  <dd className="text-[20px] tabular">{inventory.reserved}</dd>
-                </div>
-                <div>
-                  <dt className="text-[12px] uppercase text-stone-500">Disponible</dt>
-                  <dd className="text-[20px] tabular font-medium">{inventory.available}</dd>
-                </div>
-              </dl>
-            )}
             <div className="grid gap-4">
-              <Field label="Stock mínimo" htmlFor="minStock" hint="Umbral de alerta de reposición.">
+              {/*
+                El campo principal, y grande: es el único que se toca seguido.
+                Se escribe el número de botellas que hay y se guarda con el
+                resto de la ficha. No hay que ir a ninguna otra pantalla ni
+                saber qué es un movimiento de stock.
+              */}
+              <Field
+                label="¿Cuántas botellas tenés?"
+                htmlFor="stockOnHand"
+                hint="Las que hay hoy en el depósito. Escribí el número y guardá."
+              >
+                <Input
+                  id="stockOnHand"
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  className="h-12 text-[20px] tabular"
+                  value={form.stockOnHand}
+                  onChange={(e) => set("stockOnHand", e.target.value)}
+                />
+              </Field>
+
+              {/*
+                Reservado y disponible sólo aparecen cuando hay algo reservado.
+                El 99% del tiempo son 0 y el mismo número repetido tres veces,
+                que es justamente el embrollo que había. Cuando alguien tiene
+                un pedido esperando pago, en cambio, lo que se puede vender NO
+                es lo que hay en el depósito, y ahí callarlo sería mentir.
+              */}
+              {inventory && inventory.reserved > 0 && (
+                <p className="-mt-1 border-l-2 border-warning-500 bg-warning-100/40 px-3 py-2 text-[13px] leading-relaxed text-carbon-800">
+                  De esas, <strong className="font-medium">{inventory.reserved}</strong>{" "}
+                  {inventory.reserved === 1 ? "está reservada" : "están reservadas"} por pedidos sin
+                  entregar, así que quedan{" "}
+                  <strong className="font-medium">{inventory.available}</strong> para vender.
+                </p>
+              )}
+
+              <Field label="Avisarme cuando queden menos de" htmlFor="minStock"
+                hint="Para que aparezca en la alerta de reposición.">
                 <Input id="minStock" type="number" min={0} value={form.minStock}
                   onChange={(e) => set("minStock", e.target.value)} />
               </Field>
-              <Field label="Ubicación en depósito" htmlFor="location">
+              <Field label="Ubicación en depósito" htmlFor="location"
+                hint="Opcional. Dónde está la caja.">
                 <Input id="location" value={form.location}
                   onChange={(e) => set("location", e.target.value)} />
               </Field>
@@ -951,9 +978,9 @@ export function ProductForm({
             {form.id && (
               <Link
                 href="/admin/stock"
-                className="mt-4 inline-block text-[13px] underline underline-offset-2 hover:text-accent-700"
+                className="mt-4 inline-block text-[12px] text-stone-500 underline underline-offset-2 hover:text-carbon-900"
               >
-                Registrar movimiento de stock
+                Ver el historial y registrar roturas
               </Link>
             )}
           </AdminCard>

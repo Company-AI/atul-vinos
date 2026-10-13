@@ -18,7 +18,7 @@ const EMPTY: ProductFormData = {
   seoTitle: "", seoDescription: "",
   categoryId: "", wineryId: "", regionId: "", lineId: "",
   grapeIds: [], pairingIds: [], tagIds: [],
-  minStock: "6", location: "",
+  minStock: "6", stockOnHand: "0", location: "",
   packItems: [], awards: [],
 };
 
