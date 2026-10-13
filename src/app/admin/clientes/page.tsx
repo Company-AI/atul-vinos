@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireStaff } from "@/infra/auth/guards";
+import { getSettings } from "@/domain/settings/service";
 import { prisma } from "@/infra/db/prisma";
 import { REVENUE_STATUSES } from "@/domain/orders/status";
 import { SUBSCRIPTION_STATUS_LABELS, SUBSCRIPTION_STATUS_TONES } from "@/domain/subscriptions/status";
 import { formatARS, toNumber } from "@/lib/money";
+import { etiquetaDeOrigen } from "@/domain/promotions/origen";
 import { formatDate } from "@/lib/dates";
 import { AdminCard, AdminPageHeader, AdminTable, Td } from "@/components/admin/admin-ui";
 import { Badge } from "@/ui/badge";
@@ -18,6 +20,8 @@ type PageProps = { searchParams: Promise<{ q?: string; socios?: string }> };
 export default async function AdminCustomersPage({ searchParams }: PageProps) {
   await requireStaff("customers.view");
   const { q, socios } = await searchParams;
+  // Con el Club apagado, el filtro y la columna de suscripción no dicen nada.
+  const { club } = await getSettings();
 
   const customers = await prisma.user.findMany({
     where: {
@@ -70,21 +74,23 @@ export default async function AdminCustomersPage({ searchParams }: PageProps) {
         <button type="submit" className={buttonVariants({ variant: "subtle", size: "sm" })}>
           Buscar
         </button>
-        <Link
-          href={socios ? "/admin/clientes" : "/admin/clientes?socios=1"}
-          className={buttonVariants({ variant: socios ? "dark" : "subtle", size: "sm" })}
-        >
-          Solo socios del Club
-        </Link>
+        {club.enabled && (
+          <Link
+            href={socios ? "/admin/clientes" : "/admin/clientes?socios=1"}
+            className={buttonVariants({ variant: socios ? "dark" : "subtle", size: "sm" })}
+          >
+            Solo socios del Club
+          </Link>
+        )}
       </form>
 
       <AdminCard padded={false}>
         <AdminTable
           headers={[
-            "Cliente", "Contacto", "Registro",
+            "Cliente", "Contacto", "De dónde salió", "Registro",
             { label: "Pedidos", align: "right" },
             { label: "Gastado", align: "right" },
-            "Última compra", "Suscripción", { label: "", align: "right" },
+            "Última compra", ...(club.enabled ? ["Suscripción"] : []), { label: "", align: "right" },
           ]}
           empty={<p className="text-[13px] text-stone-500">No hay clientes con ese filtro.</p>}
         >
@@ -104,6 +110,9 @@ export default async function AdminCustomersPage({ searchParams }: PageProps) {
                   <span className="block text-[11px] text-stone-500">{customer.phone}</span>
                 )}
               </Td>
+              <Td className="text-[12px] text-stone-500">
+                {etiquetaDeOrigen(customer.source)}
+              </Td>
               <Td className="whitespace-nowrap tabular text-stone-500">
                 {formatDate(customer.createdAt)}
               </Td>
@@ -112,15 +121,17 @@ export default async function AdminCustomersPage({ searchParams }: PageProps) {
               <Td className="whitespace-nowrap tabular text-stone-500">
                 {lastOrder ? formatDate(lastOrder) : "—"}
               </Td>
-              <Td>
-                {subscription ? (
-                  <Badge tone={SUBSCRIPTION_STATUS_TONES[subscription.status]}>
-                    {subscription.plan.name} · {SUBSCRIPTION_STATUS_LABELS[subscription.status]}
-                  </Badge>
-                ) : (
-                  <span className="text-stone-400">—</span>
-                )}
-              </Td>
+              {club.enabled && (
+                <Td>
+                  {subscription ? (
+                    <Badge tone={SUBSCRIPTION_STATUS_TONES[subscription.status]}>
+                      {subscription.plan.name} · {SUBSCRIPTION_STATUS_LABELS[subscription.status]}
+                    </Badge>
+                  ) : (
+                    <span className="text-stone-400">—</span>
+                  )}
+                </Td>
+              )}
               <Td align="right">
                 <Link
                   href={`/admin/clientes/${customer.id}`}

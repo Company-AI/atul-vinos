@@ -121,7 +121,7 @@ export async function register(input: {
 
   const user = existing
     ? await prisma.user.update({ where: { id: existing.id }, data: datos })
-    : await prisma.user.create({ data: { email, ...datos } });
+    : await prisma.user.create({ data: { email, ...datos, source: "registro" } });
 
   if (parsed.data.acceptsMarketing) {
     await prisma.newsletterSubscriber.upsert({

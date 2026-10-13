@@ -90,7 +90,14 @@ export async function registrarBienvenida(input: {
         }
       } else {
         await tx.user.create({
-          data: { email, firstName, lastName: "", birthDate: nacimiento, acceptsMarketing: true },
+          data: {
+            email,
+            firstName,
+            lastName: "",
+            birthDate: nacimiento,
+            acceptsMarketing: true,
+            source: "bienvenida",
+          },
         });
       }
 

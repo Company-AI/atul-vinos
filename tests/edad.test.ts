@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { edadEnAnios, fechaDeNacimiento } from "@/domain/promotions/edad";
+import { formatDateOnly } from "@/lib/dates";
 
 const hoy = new Date(Date.UTC(2026, 9, 13)); // 13 de octubre de 2026
 
@@ -40,5 +41,19 @@ describe("edad", () => {
   it("rechaza el futuro y lo imposible", () => {
     expect(fechaDeNacimiento("2099-01-01")).toBeNull();
     expect(fechaDeNacimiento("1850-01-01")).toBeNull();
+  });
+});
+
+describe("fechas sin hora", () => {
+  it("no corre el día al imprimir una fecha de nacimiento", () => {
+    // Postgres devuelve `@db.Date` a medianoche UTC. En UTC-3, formatearla en
+    // hora local daría el 13.
+    expect(formatDateOnly(new Date("1996-03-14T00:00:00.000Z"))).toBe("14/03/1996");
+    expect(formatDateOnly(new Date("2000-01-01T00:00:00.000Z"))).toBe("01/01/2000");
+  });
+
+  it("sin fecha, un guión", () => {
+    expect(formatDateOnly(null)).toBe("—");
+    expect(formatDateOnly("cualquier cosa")).toBe("—");
   });
 });

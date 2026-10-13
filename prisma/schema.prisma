@@ -33,6 +33,10 @@ model User {
   /// respalda la venta: sin esto, la única constancia de que alguien dijo
   /// ser mayor es una cookie que se borra.
   birthDate        DateTime? @db.Date
+  /// Por dónde entró: bienvenida | registro | admin. Se guarda en vez de
+  /// deducirse de si tiene contraseña, porque esa deducción se rompe el día
+  /// que alguien de la ventana termine de abrir su cuenta.
+  source           String?
   emailVerifiedAt  DateTime?
   isStaff          Boolean   @default(false)
   isActive         Boolean   @default(true)
