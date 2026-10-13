@@ -3,11 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireStaff } from "@/infra/auth/guards";
 import { prisma } from "@/infra/db/prisma";
+import { getSettings } from "@/domain/settings/service";
 import { ORDER_STATUS_ADMIN_LABELS, ORDER_STATUS_TONES, REVENUE_STATUSES } from "@/domain/orders/status";
 import { SUBSCRIPTION_STATUS_LABELS, SUBSCRIPTION_STATUS_TONES } from "@/domain/subscriptions/status";
 import { getMemberBenefits } from "@/domain/promotions/club-benefits";
 import { formatARS, toNumber } from "@/lib/money";
-import { formatDate } from "@/lib/dates";
+import { edadEnAnios } from "@/domain/promotions/edad";
+import { etiquetaDeOrigen } from "@/domain/promotions/origen";
+import { formatDate, formatDateOnly } from "@/lib/dates";
 import { AdminCard, AdminPageHeader, AdminTable, MetricCard, Td } from "@/components/admin/admin-ui";
 import { CustomerNote } from "@/components/admin/customer-note";
 import { Badge } from "@/ui/badge";
@@ -33,6 +36,7 @@ export default async function AdminCustomerDetailPage({ params }: PageProps) {
   if (!customer) notFound();
 
   const benefits = await getMemberBenefits(customer.id);
+  const { club } = await getSettings();
   const paidOrders = customer.orders.filter((o) => REVENUE_STATUSES.includes(o.status));
   const spent = paidOrders.reduce((acc, order) => acc + toNumber(order.total), 0);
   const canEdit = staff.isSuperAdmin || staff.permissions.has("customers.edit");
@@ -45,19 +49,22 @@ export default async function AdminCustomerDetailPage({ params }: PageProps) {
         description={`${customer.email} · cliente desde ${formatDate(customer.createdAt)}`}
       />
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-4">
+      {/* Con el Club apagado la tarjeta diría "No" para todos: no informa nada. */}
+      <div className={`mb-4 grid gap-3 ${club.enabled ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
         <MetricCard label="Pedidos pagados" value={paidOrders.length} />
         <MetricCard label="Total comprado" value={formatARS(spent)} />
         <MetricCard
           label="Ticket promedio"
           value={formatARS(paidOrders.length ? Math.round(spent / paidOrders.length) : 0)}
         />
-        <MetricCard
-          label="Socio del Club"
-          value={benefits.isMember ? "Sí" : "No"}
-          hint={benefits.planName ?? undefined}
-          tone={benefits.isMember ? "success" : "neutral"}
-        />
+        {club.enabled && (
+          <MetricCard
+            label="Socio del Club"
+            value={benefits.isMember ? "Sí" : "No"}
+            hint={benefits.planName ?? undefined}
+            tone={benefits.isMember ? "success" : "neutral"}
+          />
+        )}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
@@ -174,6 +181,18 @@ export default async function AdminCustomerDetailPage({ params }: PageProps) {
                   <dd className="tabular">{customer.documentId}</dd>
                 </div>
               )}
+              {customer.birthDate && (
+                <div>
+                  <dt className="text-stone-500">Nacimiento</dt>
+                  <dd className="tabular">
+                    {formatDateOnly(customer.birthDate)} ({edadEnAnios(customer.birthDate)} años)
+                  </dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-stone-500">De dónde salió</dt>
+                <dd>{etiquetaDeOrigen(customer.source)}</dd>
+              </div>
               <div>
                 <dt className="text-stone-500">Newsletter</dt>
                 <dd>{customer.acceptsMarketing ? "Suscripto" : "No"}</dd>

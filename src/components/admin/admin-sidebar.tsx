@@ -5,9 +5,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
-  BarChart3, Box, Boxes, ClipboardList, FileText, LayoutDashboard, LogOut, Megaphone,
-  Menu, Package, Percent, ScrollText, Settings, ShieldCheck, ShoppingCart, Tags,
-  Truck, Users, Wine, X,
+  BarChart3, Box, Boxes, ClipboardList, FileText, LayoutDashboard, LogOut, Mail,
+  Megaphone, Menu, Package, Percent, ScrollText, Settings, ShieldCheck, ShoppingCart,
+  Tags, Truck, Users, Wine, X,
 } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { cn } from "@/lib/cn";
@@ -110,6 +110,7 @@ export function AdminSidebar({
       title: "Comercial",
       items: [
         { href: "/admin/clientes", label: "Clientes", Icon: Users, permission: "customers.view" },
+        { href: "/admin/suscriptores", label: "Suscriptores", Icon: Mail, permission: "customers.view" },
         { href: "/admin/cupones", label: "Cupones", Icon: Percent, permission: "coupons.view" },
         { href: "/admin/contenido", label: "Contenido", Icon: Megaphone, permission: "cms.edit", oculto: true },
       ],
