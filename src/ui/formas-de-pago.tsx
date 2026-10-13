@@ -56,7 +56,7 @@ export async function FormasDePago({
           descuentos, así que el precio con transferencia se lee como lo que
           es sin necesidad de explicarlo.
         */
-        <p className="tabular font-medium text-wine-700">
+        <p className="tabular font-bold text-wine-700">
           {formatARS(conTransferencia)} con transferencia
         </p>
       )}
