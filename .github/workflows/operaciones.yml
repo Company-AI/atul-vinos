@@ -22,6 +22,31 @@ on:
           - ver-estado-del-cupon-de-bienvenida
           - activar-cupon-de-bienvenida
           - desactivar-cupon-de-bienvenida
+          - cargar-datos-de-transferencia
+      # Sólo los usa "cargar-datos-de-transferencia". Se piden por parámetro y
+      # no se guardan en el repositorio: son el nombre, el CUIT y el CBU de una
+      # persona, y aunque se publiquen en el checkout, escribirlos en el código
+      # los mete en el historial de git para siempre.
+      titular:
+        description: "Titular de la cuenta (tal cual figura en el banco)"
+        required: false
+        type: string
+      banco:
+        description: "Banco"
+        required: false
+        type: string
+      alias:
+        description: "Alias"
+        required: false
+        type: string
+      cbu:
+        description: "CBU (22 dígitos)"
+        required: false
+        type: string
+      cuit:
+        description: "CUIT del titular"
+        required: false
+        type: string
 
 jobs:
   operar:
@@ -52,14 +77,30 @@ jobs:
             ver-estado-del-cupon-de-bienvenida)  echo "script=prisma/ops/cupon-de-bienvenida.ts estado" >> "$GITHUB_OUTPUT" ;;
             activar-cupon-de-bienvenida)         echo "script=prisma/ops/cupon-de-bienvenida.ts activar" >> "$GITHUB_OUTPUT" ;;
             desactivar-cupon-de-bienvenida)      echo "script=prisma/ops/cupon-de-bienvenida.ts desactivar" >> "$GITHUB_OUTPUT" ;;
+            cargar-datos-de-transferencia)       echo "script=prisma/ops/datos-de-transferencia.ts" >> "$GITHUB_OUTPUT" ;;
             *) echo "Tarea desconocida."; exit 1 ;;
           esac
 
       # Las credenciales viajan en .env.production, que el deploy ya dejó
       # escrito en el servidor. Pasarlas por -e las dejaría visibles en el `ps`.
+      # Los datos de la cuenta se mandan en un solo token base64 y no sueltos
+      # dentro del comando. base64 sólo produce letras, números, + / y =, así
+      # que no hay comilla ni punto y coma del usuario que pueda convertir esa
+      # línea en otra cosa al ejecutarse en el servidor. Es la misma razón por
+      # la que la tarea sale de una lista cerrada.
       - name: Ejecutar
         env:
           SCRIPT: ${{ steps.tarea.outputs.script }}
+          TITULAR: ${{ inputs.titular }}
+          BANCO: ${{ inputs.banco }}
+          ALIAS: ${{ inputs.alias }}
+          CBU: ${{ inputs.cbu }}
+          CUIT: ${{ inputs.cuit }}
         run: |
+          DATOS=$(jq -nc \
+            --arg titular "$TITULAR" --arg banco "$BANCO" --arg alias "$ALIAS" \
+            --arg cbu "$CBU" --arg cuit "$CUIT" \
+            '{titular:$titular,banco:$banco,alias:$alias,cbu:$cbu,cuit:$cuit}' | base64 | tr -d '\n')
+
           ssh -o BatchMode=yes "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "cd /opt/atul-vinos/deploy && docker compose --env-file .env.production run --rm migrate npx tsx $SCRIPT"
+            "cd /opt/atul-vinos/deploy && docker compose --env-file .env.production run --rm -e DATOS_B64=$DATOS migrate npx tsx $SCRIPT"
