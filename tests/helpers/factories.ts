@@ -43,6 +43,7 @@ export async function resetDatabase() {
     prisma.shippingRate.deleteMany(),
     prisma.shippingZone.deleteMany(),
     prisma.carrier.deleteMany(),
+    prisma.newsletterSubscriber.deleteMany(),
     prisma.setting.deleteMany(),
   ]);
 }

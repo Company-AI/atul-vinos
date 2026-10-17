@@ -45,10 +45,13 @@ export function CouponManager({
   coupons,
   categories,
   canEdit,
+  clubEnabled,
 }: {
   coupons: CouponRow[];
   categories: { id: string; name: string }[];
   canEdit: boolean;
+  /** Con el Club apagado, "exclusivo para socios" no tiene a quién excluir. */
+  clubEnabled: boolean;
 }) {
   const router = useRouter();
   const [form, setForm] = useState<typeof EMPTY | null>(null);
@@ -321,13 +324,15 @@ export function CouponManager({
             </fieldset>
 
             <div className="space-y-2.5 sm:col-span-2">
-              <label className="flex items-center gap-2.5 text-[13px]">
-                <Checkbox
-                  checked={form.clubMembersOnly}
-                  onChange={(e) => set("clubMembersOnly", e.target.checked)}
-                />
-                Exclusivo para socios del Club
-              </label>
+              {clubEnabled && (
+                <label className="flex items-center gap-2.5 text-[13px]">
+                  <Checkbox
+                    checked={form.clubMembersOnly}
+                    onChange={(e) => set("clubMembersOnly", e.target.checked)}
+                  />
+                  Exclusivo para socios del Club
+                </label>
+              )}
               <label className="flex items-center gap-2.5 text-[13px]">
                 <Checkbox
                   checked={form.firstPurchaseOnly}

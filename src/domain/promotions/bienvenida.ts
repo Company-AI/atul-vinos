@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { prisma } from "@/infra/db/prisma";
 import { getSettings } from "@/domain/settings/service";
+import { cuponDeBienvenidaVigente } from "./cupon-de-bienvenida";
 import { edadEnAnios, fechaDeNacimiento } from "./edad";
 
 const schema = z.object({
@@ -46,8 +47,15 @@ export async function registrarBienvenida(input: {
     };
   }
 
-  const { promo, ageGate } = await getSettings();
-  if (!promo.enabled) {
+  const { ageGate } = await getSettings();
+
+  /*
+    Se resuelve el cupón ANTES de guardar nada. Si no hay uno usable, no se
+    crea el cliente ni se lo suscribe: le pedimos el mail a cambio de algo
+    que no le podemos dar.
+  */
+  const couponCode = await cuponDeBienvenidaVigente();
+  if (!couponCode) {
     return { ok: false, error: "La promoción no está disponible." };
   }
 
@@ -111,5 +119,5 @@ export async function registrarBienvenida(input: {
     return { ok: false, error: "No pudimos guardar tus datos. Probá de nuevo." };
   }
 
-  return { ok: true, couponCode: promo.couponCode };
+  return { ok: true, couponCode };
 }

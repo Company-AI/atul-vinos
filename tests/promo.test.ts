@@ -23,10 +23,18 @@ async function habilitarPromo(couponCode = "BIENVENIDOATUL10") {
   });
 }
 
+/** El cupón que la ventana promete. Sin esto no entrega nada. */
+async function crearCupon(code = "BIENVENIDOATUL10") {
+  await prisma.coupon.create({
+    data: { code, type: "PERCENT", value: 10, isActive: true, firstPurchaseOnly: true, maxUsesPerUser: 1 },
+  });
+}
+
 describe("ventana de bienvenida", () => {
   beforeEach(async () => {
     await resetDatabase();
     await habilitarPromo();
+    await crearCupon();
   });
 
   it("guarda el cliente, la fecha de nacimiento y la suscripción con consentimiento", async () => {
@@ -117,5 +125,67 @@ describe("ventana de bienvenida", () => {
 
     expect(res.ok).toBe(false);
     expect(await prisma.user.findUnique({ where: { email: "dani@test.local" } })).toBeNull();
+  });
+});
+
+/*
+  La ventana prometía por su cuenta: entregaba el código mirando sólo si
+  estaba encendida, sin fijarse nunca en el cupón. El cliente desactivó el
+  cupón para que arrancara con la apertura y la ventana lo siguió regalando;
+  el checkout después lo rechazaba. Esto es ese agujero.
+*/
+describe("la ventana respeta el estado del cupón", () => {
+  beforeEach(async () => {
+    await resetDatabase();
+    await habilitarPromo();
+  });
+
+  async function cupon(datos: Partial<{ isActive: boolean; startsAt: Date; endsAt: Date; maxUses: number; usedCount: number }>) {
+    await prisma.coupon.create({
+      data: { code: "BIENVENIDOATUL10", type: "PERCENT", value: 10, isActive: true, ...datos },
+    });
+  }
+
+  const pedir = () =>
+    registrarBienvenida({ firstName: "Ana", email: "ana@test.local", birthDate: MAYOR });
+
+  it("lo entrega cuando el cupón está activo y vigente", async () => {
+    await cupon({});
+    expect(await pedir()).toMatchObject({ ok: true, couponCode: "BIENVENIDOATUL10" });
+  });
+
+  it("no lo entrega si el cupón no existe", async () => {
+    const res = await pedir();
+    expect(res.ok).toBe(false);
+    expect(await prisma.user.findUnique({ where: { email: "ana@test.local" } })).toBeNull();
+  });
+
+  it("no lo entrega si está desactivado", async () => {
+    await cupon({ isActive: false });
+    expect((await pedir()).ok).toBe(false);
+  });
+
+  it("no lo entrega antes de la fecha de inicio", async () => {
+    await cupon({ startsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
+    expect((await pedir()).ok).toBe(false);
+  });
+
+  it("no lo entrega después de vencido", async () => {
+    await cupon({ endsAt: new Date(Date.now() - 24 * 60 * 60 * 1000) });
+    expect((await pedir()).ok).toBe(false);
+  });
+
+  it("no lo entrega si se agotaron los usos", async () => {
+    await cupon({ maxUses: 5, usedCount: 5 });
+    expect((await pedir()).ok).toBe(false);
+  });
+
+  it("no guarda el cliente cuando no puede entregarlo", async () => {
+    await cupon({ isActive: false });
+    await pedir();
+    expect(await prisma.user.findUnique({ where: { email: "ana@test.local" } })).toBeNull();
+    expect(
+      await prisma.newsletterSubscriber.findUnique({ where: { email: "ana@test.local" } }),
+    ).toBeNull();
   });
 });
