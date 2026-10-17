@@ -3,9 +3,15 @@
 # reescriben en el servidor en cada deploy: no hay copia manual que se desincronice.
 #
 # Lo que no es secreto va en "variables" del repo y no en "secrets", para poder
-# leerlo: MODO_APERTURA cierra la tienda al público mientras valga "1", y
-# APERTURA_EN es la fecha de la cuenta regresiva. Cambiar cualquiera de las dos
-# y volver a desplegar alcanza; no hace falta tocar el servidor.
+# leerlo. Cambiar cualquiera y volver a desplegar alcanza; no hace falta tocar
+# el servidor.
+#
+#   MODO_APERTURA   "1"     cerrada, se abre a mano cambiando esto a "0"
+#                   "auto"  cerrada hasta que pase APERTURA_EN, después abre sola
+#                   "0"     abierta
+#
+#   APERTURA_EN     la fecha de la cuenta regresiva. En "auto" es además la que
+#                   abre la puerta: una sola fecha para las dos cosas.
 
 name: Deploy
 

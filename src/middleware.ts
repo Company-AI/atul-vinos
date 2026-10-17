@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { tiendaCerrada } from "@/domain/apertura";
 
 /**
  * Modo "todavía no abrimos".
@@ -12,6 +13,11 @@ import { NextResponse, type NextRequest } from "next/server";
  * base, por dos razones: tiene que funcionar también sin base —hoy producción
  * corre así— y apagar la tienda es una decisión que no conviene que quede a un
  * clic de distancia dentro del mismo panel que usa todo el mundo.
+ *
+ * MODO_APERTURA="1" se abre a mano; ="auto" abre sola cuando pasa APERTURA_EN,
+ * que es la misma fecha de la cuenta regresiva. La lógica está en
+ * `domain/apertura.ts`, con sus pruebas: decidir si la tienda está abierta es
+ * demasiado consecuente para verificarlo a ojo.
  *
  * Queda afuera del desvío:
  *   - /admin, para poder trabajar;
@@ -35,7 +41,9 @@ const COOKIE_VER = "atul-ver";
 const SIN_DESVIO = [/^\/admin(\/|$)/, /^\/api(\/|$)/, /^\/proximamente\/?$/];
 
 export function middleware(request: NextRequest) {
-  if (process.env.MODO_APERTURA !== "1") return NextResponse.next();
+  if (!tiendaCerrada(process.env.MODO_APERTURA, process.env.APERTURA_EN)) {
+    return NextResponse.next();
+  }
 
   const { pathname } = request.nextUrl;
   if (SIN_DESVIO.some((patron) => patron.test(pathname))) return NextResponse.next();
