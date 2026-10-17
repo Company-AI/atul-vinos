@@ -19,6 +19,9 @@ on:
           - configurar-ventana-de-bienvenida
           - corregir-textos-del-sitio
           - encender-transferencia-de-prueba
+          - ver-estado-del-cupon-de-bienvenida
+          - activar-cupon-de-bienvenida
+          - desactivar-cupon-de-bienvenida
 
 jobs:
   operar:
@@ -46,6 +49,9 @@ jobs:
             configurar-ventana-de-bienvenida) echo "script=prisma/ops/bienvenida.ts" >> "$GITHUB_OUTPUT" ;;
             corregir-textos-del-sitio) echo "script=prisma/ops/textos.ts" >> "$GITHUB_OUTPUT" ;;
             encender-transferencia-de-prueba) echo "script=prisma/ops/transferencia-de-prueba.ts" >> "$GITHUB_OUTPUT" ;;
+            ver-estado-del-cupon-de-bienvenida)  echo "script=prisma/ops/cupon-de-bienvenida.ts estado" >> "$GITHUB_OUTPUT" ;;
+            activar-cupon-de-bienvenida)         echo "script=prisma/ops/cupon-de-bienvenida.ts activar" >> "$GITHUB_OUTPUT" ;;
+            desactivar-cupon-de-bienvenida)      echo "script=prisma/ops/cupon-de-bienvenida.ts desactivar" >> "$GITHUB_OUTPUT" ;;
             *) echo "Tarea desconocida."; exit 1 ;;
           esac
 
