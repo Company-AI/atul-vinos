@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireStaff } from "@/infra/auth/guards";
 import { prisma } from "@/infra/db/prisma";
+import { getSettings } from "@/domain/settings/service";
 import { toNumber } from "@/lib/money";
 import { formatDate } from "@/lib/dates";
 import { AdminCard, AdminPageHeader } from "@/components/admin/admin-ui";
@@ -11,12 +12,13 @@ export const metadata: Metadata = { title: "Cupones" };
 export default async function AdminCouponsPage() {
   const staff = await requireStaff("coupons.view");
 
-  const [coupons, categories] = await Promise.all([
+  const [coupons, categories, { club }] = await Promise.all([
     prisma.coupon.findMany({
       orderBy: [{ isActive: "desc" }, { createdAt: "desc" }],
       include: { products: true, categories: true },
     }),
     prisma.category.findMany({ orderBy: { sortOrder: "asc" }, select: { id: true, name: true } }),
+    getSettings(),
   ]);
 
   const iso = (date: Date | null) => (date ? date.toISOString().slice(0, 10) : null);
@@ -56,6 +58,7 @@ export default async function AdminCouponsPage() {
             coupons={rows}
             categories={categories}
             canEdit={staff.isSuperAdmin || staff.permissions.has("coupons.edit")}
+            clubEnabled={club.enabled}
           />
         </div>
       </AdminCard>

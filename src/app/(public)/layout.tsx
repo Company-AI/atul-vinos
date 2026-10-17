@@ -1,5 +1,7 @@
 import { getActiveBanners, getSection } from "@/domain/cms/service";
 import { getSettings } from "@/domain/settings/service";
+import { cuponDeBienvenidaVigente } from "@/domain/promotions/cupon-de-bienvenida";
+import { PromoPopup } from "@/components/site/promo-popup";
 import { getCartCount } from "@/domain/cart/service";
 import { getSession } from "@/infra/auth/session";
 import { PromoBar } from "@/components/site/promo-bar";
@@ -53,12 +55,13 @@ const NAV_SECUNDARIA: SidebarItem[] = [
 const TAGLINE = ["Vinos", "que", "conectan"];
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [settings, cartCount, session, beneficios] = await Promise.all([
+  const [settings, cartCount, session, beneficios, cuponDeBienvenida] = await Promise.all([
     getSettings(),
     getCartCount(),
     getSession(),
     // Los beneficios de la franja superior se editan desde Contenido.
     getSection("site.beneficios", "benefits_bar"),
+    cuponDeBienvenidaVigente(),
   ]);
 
   // Los banners del CMS siguen disponibles, pero la franja fija de beneficios
@@ -99,6 +102,29 @@ export default async function PublicLayout({ children }: { children: React.React
         <TrustBar />
         <SiteFooter />
       </div>
+
+      {/*
+        La ventana de bienvenida vive acá y no en el layout raíz: así saluda
+        a quien entra a la tienda y no se abre encima del login del admin
+        —donde el cliente se la encontró tapando el formulario—, ni en medio
+        del checkout, ni en la pantalla de próximamente, donde ofrecer un
+        descuento de primera compra no tiene sentido porque todavía no se
+        puede comprar.
+
+        Sólo aparece si hay un cupón que se pueda usar hoy.
+      */}
+      {cuponDeBienvenida && (
+        <PromoPopup
+          title={settings.promo.title}
+          message={settings.promo.message}
+          ctaLabel={settings.promo.ctaLabel}
+          ctaHref={settings.promo.ctaHref}
+          dismissLabel={settings.promo.dismissLabel}
+          imageUrl={settings.promo.imageUrl}
+          legalNote={settings.promo.legalNote}
+          minAge={settings.ageGate.minAge}
+        />
+      )}
     </div>
   );
 }
