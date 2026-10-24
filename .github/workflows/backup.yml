@@ -66,6 +66,22 @@ jobs:
           export RCLONE_CONFIG_B2_TYPE=b2
           export RCLONE_CONFIG_B2_ACCOUNT="$B2_KEY_ID"
           export RCLONE_CONFIG_B2_KEY="$B2_APP_KEY"
-          rclone lsl "b2:$B2_BUCKET/versionado" 2>&1 | tail -5 || echo "  no pude listar el bucket"
+          if ! rclone lsl "b2:$B2_BUCKET/versionado" 2>/tmp/b2err | tail -5; then
+            echo "  no pude leer el bucket:"
+            sed 's/^/    /' /tmp/b2err
+            echo
+            # Separa "la llave no sirve" de "la llave sirve pero no alcanza a
+            # este bucket". No se inspeccionan las credenciales: sólo se
+            # pregunta qué puede hacer la llave.
+            echo "  ¿la llave autentica contra Backblaze?"
+            if rclone lsd b2: >/tmp/b2buckets 2>/tmp/b2err2; then
+              echo "    sí. Buckets que ve:"
+              sed 's/^/      /' /tmp/b2buckets | head -5
+              echo "    → la llave es válida; el problema es el alcance sobre $B2_BUCKET"
+            else
+              sed 's/^/    /' /tmp/b2err2 | head -3
+              echo "    → la llave no autentica: está equivocada, cortada o revocada"
+            fi
+          fi
           echo "  tamaño en el bucket: $(rclone size "b2:$B2_BUCKET" 2>/dev/null | tr '\n' ' ')"
           REMOTO
