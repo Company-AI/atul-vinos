@@ -104,6 +104,17 @@ const LABELS: Record<string, { label: string; hint?: string; long?: boolean }> =
     label: "Cuotas sin interés que se anuncian",
     hint: "Se muestra bajo cada precio: “3 x $12.700 sin interés”. Tiene que coincidir con lo que esté configurado en el panel de Mercado Pago. En 0 no se muestra nada.",
   },
+  quantityDiscountPercent: {
+    label: "Descuento por cantidad (%)",
+    hint: "Se anuncia y se aplica cuando el pedido llega al mínimo de botellas. En 0 no existe.",
+  },
+  quantityDiscountMinBottles: {
+    label: "Botellas mínimas para ese descuento",
+    hint: "Cuenta botellas, no productos: un box de seis cuenta como seis.",
+  },
+  quantityDiscountFirstPurchaseOnly: {
+    label: "El descuento por cantidad vale sólo en la primera compra",
+  },
   transferDiscountPercent: {
     label: "Descuento por transferencia (%)",
     hint: "Se anuncia bajo cada precio y se aplica al total si eligen transferencia. En 0 no se muestra nada.",

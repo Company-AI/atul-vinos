@@ -11,7 +11,7 @@ import { validateCoupon } from "@/domain/promotions/coupons";
 import { esPrimeraCompra } from "@/domain/promotions/primera-compra";
 import { getSettings } from "@/domain/settings/service";
 import { toCents, toNumber } from "@/lib/money";
-import { calculatePricing, type PricingResult } from "./pricing";
+import { calculatePricing, reglaDeCantidad, type PricingResult } from "./pricing";
 
 const CART_COOKIE = "bodega_cart";
 
@@ -206,6 +206,24 @@ export const getCart = cache(async (): Promise<CartSummary> => {
     }
   }
 
+  const botellas = lines.reduce(
+    (acc, l) => acc + l.quantity * (l.kind === "PACK"
+      ? l.packComponents.reduce((s, c) => s + c.quantity, 0)
+      : 1), 0,
+  );
+
+  /*
+    En el carrito todavía no sabemos quién es si no inició sesión, y
+    esPrimeraCompra sin datos responde que sí. O sea que un invitado ve el
+    descuento acá y, si ya compró antes con ese mail, lo pierde al confirmar.
+    Es el mismo criterio que ya usa el cupón: la cuenta que vale es la que
+    hace createOrder, con el mail del formulario a la vista.
+  */
+  const primeraCompra = await esPrimeraCompra({
+    userId: session?.userId,
+    email: session?.email,
+  });
+
   const pricing = calculatePricing({
     lines: lines.map((l) => ({
       productId: l.productId,
@@ -218,17 +236,16 @@ export const getCart = cache(async (): Promise<CartSummary> => {
     freeShippingFromCents: settings.shipping.freeShippingFrom
       ? toCents(settings.shipping.freeShippingFrom)
       : null,
+    quantityDiscount: reglaDeCantidad(settings.payments),
+    bottles: botellas,
+    isFirstPurchase: primeraCompra,
   });
 
   return {
     id: cart.id,
     lines,
     itemCount: lines.length,
-    bottleCount: lines.reduce(
-      (acc, l) => acc + l.quantity * (l.kind === "PACK"
-        ? l.packComponents.reduce((s, c) => s + c.quantity, 0)
-        : 1), 0,
-    ),
+    bottleCount: botellas,
     pricing,
     coupon,
     couponError,

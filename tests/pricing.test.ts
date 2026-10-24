@@ -144,3 +144,131 @@ describe("descuento por transferencia", () => {
     expect(r.total).toBe(0);
   });
 });
+
+describe("descuento por cantidad", () => {
+  /*
+    Por defecto corre siempre, no sólo en la primera compra: lo definió el
+    cliente. La variante acotada sigue existiendo y tiene su propio caso.
+  */
+  const regla = { percent: 10, minBottles: 6, firstPurchaseOnly: false };
+  // Seis botellas de $10.000 = $60.000.
+  const seisBotellas = [{ productId: "a", quantity: 6, unitPriceCents: toCents(10000) }];
+
+  it("no se aplica por debajo del mínimo", () => {
+    const r = calculatePricing({
+      lines: [{ productId: "a", quantity: 5, unitPriceCents: toCents(10000) }],
+      quantityDiscount: regla,
+      bottles: 5,
+      isFirstPurchase: true,
+    });
+    expect(r.quantityDiscountCents).toBe(0);
+    expect(r.total).toBe(50000);
+  });
+
+  it("se aplica justo en el mínimo", () => {
+    const r = calculatePricing({
+      lines: seisBotellas,
+      quantityDiscount: regla,
+      bottles: 6,
+      isFirstPurchase: true,
+    });
+    expect(r.quantityDiscountCents).toBe(toCents(6000));
+    expect(r.total).toBe(54000);
+  });
+
+  /*
+    Un box de seis son seis botellas, no una. Si se contaran las líneas del
+    carrito, justo el que más lleva se quedaría sin el descuento.
+  */
+  it("un box cuenta por las botellas que trae, no como un producto", () => {
+    const r = calculatePricing({
+      lines: [{ productId: "box", quantity: 1, unitPriceCents: toCents(60000) }],
+      quantityDiscount: regla,
+      bottles: 6,
+      isFirstPurchase: true,
+    });
+    expect(r.quantityDiscountCents).toBe(toCents(6000));
+  });
+
+  it("corre aunque no sea la primera compra", () => {
+    const r = calculatePricing({
+      lines: seisBotellas,
+      quantityDiscount: regla,
+      bottles: 6,
+      isFirstPurchase: false,
+    });
+    expect(r.quantityDiscountCents).toBe(toCents(6000));
+    expect(r.total).toBe(54000);
+  });
+
+  it("acotado a la primera compra, no corre para quien ya compró", () => {
+    const r = calculatePricing({
+      lines: seisBotellas,
+      quantityDiscount: { ...regla, firstPurchaseOnly: true },
+      bottles: 6,
+      isFirstPurchase: false,
+    });
+    expect(r.quantityDiscountCents).toBe(0);
+  });
+
+  it("sin regla configurada no descuenta nada", () => {
+    const r = calculatePricing({ lines: seisBotellas, bottles: 6, isFirstPurchase: true });
+    expect(r.quantityDiscountCents).toBe(0);
+    expect(r.total).toBe(60000);
+  });
+
+  /*
+    Los dos descuentos se suman, pero cada uno sobre lo que quedó del
+    anterior. 10% y 20% dan 28% y no 30%: sumarlos en crudo descontaría de
+    más sobre una base que ya bajó.
+  */
+  it("se suma al de transferencia, cada uno sobre el saldo del anterior", () => {
+    const r = calculatePricing({
+      lines: seisBotellas,
+      quantityDiscount: regla,
+      bottles: 6,
+      isFirstPurchase: true,
+      transferDiscountPercent: 20,
+    });
+    expect(r.quantityDiscountCents).toBe(toCents(6000)); // 10% de 60.000
+    expect(r.transferDiscountCents).toBe(toCents(10800)); // 20% de 54.000
+    expect(r.total).toBe(43200); // 28% off, no 30%
+  });
+
+  it("va después del cupón, no sobre el precio de lista", () => {
+    const r = calculatePricing({
+      lines: seisBotellas,
+      coupon: { discountCents: toCents(10000), freeShipping: false, code: "X" },
+      quantityDiscount: regla,
+      bottles: 6,
+      isFirstPurchase: true,
+    });
+    // Sobre 50.000, no sobre 60.000.
+    expect(r.quantityDiscountCents).toBe(toCents(5000));
+    expect(r.total).toBe(45000);
+  });
+
+  it("no abarata el envío", () => {
+    const r = calculatePricing({
+      lines: seisBotellas,
+      quantityDiscount: regla,
+      bottles: 6,
+      isFirstPurchase: true,
+      shippingCents: toCents(8900),
+    });
+    expect(r.shippingTotal).toBe(8900);
+    expect(r.total).toBe(62900);
+  });
+
+  it("no hace perder el envío gratis que ya se había alcanzado", () => {
+    const r = calculatePricing({
+      lines: [{ productId: "a", quantity: 6, unitPriceCents: toCents(20000) }],
+      quantityDiscount: regla,
+      bottles: 6,
+      isFirstPurchase: true,
+      shippingCents: toCents(8900),
+      freeShippingFromCents: toCents(120000),
+    });
+    expect(r.shippingFreeReason).toBe("threshold");
+  });
+});
