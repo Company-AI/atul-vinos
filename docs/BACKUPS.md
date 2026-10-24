@@ -33,6 +33,17 @@ deploy sigue y queda marcado en amarillo.
 
 Se guardan **14 días** de dumps.
 
+### Correr uno ahora
+
+```bash
+gh workflow run backup.yml --repo Company-AI/atul-vinos
+```
+
+Sirve para comprobar que el circuito funciona —sobre todo la subida, que es
+la parte que puede fallar en silencio— y para tomarse una copia antes de algo
+riesgoso: una migración pesada, una carga masiva. Al terminar lista qué quedó
+en el servidor y qué quedó en el bucket. El cron sigue corriendo igual.
+
 ## Dónde quedan
 
 1. **En el servidor**, en `/var/backups/atul/`, con permisos 600. Esto protege
