@@ -1,0 +1,71 @@
+# Correr una copia de seguridad ahora mismo, sin esperar al cron de las 00:30.
+#
+# Sirve para dos cosas: comprobar que el circuito entero funciona —sobre todo
+# la subida a Backblaze, que es la parte que puede fallar en silencio— y
+# tomarse una copia a mano antes de algo riesgoso, como una migración pesada o
+# una carga masiva de productos.
+#
+# El cron sigue corriendo igual. Esto es extra, no un reemplazo.
+
+name: Backup ahora
+
+on:
+  workflow_dispatch:
+
+# Uno a la vez: dos backups simultáneos se pisarían el espejo de las fotos.
+concurrency:
+  group: backup-production
+  cancel-in-progress: false
+
+env:
+  APP_DIR: /opt/atul-vinos
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Abrir sesión SSH con el servidor
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          cat >> ~/.ssh/config <<CFG
+          Host servidor
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            IdentityFile ~/.ssh/id_ed25519
+            BatchMode yes
+            StrictHostKeyChecking yes
+          CFG
+
+      # Acá SÍ conviene que falle ruidosamente: el punto de correrlo a mano es
+      # enterarse de que algo no anda.
+      - name: Correr el backup
+        run: ssh servidor "$APP_DIR/scripts/backup.sh"
+
+      - name: Qué quedó guardado
+        if: always()
+        run: |
+          ssh servidor bash -s <<'REMOTO'
+          echo "── en el servidor ──"
+          ls -lh /var/backups/atul/base-*.sql.gz 2>/dev/null | tail -5 || echo "  (no hay dumps)"
+          du -sh /var/backups/atul 2>/dev/null
+
+          echo
+          echo "── en Backblaze ──"
+          cd /opt/atul-vinos/deploy
+          B2_KEY_ID=$(grep '^B2_KEY_ID=' .env.production | cut -d= -f2- | tr -d '"')
+          B2_APP_KEY=$(grep '^B2_APP_KEY=' .env.production | cut -d= -f2- | tr -d '"')
+          B2_BUCKET=$(grep '^B2_BUCKET=' .env.production | cut -d= -f2- | tr -d '"')
+          if [ -z "$B2_KEY_ID" ] || [ -z "$B2_BUCKET" ]; then
+            echo "  (sin credenciales de Backblaze: las copias quedan sólo en el servidor)"
+            exit 0
+          fi
+          export RCLONE_CONFIG_B2_TYPE=b2
+          export RCLONE_CONFIG_B2_ACCOUNT="$B2_KEY_ID"
+          export RCLONE_CONFIG_B2_KEY="$B2_APP_KEY"
+          rclone lsl "b2:$B2_BUCKET/versionado" 2>&1 | tail -5 || echo "  no pude listar el bucket"
+          echo "  tamaño en el bucket: $(rclone size "b2:$B2_BUCKET" 2>/dev/null | tr '\n' ' ')"
+          REMOTO
