@@ -100,32 +100,6 @@ jobs:
           docker compose ps
           REMOTE
 
-      # El backup se instala desde acá y no a mano en el servidor: un paso manual
-      # es un paso que alguien no repite cuando hay que rearmar el VPS. Es
-      # idempotente, así que correrlo en cada deploy no molesta.
-      - name: Asegurar las copias de seguridad
-        run: |
-          ssh servidor "APP_DIR='$APP_DIR' bash -s" <<'REMOTE'
-          set -euo pipefail
-
-          if ! command -v rclone >/dev/null; then
-            echo "instalando rclone…"
-            curl -fsSL https://rclone.org/install.sh | bash >/dev/null
-          fi
-
-          mkdir -p /var/backups/atul && chmod 700 /var/backups/atul
-
-          # 00:30 de Argentina = 3:30 UTC. El servidor corre en UTC.
-          LINEA="30 3 * * * $APP_DIR/scripts/backup.sh >> /var/log/atul-backup.log 2>&1"
-          if ! crontab -l 2>/dev/null | grep -qF "$APP_DIR/scripts/backup.sh"; then
-            (crontab -l 2>/dev/null; echo "$LINEA") | crontab -
-            echo "cron del backup instalado"
-          fi
-
-          echo "rclone: $(rclone version | head -1)"
-          echo "cron:   $(crontab -l 2>/dev/null | grep backup.sh || echo 'NO INSTALADO')"
-          REMOTE
-
       # Se mira la salud del contenedor y no la URL pública: el chequeo tiene que
       # valer aunque el DNS o el certificado todavía no estén listos.
       - name: Verificar que la app quedó sana
@@ -144,4 +118,44 @@ jobs:
           echo "La app nunca llegó a healthy"
           docker compose logs --tail 60 app
           exit 1
+          REMOTE
+
+      # Va DESPUÉS del chequeo de salud y no puede voltear el deploy.
+      #
+      # Estaba antes, y con `set -e` el instalador de rclone —que salió con
+      # código 1 aunque instaló bien— se llevó puesto el deploy entero y, peor,
+      # salteó la verificación de que la app había quedado sana. Las copias son
+      # importantes, pero nunca más que la tienda andando: si esto falla, el
+      # deploy sigue y el paso queda marcado en amarillo.
+      - name: Asegurar las copias de seguridad
+        continue-on-error: true
+        run: |
+          ssh servidor "APP_DIR='$APP_DIR' bash -s" <<'REMOTE'
+          set -uo pipefail
+
+          # El instalador devuelve códigos propios —3 si ya estaba al día— y
+          # acá vimos que puede salir con 1 habiendo instalado bien. Lo que
+          # vale es si el binario quedó, no lo que dijo el script.
+          if ! command -v rclone >/dev/null; then
+            echo "instalando rclone…"
+            curl -fsSL https://rclone.org/install.sh | bash >/dev/null 2>&1 || true
+            hash -r
+          fi
+
+          if ! command -v rclone >/dev/null; then
+            echo "ERROR: rclone no quedó instalado. El backup va a guardar sólo en el servidor."
+            exit 1
+          fi
+
+          mkdir -p /var/backups/atul && chmod 700 /var/backups/atul
+
+          # 00:30 de Argentina = 3:30 UTC. El servidor corre en UTC.
+          LINEA="30 3 * * * $APP_DIR/scripts/backup.sh >> /var/log/atul-backup.log 2>&1"
+          if ! crontab -l 2>/dev/null | grep -qF "$APP_DIR/scripts/backup.sh"; then
+            (crontab -l 2>/dev/null; echo "$LINEA") | crontab -
+            echo "cron del backup instalado"
+          fi
+
+          echo "rclone: $(rclone version 2>/dev/null | head -1)"
+          echo "cron:   $(crontab -l 2>/dev/null | grep backup.sh || echo 'NO INSTALADO')"
           REMOTE
