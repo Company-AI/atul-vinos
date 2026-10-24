@@ -33,10 +33,19 @@ export function useCarrusel({
   cantidad,
   autoplaySegundos,
   autoplay = true,
+  pausarAlPasarElMouse = true,
 }: {
   cantidad: number;
   autoplaySegundos: number;
   autoplay?: boolean;
+  /*
+    Frenar cuando el cursor pasa por encima tiene sentido en una banda
+    chica, que alguien puede estar leyendo. En un hero a pantalla completa
+    no: el cursor está encima casi siempre y el carrusel queda congelado
+    sin que nadie lo haya pedido. El cliente lo reportó como "la foto no
+    se mueve", y era esto.
+  */
+  pausarAlPasarElMouse?: boolean;
 }) {
   const rielRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<number | null>(null);
@@ -162,16 +171,25 @@ export function useCarrusel({
     };
 
     arrancar();
-    riel.addEventListener("mouseenter", frenar);
-    riel.addEventListener("mouseleave", arrancar);
+
+    /*
+      El foco SÍ frena siempre, con mouse o sin él: quien llegó navegando con
+      el teclado está leyendo esa pantalla y moverla bajo sus pies le hace
+      perder el lugar. Eso, más los puntitos para elegir a mano y el respeto
+      por "reducir movimiento", alcanzan para poder detenerlo.
+    */
     riel.addEventListener("focusin", frenar);
+    if (pausarAlPasarElMouse) {
+      riel.addEventListener("mouseenter", frenar);
+      riel.addEventListener("mouseleave", arrancar);
+    }
     return () => {
       frenar();
+      riel.removeEventListener("focusin", frenar);
       riel.removeEventListener("mouseenter", frenar);
       riel.removeEventListener("mouseleave", arrancar);
-      riel.removeEventListener("focusin", frenar);
     };
-  }, [varios, autoplay, autoplaySegundos, cantidad, interactuado, irA]);
+  }, [varios, autoplay, autoplaySegundos, cantidad, interactuado, irA, pausarAlPasarElMouse]);
 
   useEffect(() => cortar, [cortar]);
 
