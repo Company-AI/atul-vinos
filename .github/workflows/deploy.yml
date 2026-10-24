@@ -74,6 +74,10 @@ jobs:
             ENVIOPACK_SECRET_KEY=${{ secrets.ENVIOPACK_SECRET_KEY }}
             ENVIOPACK_DIRECCION_ENVIO=${{ vars.ENVIOPACK_DIRECCION_ENVIO }}
             ENVIOPACK_WEBHOOK_SECRET=${{ secrets.ENVIOPACK_WEBHOOK_SECRET }}
+            B2_KEY_ID=${{ secrets.B2_KEY_ID }}
+            B2_APP_KEY=${{ secrets.B2_APP_KEY }}
+            B2_BUCKET=${{ vars.B2_BUCKET }}
+            BACKUP_WEBHOOK=${{ secrets.BACKUP_WEBHOOK }}
         run: |
           printf '%s' "$DEPLOY_ENV" | ssh servidor \
             "umask 077 && mkdir -p '$APP_DIR/deploy' && cat > '$APP_DIR/deploy/.env.production'"
@@ -94,6 +98,32 @@ jobs:
 
           echo "--- estado ---"
           docker compose ps
+          REMOTE
+
+      # El backup se instala desde acá y no a mano en el servidor: un paso manual
+      # es un paso que alguien no repite cuando hay que rearmar el VPS. Es
+      # idempotente, así que correrlo en cada deploy no molesta.
+      - name: Asegurar las copias de seguridad
+        run: |
+          ssh servidor "APP_DIR='$APP_DIR' bash -s" <<'REMOTE'
+          set -euo pipefail
+
+          if ! command -v rclone >/dev/null; then
+            echo "instalando rclone…"
+            curl -fsSL https://rclone.org/install.sh | bash >/dev/null
+          fi
+
+          mkdir -p /var/backups/atul && chmod 700 /var/backups/atul
+
+          # 00:30 de Argentina = 3:30 UTC. El servidor corre en UTC.
+          LINEA="30 3 * * * $APP_DIR/scripts/backup.sh >> /var/log/atul-backup.log 2>&1"
+          if ! crontab -l 2>/dev/null | grep -qF "$APP_DIR/scripts/backup.sh"; then
+            (crontab -l 2>/dev/null; echo "$LINEA") | crontab -
+            echo "cron del backup instalado"
+          fi
+
+          echo "rclone: $(rclone version | head -1)"
+          echo "cron:   $(crontab -l 2>/dev/null | grep backup.sh || echo 'NO INSTALADO')"
           REMOTE
 
       # Se mira la salud del contenedor y no la URL pública: el chequeo tiene que
