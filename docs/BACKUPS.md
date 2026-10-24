@@ -24,6 +24,13 @@ falta, crea `/var/backups/atul` y agrega la línea al cron si no está. Es
 idempotente, así que correrlo mil veces no cambia nada — y si algún día hay
 que rearmar el VPS, sale solo con el primer deploy.
 
+Ese paso va **al final del deploy y no puede voltearlo**. La primera versión
+iba antes del chequeo de salud y con `set -e`: el instalador de rclone salió
+con código 1 habiendo instalado bien, y se llevó puesto el deploy entero
+además de saltear la verificación de que la app había quedado sana. Las
+copias importan, pero nunca más que la tienda andando. Si el paso falla, el
+deploy sigue y queda marcado en amarillo.
+
 Se guardan **14 días** de dumps.
 
 ## Dónde quedan
