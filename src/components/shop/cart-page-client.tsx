@@ -186,6 +186,15 @@ export function CartPageClient({
               </div>
             )}
 
+            {pricing.quantityDiscountCents > 0 && (
+              <div className="flex justify-between">
+                <dt className="text-stone-500">Por llevar {cart.bottleCount} botellas</dt>
+                <dd className="tabular text-success-500">
+                  −{formatARS(pricing.quantityDiscountCents / 100)}
+                </dd>
+              </div>
+            )}
+
             <div className="flex justify-between">
               <dt className="text-stone-500">Envío</dt>
               <dd className="tabular text-stone-500">
