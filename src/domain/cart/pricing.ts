@@ -26,12 +26,28 @@ export type PricingInput = {
     productos, no sobre el envío: el banco no abarata el flete.
   */
   transferDiscountPercent?: number;
+  /*
+    Descuento por llevarse varias botellas. Cuenta BOTELLAS y no líneas del
+    carrito: un box de seis son seis botellas, no una. Contar líneas dejaría
+    afuera justo al que compra un box, que es el que más lleva.
+  */
+  quantityDiscount?: {
+    percent: number;
+    minBottles: number;
+    /** Si sólo corre en la primera compra de esa persona. */
+    firstPurchaseOnly: boolean;
+  } | null;
+  /** Botellas del pedido, con los box ya expandidos a su contenido. */
+  bottles?: number;
+  /** Si quien compra nunca completó un pedido. */
+  isFirstPurchase?: boolean;
 };
 
 export type PricingResult = {
   subtotalCents: number;
   memberDiscountCents: number;
   couponDiscountCents: number;
+  quantityDiscountCents: number;
   transferDiscountCents: number;
   discountTotalCents: number;
   shippingCents: number;
@@ -66,12 +82,34 @@ export function calculatePricing(input: PricingInput): PricingResult {
     quedar por debajo de lo que cuesta la mercadería.
   */
   const afterCoupon = afterMember - couponDiscountCents;
+
+  /*
+    Descuento por cantidad, antes del de transferencia y sobre lo que quedó.
+    Los dos se suman —lo pidió el cliente— pero cada uno sobre el saldo del
+    anterior, no sobre el precio de lista: con 10% y 20% el total es 28% y no
+    30%. Sumarlos en crudo descontaría de más sobre una base que ya bajó.
+  */
+  const quantity = input.quantityDiscount;
+  const alcanzaLaCantidad =
+    !!quantity &&
+    quantity.percent > 0 &&
+    quantity.minBottles > 0 &&
+    (input.bottles ?? 0) >= quantity.minBottles;
+  const habilitadoPorCompra =
+    !quantity?.firstPurchaseOnly || input.isFirstPurchase === true;
+
+  const quantityDiscountCents =
+    alcanzaLaCantidad && habilitadoPorCompra
+      ? percentOfCents(afterCoupon, quantity.percent)
+      : 0;
+
+  const afterQuantity = afterCoupon - quantityDiscountCents;
   const transferDiscountCents = input.transferDiscountPercent
-    ? percentOfCents(afterCoupon, input.transferDiscountPercent)
+    ? percentOfCents(afterQuantity, input.transferDiscountPercent)
     : 0;
 
   const discountTotalCents =
-    memberDiscountCents + couponDiscountCents + transferDiscountCents;
+    memberDiscountCents + couponDiscountCents + quantityDiscountCents + transferDiscountCents;
   const netCents = subtotalCents - discountTotalCents;
 
   let shippingCents = Math.max(0, input.shippingCents ?? 0);
@@ -87,7 +125,8 @@ export function calculatePricing(input: PricingInput): PricingResult {
     input.freeShippingFromCents !== null &&
     input.freeShippingFromCents !== undefined &&
     /*
-      El umbral se mide ANTES del descuento por transferencia. Si se midiera
+      El umbral se mide ANTES de los descuentos por cantidad y por
+      transferencia. Si se midiera
       después, un carrito apenas arriba del mínimo perdería el envío gratis
       justo por elegir transferencia: ahorraría el 10% de la mercadería y
       pagaría el flete entero. Además es lo que ya cotizó el transportista,
@@ -105,6 +144,7 @@ export function calculatePricing(input: PricingInput): PricingResult {
     subtotalCents,
     memberDiscountCents,
     couponDiscountCents,
+    quantityDiscountCents,
     transferDiscountCents,
     discountTotalCents,
     shippingCents,
@@ -126,4 +166,27 @@ export function amountMissingForFreeShipping(
   if (!freeShippingFromCents) return null;
   const missing = freeShippingFromCents - netCents;
   return missing > 0 ? missing : null;
+}
+
+/**
+ * La regla de descuento por cantidad, leída de los ajustes.
+ *
+ * Existe para que los tres lugares que calculan precios —el carrito, el
+ * checkout y la creación del pedido— la armen igual. Si cada uno la leyera
+ * por su cuenta, alcanzaría con que uno se olvidara de un campo para que el
+ * carrito muestre un total y el pedido cobre otro.
+ */
+export function reglaDeCantidad(payments: {
+  quantityDiscountPercent: number;
+  quantityDiscountMinBottles: number;
+  quantityDiscountFirstPurchaseOnly: boolean;
+}): PricingInput["quantityDiscount"] {
+  if (payments.quantityDiscountPercent <= 0 || payments.quantityDiscountMinBottles <= 0) {
+    return null;
+  }
+  return {
+    percent: payments.quantityDiscountPercent,
+    minBottles: payments.quantityDiscountMinBottles,
+    firstPurchaseOnly: payments.quantityDiscountFirstPurchaseOnly,
+  };
 }

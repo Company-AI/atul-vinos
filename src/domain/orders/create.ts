@@ -3,7 +3,8 @@ import { prisma } from "@/infra/db/prisma";
 import { getMemberBenefits } from "@/domain/promotions/club-benefits";
 import { validateCoupon } from "@/domain/promotions/coupons";
 import { esPrimeraCompra } from "@/domain/promotions/primera-compra";
-import { calculatePricing } from "@/domain/cart/pricing";
+import { calculatePricing, reglaDeCantidad } from "@/domain/cart/pricing";
+import { estimateBottles } from "@/domain/shipping/service";
 import { getAvailabilityMap } from "@/domain/inventory/availability";
 import { getSettings } from "@/domain/settings/service";
 import { err, ok, type Result } from "@/lib/result";
@@ -116,6 +117,24 @@ export async function createOrderFromCart(
     (acc, i) => acc + toCents(i.product.price) * i.quantity, 0,
   );
 
+  /*
+    Se calcula una sola vez y se usa para el cupón y para el descuento por
+    cantidad: las dos reglas preguntan lo mismo y consultar dos veces abriría
+    la puerta a que una diga que sí y la otra que no.
+  */
+  const primeraCompra = await esPrimeraCompra({
+    userId: input.userId,
+    email: input.contact.email,
+  });
+
+  const botellas = estimateBottles(
+    cart.items.map((i) => ({
+      quantity: i.quantity,
+      kind: i.product.kind,
+      packComponents: i.product.packItems.map((pi) => ({ quantity: pi.quantity })),
+    })),
+  );
+
   // Revalidación del cupón en el momento de crear el pedido.
   let couponData: { id: string; code: string; discountCents: number; freeShipping: boolean } | null = null;
   if (cart.coupon) {
@@ -126,10 +145,7 @@ export async function createOrderFromCart(
       isClubMember: member.isMember,
       productIds: cart.items.map((i) => i.productId),
       categoryIds: cart.items.map((i) => i.product.categoryId).filter((c): c is string => !!c),
-      isFirstPurchase: await esPrimeraCompra({
-        userId: input.userId,
-        email: input.contact.email,
-      }),
+      isFirstPurchase: primeraCompra,
     });
 
     if (validation.ok) {
@@ -170,6 +186,9 @@ export async function createOrderFromCart(
       ciento y el sitio lo cobraría.
     */
     transferDiscountPercent: esTransferencia ? settings.payments.transferDiscountPercent : 0,
+    quantityDiscount: reglaDeCantidad(settings.payments),
+    bottles: botellas,
+    isFirstPurchase: primeraCompra,
   });
 
   const idempotencyKey = `order-${cart.id}-${pricing.totalCents}-${Date.now()}`;

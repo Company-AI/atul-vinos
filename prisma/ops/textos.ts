@@ -27,6 +27,36 @@ const CAMBIOS: { seccion: string; de: string; a: string; porque: string }[] = [
     a: "Box de 3 y de 6 vinos",
     porque: "Los box pasan a ser de 3 y de 6.",
   },
+  {
+    seccion: "home.banner",
+    de: "Box de 3 y de 6 vinos",
+    a: "Box de 6 vinos",
+    porque: "Al final sale sólo el de 6.",
+  },
+  {
+    seccion: "home.banner",
+    de: "Gratis en Río Cuarto y la zona.",
+    a: "Gratis en Río Cuarto.",
+    porque: "No prometer la zona: un pedido chico de afuera no conviene llevarlo gratis.",
+  },
+  {
+    seccion: "home.banner",
+    de: "Y 10% off si pagás por transferencia.",
+    a: "Y 20% off si pagás por transferencia.",
+    porque: "El descuento configurado ya es 20%; el cartel decía 10%.",
+  },
+  {
+    seccion: "site.beneficios",
+    de: "10% off por transferencia",
+    a: "20% off por transferencia",
+    porque: "Lo mismo en la franja de arriba.",
+  },
+  {
+    seccion: "home.destacados",
+    de: "Entregamos en Río Cuarto, Las Higueras y Holmberg sin costo de envío.",
+    a: "Entregamos en Río Cuarto sin costo de envío.",
+    porque: "Mismo criterio que la franja.",
+  },
 ];
 
 async function main() {

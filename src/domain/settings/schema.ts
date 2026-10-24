@@ -168,6 +168,22 @@ export const paymentSettings = z.object({
   transferDiscountPercent: z.number().min(0).max(90).default(10),
 
   /*
+    Descuento por llevarse varias botellas. Cuenta BOTELLAS y no productos: un
+    box de seis son seis botellas. En cero no se aplica ni se anuncia.
+
+    Se suma al de transferencia, cada uno sobre lo que quedó del anterior: con
+    10 y 20 el total es 28% y no 30%.
+  */
+  quantityDiscountPercent: z.number().min(0).max(90).default(0),
+  quantityDiscountMinBottles: z.number().int().min(0).max(120).default(6),
+  /*
+    Encendido, sólo corre en la primera compra de esa persona. Apagado —como
+    lo pidió el cliente— corre siempre: quien se lleva seis botellas tiene el
+    descuento, sea su primera compra o la décima.
+  */
+  quantityDiscountFirstPurchaseOnly: z.boolean().default(false),
+
+  /*
     Pago por transferencia. Apagado por defecto: mientras no estén los datos
     de la cuenta, ofrecerlo sería mandar a alguien a transferir sin decirle
     a dónde. La pantalla de pago sólo lo muestra si está encendido y hay al
