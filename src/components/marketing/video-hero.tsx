@@ -165,6 +165,8 @@ export function VideoHero({
   const carrusel = useCarrusel({
     cantidad: pantallas.length,
     autoplaySegundos: data.autoplaySeconds,
+    // El hero ocupa casi toda la pantalla: el cursor está encima casi siempre.
+    pausarAlPasarElMouse: false,
   });
   const { rielRef, activo, varios, alArrastrar, alElegir } = carrusel;
 
