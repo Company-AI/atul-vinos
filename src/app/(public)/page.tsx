@@ -232,14 +232,16 @@ export default async function HomePage() {
         anterior —560px de ancho montada sobre la foto— entraba uno. Con la
         foto al lado, el texto tiene su propia columna y respira.
 
-        La foto es provisoria: va una de Marian y Maxi, que ellos van a pasar.
+        La foto es la que mandaron ellos, en un viñedo de Mendoza. El recorte
+        es vertical y centrado: en el original las caras quedan en el medio,
+        así que object-cover saca cielo arriba y pedregullo abajo sin tocarlas.
       */}
       <section className="mt-20 border-t border-linen-200 bg-bone-pure">
         <div className="mx-auto grid max-w-[1600px] items-center gap-10 px-gutter py-16 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-16 lg:py-24">
           <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-linen-100 lg:aspect-[4/4.6]">
             <Image
-              src="/media/scenes/mendoza-vineyard-house.jpg"
-              alt="Casa entre viñedos en Mendoza"
+              src="/media/equipo/marian-y-maxi.jpg"
+              alt="Marian y Maxi entre las hileras de un viñedo"
               fill
               sizes="(max-width: 1024px) 100vw, 40vw"
               className="object-cover"
