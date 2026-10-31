@@ -67,14 +67,14 @@ const CAMBIOS: { seccion: string; de: string; a: string; porque: string }[] = [
   {
     seccion: "home.hero",
     de: "/media/scenes/sparkling.jpg",
-    a: "/media/scenes/barrels.jpg",
+    a: "/media/scenes/grapes-cluster.jpg",
     porque:
-      "El segundo slide eran copas de champagne sobre negro: foto de brindis de fin de año, no de bodega, y recortada al hero la mitad izquierda quedaba en negro puro. Va una pared de barricas, que tiene profundidad y aguanta el texto blanco.",
+      "El segundo slide eran copas de champagne sobre negro: foto de brindis de fin de año, no de bodega, y recortada al hero la mitad izquierda quedaba en negro puro. Va un racimo en la planta, que lo eligió el cliente: el fondo detrás del texto queda oscuro y desenfocado, y las hojas claras caen a la derecha.",
   },
   {
     seccion: "home.hero",
     de: "Dos copas de vino claro brindando",
-    a: "Pared de barricas de roble apiladas en una bodega",
+    a: "Racimo de uvas tintas madurando en la planta",
     porque: "El alt tiene que describir la foto nueva.",
   },
 ];
