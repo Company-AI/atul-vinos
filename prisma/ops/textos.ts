@@ -64,6 +64,19 @@ const CAMBIOS: { seccion: string; de: string; a: string; porque: string }[] = [
     porque:
       'El pie repetía la etiqueta "Quiénes somos" apuntando a /historia, que es otra página y no los muestra a ellos. Ahora lleva a la misma sección de la home que el menú.',
   },
+  {
+    seccion: "home.hero",
+    de: "/media/scenes/sparkling.jpg",
+    a: "/media/scenes/barrels.jpg",
+    porque:
+      "El segundo slide eran copas de champagne sobre negro: foto de brindis de fin de año, no de bodega, y recortada al hero la mitad izquierda quedaba en negro puro. Va una pared de barricas, que tiene profundidad y aguanta el texto blanco.",
+  },
+  {
+    seccion: "home.hero",
+    de: "Dos copas de vino claro brindando",
+    a: "Pared de barricas de roble apiladas en una bodega",
+    porque: "El alt tiene que describir la foto nueva.",
+  },
 ];
 
 async function main() {
