@@ -7,19 +7,77 @@
  * ninguna otra tabla.
  *
  *   npx tsx scripts/reseed-content.ts
+ *
+ * ──────────────────────────────────────────────────────────────────────────
+ * Esto borra. Es para iterar diseño en tu base local, no para producción.
+ *
+ * Borra las secciones de esas páginas que no estén declaradas acá, y borra
+ * TODOS los banners antes de recrear los del seed. Contra una base con
+ * contenido real eso se lleva puesto lo que el cliente cargó desde el admin:
+ * un banner de temporada no está en el seed y no vuelve solo.
+ *
+ * Por eso antes de tocar nada se fija si hay filas que no salieron del seed.
+ * Si encuentra alguna, no hace nada y las lista. Para correrlo igual, sabiendo
+ * lo que se pierde:
+ *
+ *   REEMPLAZAR_CONTENIDO=si npx tsx scripts/reseed-content.ts
+ *
+ * Sobre una base que sólo tiene lo del seed no cambia nada: no hay filas
+ * ajenas que proteger y corre derecho.
+ *
+ * Para apagar una sección en producción no se usa este script: va un script
+ * en prisma/ops/, que toca sólo lo suyo y respeta lo editado a mano.
+ * ──────────────────────────────────────────────────────────────────────────
  */
 import { PrismaClient } from "@prisma/client";
 import { BANNERS, CMS_SECTIONS } from "../prisma/seed/content";
 
 const prisma = new PrismaClient();
 
+const FORZAR = process.env.REEMPLAZAR_CONTENIDO === "si";
+
 async function main() {
   const actor = "admin@atulwines.com";
   const keys = CMS_SECTIONS.map((s) => s.key);
+  const paginas = [...new Set(CMS_SECTIONS.map((s) => s.page))];
+
+  /*
+    Qué se perdería si siguiéramos. Las secciones son las de estas páginas que
+    el seed ya no declara. Los banners van por `message` porque la tabla no
+    tiene una clave estable: si alguien le editó el texto a uno del seed desde
+    el admin, acá figura como ajeno, que es el lado seguro para equivocarse.
+  */
+  const mensajesDelSeed = new Set(BANNERS.map((b) => b.message));
+  const [seccionesAjenas, bannersAjenos] = await Promise.all([
+    prisma.cmsSection.findMany({
+      where: { page: { in: paginas }, key: { notIn: keys } },
+      select: { key: true, title: true },
+    }),
+    prisma.banner
+      .findMany({ select: { message: true } })
+      .then((filas) => filas.filter((b) => !mensajesDelSeed.has(b.message))),
+  ]);
+
+  if (seccionesAjenas.length > 0 || bannersAjenos.length > 0) {
+    console.error("Esta base tiene contenido que no salió del seed y se perdería:\n");
+    for (const s of seccionesAjenas) console.error(`  sección  ${s.key}  ${s.title ?? ""}`);
+    for (const b of bannersAjenos) console.error(`  banner   "${b.message}"`);
+
+    if (!FORZAR) {
+      console.error("\nNo se tocó nada.");
+      console.error("Si es tu base local y querés pisarlo igual:");
+      console.error("  REEMPLAZAR_CONTENIDO=si npx tsx scripts/reseed-content.ts");
+      console.error("\nSi es producción, lo que buscás es un script en prisma/ops/.");
+      process.exitCode = 1;
+      return;
+    }
+
+    console.error("\nREEMPLAZAR_CONTENIDO=si: se borra igual.\n");
+  }
 
   // Las secciones que dejaron de estar declaradas se van con el refresco.
   const removed = await prisma.cmsSection.deleteMany({
-    where: { page: { in: [...new Set(CMS_SECTIONS.map((s) => s.page))] }, key: { notIn: keys } },
+    where: { page: { in: paginas }, key: { notIn: keys } },
   });
 
   for (const section of CMS_SECTIONS) {
