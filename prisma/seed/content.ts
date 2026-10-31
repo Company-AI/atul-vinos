@@ -571,6 +571,54 @@ export const CMS_SECTIONS = [
     },
   },
   {
+    key: "quienes-somos.bodegas",
+    page: "quienes-somos",
+    type: "showcase",
+    title: "Bodegas que representamos",
+    sortOrder: 60,
+    /*
+      Apagada a pedido del cliente ("sacar las bodegas que figuran ahí, que no
+      las trabajamos"). Se deja cargada en vez de borrarla, igual que
+      quienes-somos.lines.
+
+      Ojo si alguien la vuelve a prender: los items de acá abajo son los del
+      catálogo de ejemplo y no son clientes de Atul. Los tres "Ver la línea"
+      apuntan a /vinos?bodega=... sin un vino detrás, así que en producción
+      caían en "No encontramos vinos con esos filtros". Antes de publicarla hay
+      que cambiarle los items por bodegas reales. Las que sí trabajan se
+      muestran con su logo en la home (BODEGAS, en app/(public)/page.tsx).
+    */
+    isActive: false,
+    data: {
+      eyebrow: "Con quiénes trabajamos",
+      title: "Pocas bodegas, relación directa.",
+      body:
+        "Preferimos representar pocas casas por región y conocerlas bien. Compramos directo, sin intermediarios, y eso es lo que nos permite sostener el precio y la disponibilidad en todo el país.",
+      cta: { label: "Ver todas las etiquetas", href: "/vinos" },
+      tone: "light",
+      items: [
+        {
+          title: "Rutini Wines",
+          subtitle: "Tupungato, Valle de Uco · desde 1885",
+          imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
+          href: "/vinos?bodega=rutini-wines",
+        },
+        {
+          title: "Bodega Norton",
+          subtitle: "Perdriel, Luján de Cuyo · desde 1895",
+          imageUrl: "/media/scenes/potrerillos-andes.jpg",
+          href: "/vinos?bodega=bodega-norton",
+        },
+        {
+          title: "Trumpeter",
+          subtitle: "Luján de Cuyo · la línea de todos los días",
+          imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
+          href: "/vinos?bodega=trumpeter",
+        },
+      ],
+    },
+  },
+  {
     key: "home.box",
     page: "home",
     type: "showcase",
