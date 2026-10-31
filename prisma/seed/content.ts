@@ -571,41 +571,6 @@ export const CMS_SECTIONS = [
     },
   },
   {
-    key: "quienes-somos.bodegas",
-    page: "quienes-somos",
-    type: "showcase",
-    title: "Bodegas que representamos",
-    sortOrder: 60,
-    data: {
-      eyebrow: "Con quiénes trabajamos",
-      title: "Pocas bodegas, relación directa.",
-      body:
-        "Preferimos representar pocas casas por región y conocerlas bien. Compramos directo, sin intermediarios, y eso es lo que nos permite sostener el precio y la disponibilidad en todo el país.",
-      cta: { label: "Ver todas las etiquetas", href: "/vinos" },
-      tone: "light",
-      items: [
-        {
-          title: "Rutini Wines",
-          subtitle: "Tupungato, Valle de Uco · desde 1885",
-          imageUrl: "/media/scenes/mendoza-vineyard-rows.jpg",
-          href: "/vinos?bodega=rutini-wines",
-        },
-        {
-          title: "Bodega Norton",
-          subtitle: "Perdriel, Luján de Cuyo · desde 1895",
-          imageUrl: "/media/scenes/potrerillos-andes.jpg",
-          href: "/vinos?bodega=bodega-norton",
-        },
-        {
-          title: "Trumpeter",
-          subtitle: "Luján de Cuyo · la línea de todos los días",
-          imageUrl: "/media/scenes/mendoza-vineyard-house.jpg",
-          href: "/vinos?bodega=trumpeter",
-        },
-      ],
-    },
-  },
-  {
     key: "home.box",
     page: "home",
     type: "showcase",
@@ -649,6 +614,17 @@ export const CMS_SECTIONS = [
     type: "video_hero",
     title: "Hero de Quiénes somos",
     sortOrder: 5,
+    /*
+      Apagado: la página ahora abre con la foto y la presentación de Marian y
+      Maxi, que es lo que el cliente esperaba encontrar al entrar desde el
+      menú. Con el hero prendido quedaban dos aperturas pegadas, y además el
+      texto dice casi lo mismo que la declaración que viene justo abajo ("Un
+      catálogo corto no es una limitación").
+
+      Se deja cargado y no se borra: el copy es bueno y sirve si algún día la
+      página vuelve a abrir con video.
+    */
+    isActive: false,
     data: {
       eyebrow: "Quiénes somos",
       title: "No hacemos el vino.",

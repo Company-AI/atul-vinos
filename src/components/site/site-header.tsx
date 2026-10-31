@@ -17,8 +17,13 @@ export type NavItem = { label: string; href: string };
   Rutas cuyo hero es oscuro y a sangre: ahí el header nace transparente. La
   home salió de la lista al pasar a hero partido, que arriba es fondo claro:
   con el header transparente usaba el logotipo crema y quedaba invisible.
+
+  /quienes-somos salió por lo mismo: ahora abre con la foto de Marian y Maxi
+  sobre fondo claro, no con el hero de video. La lista quedó vacía y se deja
+  igual —no es código muerto mientras el header siga soportando el modo— pero
+  si aparece otra ruta así, va acá.
 */
-const OVERLAY_ROUTES = ["/quienes-somos"];
+const OVERLAY_ROUTES: string[] = [];
 
 export function SiteHeader({
   nav,
