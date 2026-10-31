@@ -10,16 +10,20 @@
  *
  *   1. apagar el hero de video, para que la página abra con la presentación y
  *      no con dos aperturas pegadas;
- *   2. borrar la sección de bodegas.
+ *   2. apagar la sección de bodegas.
  *
- * La sección de bodegas se borra y no se apaga, al revés que el hero. No es una
- * sección que el cliente no quiera mostrar: son datos equivocados. Listaba
- * Rutini, Norton y Trumpeter, que vienen del catálogo de ejemplo y no son
- * clientes de Atul, y los tres "Ver la línea" apuntaban a /vinos?bodega=... sin
- * un solo vino detrás: caían en "No encontramos vinos con esos filtros".
- * Dejarla apagada con los datos viejos adentro es dejar la trampa armada para
- * el día que alguien la vuelva a prender. Las bodegas reales ya se muestran con
- * su logo en la home (LogoStrip).
+ * Las dos se apagan. Nada se borra: este script no tiene un solo delete, y es a
+ * propósito. Una fila de CmsSection es contenido que alguien escribió, y
+ * recuperarla después de un deleteMany es ir a buscarla a un backup.
+ *
+ * Igual conviene saber por qué la de bodegas se apaga, porque no es el mismo
+ * caso que el hero. No es contenido que el cliente no quiera mostrar ahora: son
+ * datos equivocados. Listaba Rutini, Norton y Trumpeter, que vienen del catálogo
+ * de ejemplo y no son clientes de Atul, y los tres "Ver la línea" apuntaban a
+ * /vinos?bodega=... sin un solo vino detrás: caían en "No encontramos vinos con
+ * esos filtros". Así que si algún día alguien la vuelve a prender desde el
+ * admin, lo primero es cambiarle los items, no publicarla como está. Las
+ * bodegas reales ya se muestran con su logo en la home (LogoStrip).
  *
  * Es idempotente: la segunda corrida no encuentra nada que hacer.
  *
@@ -52,15 +56,21 @@ async function main() {
 
   const bodegas = await prisma.cmsSection.findUnique({ where: { key: "quienes-somos.bodegas" } });
   if (!bodegas) {
-    console.log("quienes-somos.bodegas: no existe, nada que borrar");
+    console.log("quienes-somos.bodegas: no existe, se saltea");
+  } else if (!bodegas.isActive) {
+    console.log("quienes-somos.bodegas: ya estaba apagada");
   } else {
     /*
-      Antes de borrar, se deja el contenido en el log. Es la única copia que va
-      a quedar si después resulta que algo de ahí servía.
+      Se deja el contenido en el log igual que si se borrara. No hace falta para
+      recuperarla —la fila queda—, pero sirve para ver desde el run qué estaba
+      publicado el día que se apagó, sin entrar a la base.
     */
-    console.log(`quienes-somos.bodegas: se borra. Contenido: ${JSON.stringify(bodegas.data)}`);
-    await prisma.cmsSection.delete({ where: { key: "quienes-somos.bodegas" } });
-    console.log("quienes-somos.bodegas: borrada");
+    console.log(`quienes-somos.bodegas: se apaga. Contenido: ${JSON.stringify(bodegas.data)}`);
+    await prisma.cmsSection.update({
+      where: { key: "quienes-somos.bodegas" },
+      data: { isActive: false, updatedBy: "ops/quienes-somos" },
+    });
+    console.log("quienes-somos.bodegas: apagada — deja de aparecer en la página");
   }
 }
 
