@@ -57,6 +57,13 @@ const CAMBIOS: { seccion: string; de: string; a: string; porque: string }[] = [
     a: "Entregamos en Río Cuarto sin costo de envío.",
     porque: "Mismo criterio que la franja.",
   },
+  {
+    seccion: "footer.main",
+    de: '"href":"/historia"',
+    a: '"href":"/#quienes-somos"',
+    porque:
+      'El pie repetía la etiqueta "Quiénes somos" apuntando a /historia, que es otra página y no los muestra a ellos. Ahora lleva a la misma sección de la home que el menú.',
+  },
 ];
 
 async function main() {

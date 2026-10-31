@@ -916,7 +916,7 @@ export const CMS_SECTIONS = [
         {
           title: "Nosotros",
           links: [
-            { label: "Quiénes somos", href: "/historia" },
+            { label: "Quiénes somos", href: "/#quienes-somos" },
             { label: "Historias", href: "/historias" },
             { label: "Contacto", href: "/contacto" },
           ],
