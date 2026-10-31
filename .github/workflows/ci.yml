@@ -1,0 +1,101 @@
+# Verifica cada pull request antes de que entre a main.
+#
+# Hasta ahora no había nada: los únicos checks verdes que aparecían en un PR
+# eran los de Netlify y Vercel, que publican un preview y no corren ni los
+# tipos ni los tests. Peor que no tener checks, porque el PR se ve verde.
+#
+# Lo que importa que pase antes de mergear:
+#
+#   tipos      tsc sobre todo el repo, que es lo que más se rompe al tocar el
+#              esquema de Prisma: una columna nueva no aparece sola en el
+#              cliente generado y el error sale lejos de donde se hizo.
+#   tests      166 pruebas contra una base de verdad —precios, cupones, stock,
+#              suscripciones, webhooks—. Necesitan Postgres, no mocks.
+#   build      el `next build` completo. Es el mismo comando que corre el
+#              Dockerfile en el deploy, así que si falla acá, el deploy a main
+#              también va a fallar, y es mejor enterarse en el PR.
+#
+# No hay un paso de lint aparte, pero `next build` corre ESLint por su cuenta:
+# va incluido justamente porque el build del deploy lo corre igual, y un error
+# de lint hoy voltea el deploy. Si se prefiere que el estilo no frene el CI, el
+# cambio es usar `npm run build:check`, que es el mismo build con --no-lint.
+#
+# El deploy sigue viviendo en deploy.yml y sólo dispara con push a main. Este
+# workflow no despliega nada.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Si llegan dos push seguidos al mismo PR, el primero se cancela: lo que
+# importa es si pasa la punta de la rama, no cada commit del camino. En main
+# no se cancela nada, para no perder el resultado de un merge.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      # Misma versión que el VPS (deploy/docker-compose.yml), para que una
+      # diferencia de Postgres no aparezca recién en producción.
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bodega_test
+        ports:
+          - 5432:5432
+        # Sin el healthcheck, los tests arrancan antes de que Postgres acepte
+        # conexiones y fallan por "connection refused" una vez cada tantas.
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bodega_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # tests/setup.ts corta si la URL no apunta a bodega_test: es la red que
+      # evita que una corrida de pruebas borre una base de desarrollo.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bodega_test?schema=public
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Igual que el Dockerfile (node:22-bookworm-slim).
+          node-version: 22
+          cache: npm
+
+      # postinstall corre `prisma generate`, así que el cliente queda al día
+      # con el esquema sin un paso aparte.
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Tipos
+        run: npm run typecheck
+
+      # migrate deploy y no migrate dev: aplica lo que ya está versionado y no
+      # intenta generar una migración nueva si encuentra una diferencia.
+      - name: Preparar la base de test
+        run: npx prisma migrate deploy
+
+      - name: Tests
+        run: npm test
+
+      # El build no necesita la base: todo lo público es dinámico porque el
+      # layout llama a getSession(), que lee cookies. Sí necesita la URL del
+      # sitio, que queda horneada en robots.txt y sitemap.xml.
+      - name: Build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL || 'https://www.atulvinos.com' }}
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
