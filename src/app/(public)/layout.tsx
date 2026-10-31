@@ -48,7 +48,13 @@ const NAV: SidebarItem[] = [
 ];
 
 const NAV_SECUNDARIA: SidebarItem[] = [
-  { label: "Quiénes somos", href: "/quienes-somos", icon: "nosotros" },
+  /*
+    Lleva a la sección de la home y no a la página aparte: lo pidió el
+    cliente. Lo que quieren mostrar —ellos dos, la foto, por qué vino— ya
+    está al final del inicio, y abrir otra página era hacer recorrer dos
+    veces lo mismo.
+  */
+  { label: "Quiénes somos", href: "/#quienes-somos", icon: "nosotros" },
   { label: "Contacto", href: "/contacto", icon: "contacto" },
 ];
 

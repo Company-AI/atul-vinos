@@ -224,7 +224,7 @@ export default async function HomePage() {
       */}
       <LogoStrip bodegas={BODEGAS} />
 
-      <QuienesSomosPresentacion />
+      <QuienesSomosPresentacion id="quienes-somos" />
 
       <div className="mx-auto flex max-w-[1600px] items-center gap-6 px-gutter py-20">
         <span aria-hidden className="h-px flex-1 bg-linen-300" />

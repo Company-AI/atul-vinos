@@ -76,11 +76,11 @@ export const CMS_SECTIONS = [
           ctaPrimary: { label: "Ver los rosados", href: "/vinos?tipo=ROSADO" },
           ctaSecondary: { label: "", href: "#" },
           media: {
-            imageUrl: "/media/scenes/sparkling.jpg",
-            imageAlt: "Dos copas de vino claro brindando",
+            imageUrl: "/media/scenes/grapes-cluster.jpg",
+            imageAlt: "Racimo de uvas tintas madurando en la planta",
             videoDesktopUrl: "",
             videoMobileUrl: "",
-            posterUrl: "/media/scenes/sparkling.jpg",
+            posterUrl: "/media/scenes/grapes-cluster.jpg",
           },
         },
       ],
@@ -916,7 +916,7 @@ export const CMS_SECTIONS = [
         {
           title: "Nosotros",
           links: [
-            { label: "Quiénes somos", href: "/historia" },
+            { label: "Quiénes somos", href: "/#quienes-somos" },
             { label: "Historias", href: "/historias" },
             { label: "Contacto", href: "/contacto" },
           ],

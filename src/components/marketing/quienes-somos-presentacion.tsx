@@ -19,10 +19,17 @@ import { ArrowRight } from "lucide-react";
   object-cover saca cielo arriba y pedregullo abajo sin tocarlas.
 */
 export function QuienesSomosPresentacion({
+  id,
   comoTitulo = false,
   conEnlace = true,
-  className = "mt-20 border-t border-linen-200 bg-bone-pure",
+  /*
+    scroll-mt deja aire para la cabecera, que es pegajosa: sin eso, al
+    llegar por el ancla el título queda tapado detrás de ella.
+  */
+  className = "mt-20 scroll-mt-24 border-t border-linen-200 bg-bone-pure",
 }: {
+  /** Ancla, para poder linkear a esta sección desde el menú. */
+  id?: string;
   /** En /quienes-somos encabeza la página, así que el h2 pasa a h1. */
   comoTitulo?: boolean;
   /** El enlace a /quienes-somos sobra cuando ya estás en /quienes-somos. */
@@ -32,7 +39,7 @@ export function QuienesSomosPresentacion({
   const Titulo = comoTitulo ? "h1" : "h2";
 
   return (
-    <section className={className}>
+    <section id={id} className={className}>
       <div className="mx-auto grid max-w-[1600px] items-center gap-10 px-gutter py-16 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-16 lg:py-24">
         <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-linen-100 lg:aspect-[4/4.6]">
           <Image
