@@ -24,6 +24,7 @@ on:
           - desactivar-cupon-de-bienvenida
           - cargar-datos-de-transferencia
           - ajustar-hero-y-box
+          - ordenar-quienes-somos
       # Sólo los usa "cargar-datos-de-transferencia". Se piden por parámetro y
       # no se guardan en el repositorio: son el nombre, el CUIT y el CBU de una
       # persona, y aunque se publiquen en el checkout, escribirlos en el código
@@ -80,6 +81,7 @@ jobs:
             desactivar-cupon-de-bienvenida)      echo "script=prisma/ops/cupon-de-bienvenida.ts desactivar" >> "$GITHUB_OUTPUT" ;;
             cargar-datos-de-transferencia)       echo "script=prisma/ops/datos-de-transferencia.ts" >> "$GITHUB_OUTPUT" ;;
             ajustar-hero-y-box)                  echo "script=prisma/ops/hero-y-box.ts" >> "$GITHUB_OUTPUT" ;;
+            ordenar-quienes-somos)               echo "script=prisma/ops/quienes-somos.ts" >> "$GITHUB_OUTPUT" ;;
             *) echo "Tarea desconocida."; exit 1 ;;
           esac
 
