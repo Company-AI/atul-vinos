@@ -6,6 +6,7 @@ import { getCartCount } from "@/domain/cart/service";
 import { getSession } from "@/infra/auth/session";
 import { PromoBar } from "@/components/site/promo-bar";
 import { SiteTopbar } from "@/components/site/site-topbar";
+import { ContadorDeVisitas } from "@/components/site/contador-de-visitas";
 import type { SidebarItem } from "@/components/site/site-sidebar";
 import { TrustBar } from "@/components/site/trust-bar";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -100,6 +101,9 @@ export default async function PublicLayout({ children }: { children: React.React
           navSecundaria={NAV_SECUNDARIA}
           tagline={TAGLINE}
         />
+
+        {/* No pinta nada: avisa cada página vista al contador del panel. */}
+        <ContadorDeVisitas />
 
         <main id="contenido" className="flex-1">
           {children}

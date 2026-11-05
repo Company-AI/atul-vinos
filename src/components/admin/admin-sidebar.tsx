@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
-  BarChart3, Box, Boxes, ClipboardList, FileText, LayoutDashboard, LogOut, Mail,
+  BarChart3,
+  Eye, Box, Boxes, ClipboardList, FileText, LayoutDashboard, LogOut, Mail,
   Megaphone, Menu, Package, Percent, ScrollText, Settings, ShieldCheck, ShoppingCart,
   Tags, Truck, Users, Wine, X,
 } from "lucide-react";
@@ -120,6 +121,7 @@ export function AdminSidebar({
       items: [
         { href: "/admin/pagos", label: "Pagos y webhooks", Icon: ScrollText, permission: "payments.view", badge: counters.failedPayments },
         { href: "/admin/reportes", label: "Reportes", Icon: BarChart3, permission: "reports.view" },
+        { href: "/admin/visitas", label: "Visitas", Icon: Eye, permission: "reports.view" },
         { href: "/admin/auditoria", label: "Auditoría", Icon: ShieldCheck, permission: "audit.view" },
         { href: "/admin/usuarios", label: "Usuarios y roles", Icon: Users, permission: "users.manage", oculto: true },
         { href: "/admin/configuracion", label: "Configuración", Icon: Settings, permission: "settings.view" },

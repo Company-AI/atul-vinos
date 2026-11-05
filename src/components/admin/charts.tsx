@@ -34,6 +34,8 @@ const seriesLabel = (name: unknown): string => {
   if (key === "signups") return "Altas";
   if (key === "cancellations") return "Bajas";
   if (key === "mrr") return "Cobrado";
+  if (key === "visitas") return "Visitas";
+  if (key === "personas") return "Personas";
   return key;
 };
 
@@ -184,6 +186,48 @@ export function RecurringRevenueChart({ data }: { data: SubscriptionFlowPoint[] 
           formatter={(value: ChartValue) => [currency.format(asNumber(value)), "Cobrado"]}
         />
         <Area type="monotone" dataKey="mrr" stroke={COLORS.club} strokeWidth={1.8} fill="url(#mrrFill)" />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
+
+/*
+  Visitas del sitio. Dos series porque son dos cosas distintas: "visitas" son
+  páginas abiertas y "personas" son visitantes distintos ese dia. La misma
+  persona mirando seis vinos es 1 persona y 7 visitas, y verlas juntas dice
+  más que cualquiera de las dos sola.
+*/
+export function VisitasChart({
+  data,
+}: {
+  data: { dia: string; visitas: number; personas: number }[];
+}) {
+  const points = data.map((p) => ({ ...p, label: dayLabel(p.dia) }));
+
+  return (
+    <ResponsiveContainer width="100%" height={240}>
+      <AreaChart data={points} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+        <defs>
+          <linearGradient id="visitasFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={COLORS.club} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={COLORS.club} stopOpacity={0.02} />
+          </linearGradient>
+          <linearGradient id="personasFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={COLORS.store} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={COLORS.store} stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid stroke={COLORS.grid} vertical={false} />
+        <XAxis dataKey="label" {...axisProps} />
+        <YAxis {...axisProps} allowDecimals={false} tickFormatter={(v) => compact.format(asNumber(v))} />
+        <Tooltip
+          contentStyle={tooltipStyle}
+          formatter={(value: ChartValue, name: unknown) => [asNumber(value).toLocaleString("es-AR"), seriesLabel(name)]}
+        />
+        <Legend formatter={(value) => seriesLabel(value)} iconType="circle" wrapperStyle={{ fontSize: 12 }} />
+        <Area type="monotone" dataKey="visitas" stroke={COLORS.club} fill="url(#visitasFill)" strokeWidth={2} />
+        <Area type="monotone" dataKey="personas" stroke={COLORS.store} fill="url(#personasFill)" strokeWidth={2} />
       </AreaChart>
     </ResponsiveContainer>
   );

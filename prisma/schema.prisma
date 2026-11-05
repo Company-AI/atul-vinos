@@ -4,13 +4,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 generator client {
-  provider = "prisma-client-js"
-  /*
-    "native" es para desarrollo local. El segundo target es el motor que
-    necesitan las funciones serverless: Netlify y Vercel corren sobre AWS
-    Lambda con Amazon Linux y OpenSSL 3. Sin este target el build pasa y
-    Prisma explota en el primer query en producción.
-  */
+  provider      = "prisma-client-js"
+  /**
+   * "native" es para desarrollo local. El segundo target es el motor que
+   * necesitan las funciones serverless: Netlify y Vercel corren sobre AWS
+   * Lambda con Amazon Linux y OpenSSL 3. Sin este target el build pasa y
+   * Prisma explota en el primer query en producción.
+   */
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -1202,4 +1202,25 @@ model Job {
   updatedAt   DateTime  @updatedAt
 
   @@index([status, runAt])
+}
+
+/// Una visita a una página pública. Es el contador propio del panel: no hay
+/// Google Analytics ni pixel de nadie, y los datos no salen del servidor.
+///
+/// No guarda IP ni user agent. `visitorKey` es un hash que mezcla la IP, el
+/// user agent, el día y un secreto del servidor: sirve para contar personas
+/// distintas dentro de un mismo día y deja de servir al día siguiente, porque
+/// el hash cambia. Por eso no hace falta banner de cookies: no se puede
+/// reconstruir quién es nadie, ni seguir a la misma persona entre dos días.
+model PageView {
+  id         String   @id @default(cuid())
+  path       String
+  referrer   String?
+  visitorKey String
+  isMobile   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([visitorKey, createdAt])
+  @@index([path, createdAt])
 }
