@@ -72,12 +72,7 @@ export function WineCardRow({
       </div>
 
       {/* Columna de la botella */}
-      <Link
-        href={`/vinos/${product.slug}`}
-        tabIndex={-1}
-        aria-hidden
-        className="relative w-[38%] shrink-0 self-stretch"
-      >
+      <div className="relative w-[38%] shrink-0 self-stretch">
         {product.imageUrl ? (
           <Image
             src={product.imageUrl}
@@ -92,12 +87,32 @@ export function WineCardRow({
             Sin imagen
           </div>
         )}
-      </Link>
+      </div>
 
       {/* Columna de datos */}
       <div className="flex min-w-0 flex-1 flex-col py-5 pr-4 pt-9">
+        {/*
+          El enlace del título se estira sobre toda la tarjeta con un ::after.
+
+          Antes sólo entraban al vino la foto y las letras del título: el
+          varietal, la región, el precio y las cuotas no hacían nada. Medido
+          punto por punto en un teléfono, el 54% de la superficie de la
+          tarjeta no respondía, y el cliente lo reporto como "hay que tocar
+          justo en lugares específicos".
+
+          Se estira el enlace que ya existe en vez de envolver todo en otro:
+          un <a> alrededor de la tarjeta entera se lee como un solo bloque de
+          texto larguísimo en un lector de pantalla, y además no puede
+          contener al botón de agregar.
+
+          El carrito y el corazón llevan z-10 para quedar por encima del
+          ::after y seguir siendo ellos mismos.
+        */}
         <h3 className="font-display text-[17px] font-medium leading-tight text-carbon-900">
-          <Link href={`/vinos/${product.slug}`} className="hover:text-accent-700">
+          <Link
+            href={`/vinos/${product.slug}`}
+            className="after:absolute after:inset-0 after:content-[''] hover:text-accent-700"
+          >
             {product.name}
           </Link>
         </h3>
@@ -131,7 +146,7 @@ export function WineCardRow({
 
           <FormasDePago value={product.price} size="sm" className="mt-1" />
 
-          <div className="mt-3">
+          <div className="relative z-10 mt-3">
             <AddToCartButton
               productId={product.id}
               available={product.available}

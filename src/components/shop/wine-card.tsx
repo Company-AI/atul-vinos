@@ -38,7 +38,7 @@ export function WineCard({
   return (
     <article className={cn("group relative flex flex-col", className)}>
       <div className="relative aspect-[3/4] overflow-hidden bg-bone-pure">
-        <Link href={`/vinos/${product.slug}`} className="block size-full" tabIndex={-1} aria-hidden>
+        <div className="block size-full">
           {product.imageUrl ? (
             <Image
               src={product.imageUrl}
@@ -51,7 +51,7 @@ export function WineCard({
           ) : (
             <div className="grid size-full place-items-center text-stone-400">Sin imagen</div>
           )}
-        </Link>
+        </div>
 
         {/* Distintivos */}
         <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-start gap-1.5">
@@ -66,11 +66,11 @@ export function WineCard({
           productId={product.id}
           productName={product.name}
           initialFavorite={isFavorite}
-          className="absolute right-3 top-3"
+          className="absolute right-3 top-3 z-10"
         />
 
         {/* CTA: siempre visible en mobile, al hover en desktop */}
-        <div className="absolute inset-x-3 bottom-3 lg:opacity-0 lg:transition-opacity lg:duration-[280ms] lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
+        <div className="absolute inset-x-3 bottom-3 z-10 lg:opacity-0 lg:transition-opacity lg:duration-[280ms] lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
           <AddToCartButton
             productId={product.id}
             available={product.available}
@@ -87,8 +87,28 @@ export function WineCard({
       <div className="flex flex-1 flex-col pt-4">
         {meta && <p className="eyebrow text-stone-500">{meta}</p>}
 
+        {/*
+          El enlace del título se estira sobre toda la tarjeta con un ::after.
+
+          Antes sólo entraban al vino la foto y las letras del título: el
+          varietal, la región, el precio y las cuotas no hacían nada. Medido
+          punto por punto en un teléfono, el 54% de la superficie de la
+          tarjeta no respondía, y el cliente lo reporto como "hay que tocar
+          justo en lugares específicos".
+
+          Se estira el enlace que ya existe en vez de envolver todo en otro:
+          un <a> alrededor de la tarjeta entera se lee como un solo bloque de
+          texto larguísimo en un lector de pantalla, y además no puede
+          contener al botón de agregar.
+
+          El carrito y el corazón llevan z-10 para quedar por encima del
+          ::after y seguir siendo ellos mismos.
+        */}
         <h3 className="mt-2 font-display text-[19px] font-light leading-snug text-carbon-900">
-          <Link href={`/vinos/${product.slug}`} className="hover:text-accent-700">
+          <Link
+            href={`/vinos/${product.slug}`}
+            className="after:absolute after:inset-0 after:content-[''] hover:text-accent-700"
+          >
             {product.name}
             {product.vintage ? <span className="text-stone-500"> {product.vintage}</span> : null}
           </Link>
