@@ -28,6 +28,51 @@ function buscarEnDemo(query: string) {
     .slice(0, 5);
 }
 
+/*
+  El campo de búsqueda vive ACÁ y no sólo en la cabecera.
+
+  La cabecera lo esconde por debajo de 768px (`hidden md:block`) y dentro de
+  ese ancho deja nada mas la lupa, que linkea a esta pagina. Sin un campo
+  propio, el telefono quedaba sin ninguna forma de buscar: se tocaba la lupa,
+  se llegaba a "Escribí al menos dos letras" y no había dónde escribir. Lo
+  reportó el cliente y se reprodujo en un teléfono emulado contra producción:
+  el input de la cabecera medía 0x0 de ancho y de alto.
+
+  Es un form de verdad con action a esta misma página, igual que el de la
+  cabecera, así anda sin JavaScript y la búsqueda queda en una URL que se
+  puede compartir.
+*/
+function CampoDeBusqueda({ query }: { query: string }) {
+  return (
+    <form action="/buscar" role="search" className="mt-6 flex max-w-[560px] gap-2">
+      <label htmlFor="buscar" className="sr-only">
+        Buscar
+      </label>
+      <div className="relative flex-1">
+        <Search
+          className="pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-stone-500"
+          aria-hidden
+        />
+        <input
+          id="buscar"
+          name="q"
+          type="search"
+          defaultValue={query}
+          placeholder="Buscar vinos, bodegas, cepas…"
+          /*
+            16px y no menos: por debajo de eso Safari en iPhone hace zoom solo
+            al enfocar el campo y deja la página corrida para el costado.
+          */
+          className="h-12 w-full rounded-pill border border-linen-300 bg-bone-pure pl-11 pr-4 text-[16px] text-carbon-900 outline-none transition-colors placeholder:text-stone-500 focus:border-accent-700"
+        />
+      </div>
+      <button type="submit" className={buttonVariants({ variant: "dark", uppercase: true })}>
+        Buscar
+      </button>
+    </form>
+  );
+}
+
 export default async function SearchPage({ searchParams }: PageProps) {
   const { q } = await searchParams;
   const query = q?.trim() ?? "";
@@ -36,7 +81,9 @@ export default async function SearchPage({ searchParams }: PageProps) {
     return (
       <Container className="pb-section pt-4">
         <Eyebrow>Buscador</Eyebrow>
-        <Heading level={1} size="md" className="mt-4 mb-10">¿Qué estás buscando?</Heading>
+        <Heading level={1} size="md" className="mt-4">¿Qué estás buscando?</Heading>
+        <CampoDeBusqueda query="" />
+        <div className="mt-10" />
         <EmptyState
           icon={<Search className="size-8" />}
           title="Escribí al menos dos letras"
@@ -75,7 +122,8 @@ export default async function SearchPage({ searchParams }: PageProps) {
       <Heading level={1} size="md" className="mt-4">
         Resultados para «{query}»
       </Heading>
-      <p className="mt-3 text-[14px] text-stone-500">
+      <CampoDeBusqueda query={query} />
+      <p className="mt-6 text-[14px] text-stone-500">
         {total} {total === 1 ? "vino" : "vinos"}
         {posts.length > 0 && ` · ${posts.length} ${posts.length === 1 ? "nota" : "notas"}`}
       </p>
